@@ -10,9 +10,27 @@ public class CouponResponse {
         private Integer quantity;
         private Boolean visible;
         private String expiredDate;
+        private String createdDate;
+        private String description;
 
 
-        public Integer getId() {
+    public String getCreatedDate() {
+        return createdDate;
+    }
+
+    public void setCreatedDate(String createdDate) {
+        this.createdDate = createdDate;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Integer getId() {
             return id;
         }
 
