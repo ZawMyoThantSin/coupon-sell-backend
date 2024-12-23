@@ -3,6 +3,7 @@ package com.css.coupon_sale.controller;
 
 import com.css.coupon_sale.dto.request.BusinessRequest;
 import com.css.coupon_sale.dto.request.SignupRequest;
+import com.css.coupon_sale.dto.request.UpdateBusinessRequest;
 import com.css.coupon_sale.dto.response.BusinessResponse;
 import com.css.coupon_sale.dto.response.HttpResponse;
 import com.css.coupon_sale.dto.response.SignupResponse;
@@ -93,7 +94,7 @@ public class BusinessController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<BusinessResponse> updateBusiness(@PathVariable Integer id, @RequestBody BusinessRequest requestDTO) {
+    public ResponseEntity<BusinessResponse> updateBusiness(@PathVariable("id") Integer id, @ModelAttribute UpdateBusinessRequest requestDTO) throws IOException{
         BusinessResponse updatedBusiness = businessService.updateBusiness(id, requestDTO);
         return ResponseEntity.ok(updatedBusiness);
     }

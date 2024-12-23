@@ -2,6 +2,7 @@ package com.css.coupon_sale.service;
 
 import com.css.coupon_sale.dto.request.BusinessRequest;
 import com.css.coupon_sale.dto.request.SignupRequest;
+import com.css.coupon_sale.dto.request.UpdateBusinessRequest;
 import com.css.coupon_sale.dto.response.BusinessResponse;
 import com.css.coupon_sale.dto.response.SignupResponse;
 
@@ -14,6 +15,6 @@ public interface BusinessService {
     BusinessResponse getBusinessById(Integer id);
     List<BusinessResponse> getByUserId(Long id);
     List<BusinessResponse> getAllBusinesses();
-    BusinessResponse updateBusiness(Integer id, BusinessRequest requestDTO);
+    BusinessResponse updateBusiness(Integer id, UpdateBusinessRequest requestDTO) throws IOException;
     BusinessResponse softDeleteBusiness(Integer id);
 }

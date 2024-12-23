@@ -6,7 +6,10 @@ import com.css.coupon_sale.dto.response.ProductResponse;
 import com.css.coupon_sale.service.ProductService;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.io.IOException;
+import java.nio.file.DirectoryNotEmptyException;
+import java.util.Comparator;
 import java.util.List;
 import com.css.coupon_sale.entity.BusinessEntity;
 import com.css.coupon_sale.entity.ProductEntity;
@@ -133,8 +136,19 @@ public class ProductServiceImpl implements ProductService {
             Path filePath = Paths.get(uploadDir + "/product", fileName);
             Files.createDirectories(filePath.getParent());
             Files.write(filePath, imageFile.getBytes());
+
+            // Delete old image if exists
+            if (productEntity.getImagePath() != null) {
+                Path oldFilePath = Paths.get(uploadDir + "/product", productEntity.getImagePath());
+                try { Files.deleteIfExists(oldFilePath); } catch (DirectoryNotEmptyException e) {
+                    System.err.println("Directory not empty: " + e.getMessage());
+                    Files.walk(oldFilePath) .sorted(Comparator.reverseOrder()) .map(Path::toFile) .forEach(File::delete);
+                    Files.deleteIfExists(oldFilePath);
+                }
+            }
             productEntity.setImagePath(fileName);
         }
+
 
         // Save the updated entity
         ProductEntity updatedProductEntity = repo.save(productEntity);
@@ -155,7 +169,6 @@ public class ProductServiceImpl implements ProductService {
         response.setUpdatedAt(updatedProductEntity.getUpdatedAt().format(formatter));
         return response;
     }
-
     @Override
     public ProductResponse updateProductDiscount(Integer id, Float discount) {
         ProductEntity productEntity = repo.findById(id)

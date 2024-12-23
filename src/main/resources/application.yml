@@ -16,8 +16,8 @@ spring:
       client:
         registration:
           google:
-            client-id: 'your-client-id'
-            client-secret: 'your-client-secret'
+            client-id: ${GOOGLE_CLIENT_ID}
+            client-secret: ${GOOGLE_CLIENT_SECRET}
             scope:
               - email
               - profile
@@ -42,4 +42,4 @@ product:
     upload-dir: uploads/images
 
 jwt:
-  secret: GDGfx/xcaSqCWZtVqxCzZ5f5j8BPYRnR0lG7vatfAOAt6tgpiGgc7X1Jxw8I96abS8+5ChS4W/hOhtHasM+bHQ==
+  secret: ${SECRET-KEY}

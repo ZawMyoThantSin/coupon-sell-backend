@@ -2,6 +2,7 @@ package com.css.coupon_sale.service.implementation;
 
 import com.css.coupon_sale.dto.request.BusinessRequest;
 import com.css.coupon_sale.dto.request.SignupRequest;
+import com.css.coupon_sale.dto.request.UpdateBusinessRequest;
 import com.css.coupon_sale.dto.response.BusinessResponse;
 import com.css.coupon_sale.dto.response.SignupResponse;
 import com.css.coupon_sale.entity.BusinessEntity;
@@ -20,13 +21,16 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.CharBuffer;
+import java.nio.file.DirectoryNotEmptyException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -145,7 +149,7 @@ public class BusinessServiceImpl implements BusinessService {
     }
 
     @Override
-    public BusinessResponse updateBusiness(Integer id, BusinessRequest requestDTO) {
+    public BusinessResponse updateBusiness(Integer id, UpdateBusinessRequest requestDTO) throws IOException{
         BusinessEntity business = businessRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Business not found"));
 
@@ -157,8 +161,31 @@ public class BusinessServiceImpl implements BusinessService {
         business.setLocation(requestDTO.getLocation());
         business.setDescription(requestDTO.getDescription());
         business.setContactNumber(requestDTO.getContactNumber());
-//        business.setPhoto(requestDTO.getPhoto());
         business.setCategory(requestDTO.getCategory());
+        //business.setStatus(requestDTO.getStatus());
+        //business.setUserName(requestDTO.getUserName());
+        //business.setUserEmail(requestDTO.getUserEmail());
+
+        // Handle image upload
+        MultipartFile imageFile = requestDTO.getImageFile();
+        if (imageFile != null && !imageFile.isEmpty()) {
+            String fileName = System.currentTimeMillis() + "_" + imageFile.getOriginalFilename();
+            Path filePath = Paths.get(uploadDir + "/business", fileName);
+            Files.createDirectories(filePath.getParent());
+            Files.write(filePath, imageFile.getBytes());
+
+            // Delete old image if exists
+            if (business.getPhoto() != null) {
+                Path oldFilePath = Paths.get(uploadDir + "/business", business.getPhoto());
+                try { Files.deleteIfExists(oldFilePath); } catch (DirectoryNotEmptyException e) {
+                    System.err.println("Directory not empty: " + e.getMessage());
+                    Files.walk(oldFilePath) .sorted(Comparator.reverseOrder()) .map(Path::toFile) .forEach(File::delete);
+                    Files.deleteIfExists(oldFilePath);
+                }
+            }
+
+            business.setPhoto(fileName); // Save new file name as photo
+        }
 
         BusinessEntity updatedBusiness = businessRepository.save(business);
         return mapToResponseDTO(updatedBusiness);
