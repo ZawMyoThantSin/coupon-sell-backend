@@ -1,0 +1,44 @@
+package com.css.coupon_sale.controller;
+
+
+import com.css.coupon_sale.dto.request.TransferRequest;
+import com.css.coupon_sale.dto.response.TransferResponse;
+import com.css.coupon_sale.service.TransferService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/transfer")
+public class TransferController {
+
+    @Autowired
+    private TransferService transferService;
+
+    @PostMapping
+    public ResponseEntity<TransferResponse> transferCoupon(@RequestBody TransferRequest requestDTO) {
+        TransferResponse response = transferService.transferCoupon(requestDTO);
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/{transferId}/accept")
+    public ResponseEntity<TransferResponse> acceptTransfer(@PathVariable int transferId) {
+        TransferResponse response = transferService.acceptTransfer(transferId);
+        return ResponseEntity.ok(response);
+    }
+
+    @PutMapping("/{transferId}/deny")
+    public ResponseEntity<TransferResponse> denyTransfer(@PathVariable int transferId) {
+        TransferResponse response = transferService.denyTransfer(transferId);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/history/{userId}")
+    public ResponseEntity<List<TransferResponse>> getTransferHistory(@PathVariable Long userId) {
+        List<TransferResponse> history = transferService.getTransferHistory(userId);
+        return ResponseEntity.ok(history);
+    }
+
+}
