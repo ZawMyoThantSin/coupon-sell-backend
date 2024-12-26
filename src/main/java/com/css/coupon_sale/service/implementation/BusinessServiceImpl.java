@@ -5,9 +5,11 @@ import com.css.coupon_sale.dto.request.SignupRequest;
 import com.css.coupon_sale.dto.request.UpdateBusinessRequest;
 import com.css.coupon_sale.dto.response.BusinessResponse;
 import com.css.coupon_sale.dto.response.SignupResponse;
+import com.css.coupon_sale.entity.BusinessCategoryEntity;
 import com.css.coupon_sale.entity.BusinessEntity;
 import com.css.coupon_sale.entity.UserEntity;
 import com.css.coupon_sale.exception.AppException;
+import com.css.coupon_sale.repository.BusinessCategoryRepository;
 import com.css.coupon_sale.repository.BusinessRepository;
 import com.css.coupon_sale.repository.UserRepository;
 import com.css.coupon_sale.service.BusinessService;
@@ -48,15 +50,19 @@ public class BusinessServiceImpl implements BusinessService {
 
     private final ModelMapper modelMapper;
 
+    private final BusinessCategoryRepository categoryRepository;
+
     @Value("${product.image.upload-dir}") // Specify folder path in application.properties
     private String uploadDir;
 
     @Autowired
-    public BusinessServiceImpl(BusinessRepository businessRepository, PasswordEncoder passwordEncoder, UserRepository userRepository, ModelMapper modelMapper) {
+    public BusinessServiceImpl(BusinessRepository businessRepository, PasswordEncoder passwordEncoder, UserRepository userRepository, ModelMapper modelMapper,
+                               BusinessCategoryRepository categoryRepository) {
         this.businessRepository = businessRepository;
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
         this.modelMapper = modelMapper;
+        this.categoryRepository = categoryRepository;
     }
 
     @Override
@@ -85,6 +91,9 @@ public class BusinessServiceImpl implements BusinessService {
         UserEntity user = userRepository.findById(dto.getUserId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
+        BusinessCategoryEntity category = categoryRepository.findById(dto.getCategoryId())
+                .orElseThrow(() -> new IllegalArgumentException("Category not found"));
+
         BusinessEntity business = new BusinessEntity();
         MultipartFile imageFile = dto.getImage();
         if (imageFile != null && !imageFile.isEmpty()) {
@@ -100,7 +109,7 @@ public class BusinessServiceImpl implements BusinessService {
         business.setLocation(dto.getLocation());
         business.setDescription(dto.getDescription());
         business.setContactNumber(dto.getContactNumber());
-        business.setCategory(dto.getCategory());
+        business.setCategory(category);
         business.setUser(user);
         business.setStatus(true);
         business.setCreatedAt(LocalDateTime.now());
@@ -156,12 +165,15 @@ public class BusinessServiceImpl implements BusinessService {
         UserEntity user = userRepository.findById(requestDTO.getUserId())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
+        BusinessCategoryEntity category = categoryRepository.findById(requestDTO.getCategoryId())
+                .orElseThrow(() -> new IllegalArgumentException("Category not found"));
+
         business.setUser(user);
         business.setName(requestDTO.getName());
         business.setLocation(requestDTO.getLocation());
         business.setDescription(requestDTO.getDescription());
         business.setContactNumber(requestDTO.getContactNumber());
-        business.setCategory(requestDTO.getCategory());
+        business.setCategory(category);
         //business.setStatus(requestDTO.getStatus());
         //business.setUserName(requestDTO.getUserName());
         //business.setUserEmail(requestDTO.getUserEmail());
@@ -204,6 +216,7 @@ public class BusinessServiceImpl implements BusinessService {
         BusinessResponse responseDTO = modelMapper.map(business, BusinessResponse.class);
         responseDTO.setUserName(business.getUser().getName());
         responseDTO.setUserEmail(business.getUser().getEmail());
+        responseDTO.setCategory(business.getCategory().getName());
         return responseDTO;
     }
 

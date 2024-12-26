@@ -52,17 +52,18 @@ public class BusinessController {
             @RequestParam("location") String location,
             @RequestParam("description") String description,
             @RequestParam("contactNumber") String contactNumber,
-            @RequestParam("category") String category,
+            @RequestParam("categoryId") Integer categoryId,
             @RequestParam("userId") Long userId,
             @RequestParam(value = "image", required = false) MultipartFile image) {
         System.out.println("Name"+ name);
+        System.out.println("Category ID: " + categoryId);
         try {
             BusinessRequest dto = new BusinessRequest();
             dto.setName(name);
             dto.setLocation(location);
             dto.setDescription(description);
             dto.setContactNumber(contactNumber);
-            dto.setCategory(category);
+            dto.setCategoryId(categoryId);
             dto.setUserId(userId);
             dto.setImage(image);
 
