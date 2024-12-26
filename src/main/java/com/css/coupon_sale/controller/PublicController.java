@@ -87,4 +87,26 @@ public class PublicController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @GetMapping("/payments/qr/{filename}")
+    public ResponseEntity<Resource> getAdminQrImage(@PathVariable String filename) throws MalformedURLException, IOException {
+        Path imagePath = Paths.get(uploadDir + "/qr_images").resolve(filename);
+        Resource imageResource = new UrlResource(imagePath.toUri());
+
+        if (imageResource.exists() && imageResource.isReadable()) {
+            // Dynamically determine the content type
+            String contentType = Files.probeContentType(imagePath);
+            if (contentType == null) {
+                contentType = MediaType.APPLICATION_OCTET_STREAM_VALUE; // Fallback content type
+            }
+
+            return ResponseEntity.ok()
+                    .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + imageResource.getFilename() + "\"")
+                    .contentType(MediaType.parseMediaType(contentType))
+                    .body(imageResource);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
 }

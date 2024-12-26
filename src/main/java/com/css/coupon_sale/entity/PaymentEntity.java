@@ -17,26 +17,77 @@ public class PaymentEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
-    @ManyToOne
-    @JoinColumn(name = "coupon_id", nullable = false)
-    private CouponEntity coupon;
+    @Column(name = "payment_type", nullable = false)
+    private String paymentType;
 
-    @ManyToOne
-    @JoinColumn(name = "business_id", nullable = false)
-    private BusinessEntity business;
+    @Column(name = "account_name", nullable = false)
+    private String accountName;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private UserEntity user;
+    @Column(name = "account_number", nullable = false)
+    private int accountNumber;
 
-    @Column(name = "payment_method", nullable = false)
-    private String paymentMethod;
+    @Column(name = "qr_image")
+    private String qrImage;
 
-    private int quantity;
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt;
 
-    @Column(name = "total_price", nullable = false)
-    private int totalPrice;
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
 
-    @Column(name = "purchase_at", nullable = false)
-    private LocalDateTime purchaseAt;
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getPaymentType() {
+        return paymentType;
+    }
+
+    public void setPaymentType(String paymentType) {
+        this.paymentType = paymentType;
+    }
+
+    public String getAccountName() {
+        return accountName;
+    }
+
+    public void setAccountName(String accountName) {
+        this.accountName = accountName;
+    }
+
+    public int getAccountNumber() {
+        return accountNumber;
+    }
+
+    public String getQrImage() {
+        return qrImage;
+    }
+
+    public void setQrImage(String qrImage) {
+        this.qrImage = qrImage;
+    }
+
+    public void setAccountNumber(int accountNumber) {
+        this.accountNumber = accountNumber;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
 }
