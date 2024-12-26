@@ -11,7 +11,7 @@ public class BusinessRequest {
     private String description;
     private String contactNumber;
     private MultipartFile image;
-    private String category;
+    private Integer categoryId;
 
     public Long getUserId() {
         return userId;
@@ -60,12 +60,11 @@ public class BusinessRequest {
         this.image = image;
     }
 
-    public String getCategory() {
-        return category;
+    public Integer getCategoryId() {
+        return categoryId;
     }
 
-    public void setCategory(String category) {
-        this.category = category;
+    public void setCategoryId(Integer categoryId) {
+        this.categoryId = categoryId;
     }
-
 }

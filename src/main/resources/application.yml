@@ -2,9 +2,9 @@ spring:
   application:
     name: coupon-sale
   datasource:
-    url: jdbc:mysql://localhost:3306/coupon_sell_system1?createDatabaseIfNotExist=true
+    url: jdbc:mysql://localhost:3306/coupon_sell_system?createDatabaseIfNotExist=true
     username: root
-    password: '!@#root'
+    password: root
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
