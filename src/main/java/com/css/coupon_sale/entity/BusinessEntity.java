@@ -34,7 +34,9 @@ public class BusinessEntity {
 
     private String photo;
 
-    private String category;
+    @ManyToOne
+    @JoinColumn(name = "business_category_id", nullable = false)
+    private BusinessCategoryEntity category;
 
     @Column(columnDefinition = "BOOLEAN DEFAULT TRUE")
     private boolean status;
@@ -101,11 +103,11 @@ public class BusinessEntity {
         this.photo = photo;
     }
 
-    public String getCategory() {
+    public BusinessCategoryEntity getCategory() {
         return category;
     }
 
-    public void setCategory(String category) {
+    public void setCategory(BusinessCategoryEntity category) {
         this.category = category;
     }
 

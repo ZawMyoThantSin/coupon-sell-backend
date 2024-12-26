@@ -8,7 +8,7 @@ public class UpdateBusinessRequest {
     private String location;
     private String description;
     private String contactNumber;
-    private String category;
+    private Integer categoryId;
     private MultipartFile imageFile;
 
     public Long getUserId() {
@@ -51,12 +51,12 @@ public class UpdateBusinessRequest {
         this.contactNumber = contactNumber;
     }
 
-    public String getCategory() {
-        return category;
+    public Integer getCategoryId() {
+        return categoryId;
     }
 
-    public void setCategory(String category) {
-        this.category = category;
+    public void setCategoryId(Integer categoryId) {
+        this.categoryId = categoryId;
     }
 
     public MultipartFile getImageFile() {
