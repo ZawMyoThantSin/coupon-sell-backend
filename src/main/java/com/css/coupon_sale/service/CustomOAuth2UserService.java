@@ -30,6 +30,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         // Save or update the user in the database
         userRepository.findByEmail(email).orElseGet(() -> {
             UserEntity user = new UserEntity();
+            System.out.println("hdfsjkadhgjhkahgkjsdghkhsfkahgakd");
             user.setEmail(email);
             user.setName(name);
             user.setSub(sub);
