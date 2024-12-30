@@ -13,6 +13,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -87,5 +88,15 @@ public class ProductController {
     public ResponseEntity<ProductResponse>findByCategory(@RequestParam String category){
         ProductResponse response=service.findProductCategroy(category);
         return ResponseEntity.ok(response);
+    }
+
+    @PostMapping("/import")
+    public ResponseEntity<String> importProducts(@RequestParam("file") MultipartFile file) {
+        try {
+            service.importProductsFromExcel(file);
+            return ResponseEntity.ok("Products imported successfully!");
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error importing products: " + e.getMessage());
+        }
     }
 }
