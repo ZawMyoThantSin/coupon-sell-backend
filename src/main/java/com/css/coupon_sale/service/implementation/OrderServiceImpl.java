@@ -8,6 +8,7 @@ import com.css.coupon_sale.dto.response.OrderResponse;
 
 import com.css.coupon_sale.entity.CouponEntity;
 import com.css.coupon_sale.entity.OrderEntity;
+import com.css.coupon_sale.entity.PaymentEntity;
 import com.css.coupon_sale.entity.UserEntity;
 import com.css.coupon_sale.repository.*;
 import com.css.coupon_sale.service.OrderService;

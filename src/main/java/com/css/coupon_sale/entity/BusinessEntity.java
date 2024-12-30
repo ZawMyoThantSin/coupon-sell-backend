@@ -27,6 +27,7 @@ public class BusinessEntity {
     @Column(nullable = false )
     private String location;
 
+    @Column(columnDefinition = "TEXT  ")
     private String description;
 
     @Column(name = "contact_number", length = 15)

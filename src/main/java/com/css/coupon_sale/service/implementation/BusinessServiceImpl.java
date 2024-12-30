@@ -143,11 +143,9 @@ public class BusinessServiceImpl implements BusinessService {
     }
 
     @Override
-    public List<BusinessResponse> getByUserId(Long id) {
-        List<BusinessEntity> businessEntityList = businessRepository.findByUser_Id(id);
-        return businessEntityList.stream()
-                .map(this::mapToResponseDTO)
-                .collect(Collectors.toList());
+    public BusinessResponse getByUserId(Long id) {
+        BusinessEntity businessEntity = businessRepository.findByUser_Id(id);
+        return mapToResponseDTO(businessEntity);
     }
 
     @Override
