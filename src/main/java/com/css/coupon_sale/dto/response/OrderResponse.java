@@ -17,6 +17,7 @@ public class OrderResponse {
   private String updatedAt;
   private String message;
   private int status;
+  private int order_id;
 
   public int getId() {
     return id;
@@ -112,5 +113,13 @@ public class OrderResponse {
 
   public void setStatus(int status) {
     this.status = status;
+  }
+
+  public int getOrder_id() {
+    return order_id;
+  }
+
+  public void setOrder_id(int order_id) {
+    this.order_id = order_id;
   }
 }

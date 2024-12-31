@@ -1,5 +1,6 @@
 package com.css.coupon_sale.service;
 
+import com.css.coupon_sale.dto.request.OrderItemRequest;
 import com.css.coupon_sale.dto.request.OrderRequest;
 import com.css.coupon_sale.dto.response.OrderResponse;
 import org.springframework.web.multipart.MultipartFile;
@@ -9,7 +10,13 @@ import java.util.List;
 
 public interface OrderService {
 
-  OrderResponse saveOrder(OrderRequest request, MultipartFile screenshot) throws IOException;
+  List<OrderResponse> saveOrders(long userId,
+                           int paymentId,
+                           String phoneNumber,
+                           int totalPrice,
+                           List<Integer> quantities,
+                           MultipartFile screenshot,
+                           List<Integer> couponIds) throws IOException;
 
   List<OrderResponse> getByPaymentId(Integer id);
   List<OrderResponse> getAllOrderlist();
