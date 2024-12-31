@@ -4,10 +4,15 @@ import com.css.coupon_sale.dto.request.ProductRequest;
 import com.css.coupon_sale.dto.request.ProductUpdateRequest;
 import com.css.coupon_sale.dto.response.ProductResponse;
 import com.css.coupon_sale.service.ProductService;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.DirectoryNotEmptyException;
 import java.util.Comparator;
 import java.util.List;
@@ -221,6 +226,42 @@ public class ProductServiceImpl implements ProductService {
         ProductRequest request=mapper.map(product, ProductRequest.class);
         return mapper.map(request,ProductResponse.class);
 
+    }
+
+    @Override
+    public void importProductsFromExcel(MultipartFile file) throws IOException {
+        if (file.isEmpty()) {
+            throw new RuntimeException("The uploaded file is empty.");
+        }
+
+        try (InputStream inputStream = file.getInputStream()) {
+            Workbook workbook = new XSSFWorkbook(inputStream);
+            Sheet sheet = workbook.getSheetAt(0); // Get the first sheet
+
+            for (Row row : sheet) {
+                if (row.getRowNum() == 0) continue; // Skip header row
+
+                ProductEntity product = new ProductEntity();
+                BusinessEntity business = new BusinessEntity();
+
+                // Assuming column 0: Business ID, 1: Name, 2: Description, 3: Price, 4: Discount
+                business.setId((int) row.getCell(0).getNumericCellValue());
+                product.setBusiness(business);
+                product.setName(row.getCell(1).getStringCellValue());
+                product.setDescription(row.getCell(2).getStringCellValue());
+                product.setPrice(row.getCell(3).getNumericCellValue());
+                product.setDiscount((float) row.getCell(4).getNumericCellValue());
+                product.setCreatedAt(LocalDateTime.now());
+                product.setUpdatedAt(LocalDateTime.now());
+                product.setStatus(true);
+
+                repo.save(product);
+            }
+
+            workbook.close();
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to import products: " + e.getMessage(), e);
+        }
     }
 
     private ProductResponse mapToResponseDTO(ProductEntity product) {

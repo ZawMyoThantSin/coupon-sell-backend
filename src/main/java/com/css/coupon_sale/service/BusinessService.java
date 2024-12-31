@@ -13,7 +13,7 @@ public interface BusinessService {
     SignupResponse addBusinessOwner(SignupRequest request);
     BusinessResponse createBusiness(BusinessRequest requestDTO) throws IOException;
     BusinessResponse getBusinessById(Integer id);
-    List<BusinessResponse> getByUserId(Long id);
+    BusinessResponse getByUserId(Long id);
     List<BusinessResponse> getAllBusinesses();
     BusinessResponse updateBusiness(Integer id, UpdateBusinessRequest requestDTO) throws IOException;
     BusinessResponse softDeleteBusiness(Integer id);

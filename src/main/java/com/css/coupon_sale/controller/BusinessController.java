@@ -29,10 +29,6 @@ public class BusinessController {
     @Autowired
     private ModelMapper modelMapper;
 
-    @GetMapping("/index")
-    public String index(){
-        return "This is business";
-    }
 
     @PostMapping("/add/owner")
     public ResponseEntity<?> signupUser(@RequestBody SignupRequest request){
@@ -77,9 +73,14 @@ public class BusinessController {
 
 
     @GetMapping("/user/{id}")
-    public ResponseEntity<List<BusinessResponse>> getBusinessByUserId(@PathVariable Long id) {
-        return ResponseEntity.ok(businessService.getByUserId(id));
-
+    public ResponseEntity<BusinessResponse> getBusinessByUserId(@PathVariable Long id) {
+        try {
+            BusinessResponse response = businessService.getByUserId(id);
+            return ResponseEntity.ok(response);
+        }catch (Exception e){
+            System.out.println("Error"+ e.getMessage());
+            return ResponseEntity.ok(new BusinessResponse());
+        }
     }
 
     @GetMapping("/{id}")
