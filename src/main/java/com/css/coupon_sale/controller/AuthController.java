@@ -54,7 +54,8 @@ public class AuthController {
 
         } catch (AuthenticationException ex) {
             // Invalid credentials
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(new LoginResponse("Invalid credentials"));
+            System.out.println("IN Here:" + ex.getMessage());
+            return ResponseEntity.status(403).body(new LoginResponse("Invalid credentials"));
         }
         UserEntity oUser= userRepository.findByEmail(loginRequest.getEmail()).orElseThrow(()-> new AppException("User Not Found",HttpStatus.NOT_FOUND));
 
@@ -64,6 +65,7 @@ public class AuthController {
             userDetails = userDetailService.loadUserByUsername(loginRequest.getEmail());
         } catch (UsernameNotFoundException e) {
             // User not found
+            System.out.println("IN Here:" + e.getMessage());
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(new LoginResponse("User not found"));
         }
         String role = userDetails.getAuthorities().stream()
