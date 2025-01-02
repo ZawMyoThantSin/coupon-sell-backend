@@ -2,15 +2,19 @@ package com.css.coupon_sale.dto.request;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
+
 public class OrderRequest {
 
   private int payment_id;
-  private  int coupon_id;
+  private  Integer coupon_id;
   private long user_id;
   private int quantity;
   private  String phoneNumber;
   private int totalPrice;
   private MultipartFile screenshot;
+  private List<OrderItemRequest> items;
+
 
   public int getPayment_id() {
     return payment_id;
@@ -20,11 +24,11 @@ public class OrderRequest {
     this.payment_id = payment_id;
   }
 
-  public int getCoupon_id() {
+  public Integer getCoupon_id() {
     return coupon_id;
   }
 
-  public void setCoupon_id(int coupon_id) {
+  public void setCoupon_id(Integer coupon_id) {
     this.coupon_id = coupon_id;
   }
 
@@ -66,5 +70,13 @@ public class OrderRequest {
 
   public void setScreenshot(MultipartFile screenshot) {
     this.screenshot = screenshot;
+  }
+
+  public List<OrderItemRequest> getItems() {
+    return items;
+  }
+
+  public void setItems(List<OrderItemRequest> items) {
+    this.items = items;
   }
 }

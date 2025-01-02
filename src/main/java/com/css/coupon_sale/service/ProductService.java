@@ -5,6 +5,7 @@ import com.css.coupon_sale.dto.request.ProductRequest1;
 import com.css.coupon_sale.dto.request.ProductUpdateRequest;
 import com.css.coupon_sale.dto.response.ProductResponse;
 import com.css.coupon_sale.entity.ProductEntity;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
@@ -29,4 +30,6 @@ public interface ProductService {
     ProductResponse findProductName(String name);
 
     ProductResponse findProductCategroy(String category);
+
+    void importProductsFromExcel(MultipartFile file) throws IOException;
 }

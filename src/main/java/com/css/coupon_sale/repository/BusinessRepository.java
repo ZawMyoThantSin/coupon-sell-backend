@@ -14,5 +14,5 @@ public interface BusinessRepository extends JpaRepository<BusinessEntity,Integer
     @Query("SELECT b FROM BusinessEntity b WHERE b.status = true")
     List<BusinessEntity> findAllActiveBusinesses();
 //  find by user_id
-    List<BusinessEntity> findByUser_Id(Long userId);
+    BusinessEntity findByUser_Id(Long userId);
 }
