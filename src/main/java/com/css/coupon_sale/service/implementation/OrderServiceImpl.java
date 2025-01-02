@@ -13,6 +13,7 @@ import com.css.coupon_sale.entity.PaymentEntity;
 import com.css.coupon_sale.entity.UserEntity;
 import com.css.coupon_sale.repository.*;
 import com.css.coupon_sale.service.OrderService;
+import org.hibernate.query.Order;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,6 +27,7 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -48,126 +50,6 @@ public class OrderServiceImpl implements OrderService {
 
   @Value("${product.image.upload-dir}") // Specify folder path in application.properties
   private String uploadDir;
-
-//  @Override
-//  public OrderResponse saveOrder(OrderRequest request) throws IOException {
-//
-//    UserEntity user = URepository.findById(request.getUser_id()).orElseThrow(
-//      ()-> new RuntimeException("User Not Found")
-//    );
-//
-//    CouponEntity coupon = CRepository.findById(request.getCoupon_id())
-//      .orElseThrow(() -> new RuntimeException("Coupon not found"));
-//
-//
-//
-//    PaymentEntity payment  = PRepository.findById(request.getPayment_id()).orElseThrow(
-//      ()-> new RuntimeException("Payment Not Found")
-//    );
-//
-//    OrderEntity order = new OrderEntity();
-//    order.setCoupon(coupon);
-//    order.setPayment(payment);
-//    order.setUser(user);
-//    order.setTotalPrice(request.getTotalPrice());
-//    order.setPhoneNumber(request.getPhoneNumber());
-//    order.setQuantity(request.getQuantity());
-//    order.setCreatedAt(LocalDateTime.now());
-//    order.setStatus(0);
-//
-//
-//    // Save the uploaded image
-//    MultipartFile imageFile = request.getScreenshot();
-//    if (imageFile != null && !imageFile.isEmpty()) {
-//      System.out.println("IMage is exist");
-//      String fileName = System.currentTimeMillis() + "_" + imageFile.getOriginalFilename();
-//      Path filePath = Paths.get(uploadDir+"/order", fileName);
-//      Files.createDirectories(filePath.getParent());
-//      Files.write(filePath, imageFile.getBytes());
-//      order.setScreenshot(fileName); // Save file name/path
-//    } else {
-//      order.setScreenshot(""); // Empty if no file uploaded
-//    }
-//
-//    OrderEntity orderEntity = orderRepository.save(order);
-//    OrderResponse response = new OrderResponse();
-//    response.setId(orderEntity.getId());
-//    response.setCoupon_id(orderEntity.getCoupon().getId());
-//    response.setUser_id(orderEntity.getUser().getId());
-//    response.setPayment_id(orderEntity.getPayment().getId());
-//    response.setMessage(orderEntity.getMessage());
-//    response.setPhoneNumber(orderEntity.getPhoneNumber());
-//    response.setQuantity(orderEntity.getQuantity());
-//    response.setTotalPrice(orderEntity.getTotalPrice());
-//
-//    response.setStatus(orderEntity.getStatus());
-//    response.setCreatedAt(orderEntity.getCreatedAt());
-//
-//
-//    response.setScreenshot(orderEntity.getScreenshot());
-//
-//
-//    return response;
-//  }
-
-    // Part - 2
-
-
-//  @Override
-//  public OrderResponse saveOrder(OrderRequest request, OrderItemRequest item) throws IOException {
-//    // Generate a unique order_id starting from 1000
-//    int orderId = generateUniqueOrderId();
-//    UserEntity user = URepository.findById(request.getUser_id())
-//            .orElseThrow(() -> new RuntimeException("User Not Found"));
-//
-//    CouponEntity coupon = CRepository.findById(request.getCoupon_id())
-//            .orElseThrow(() -> new RuntimeException("Coupon not found"));
-//
-//    PaymentEntity payment = PRepository.findById(request.getPayment_id())
-//            .orElseThrow(() -> new RuntimeException("Payment Not Found"));
-//    System.out.println("Processing order for user ID: " + request.getUser_id());
-//    System.out.println("Order item details: " + item);
-//
-//    OrderEntity order = new OrderEntity();
-//    order.setCoupon(coupon);
-//    order.setPayment(payment);
-//    order.setUser(user);
-//    order.setTotalPrice(item.getTotalPrice());
-//    order.setPhoneNumber(request.getPhoneNumber());
-//    order.setQuantity(item.getQuantity());
-//    order.setCreatedAt(LocalDateTime.now());
-//    order.setOrder_id(orderId); // Assign the generated order_id
-//    order.setStatus(0);
-//
-//    MultipartFile imageFile = request.getScreenshot();
-//    if (imageFile != null && !imageFile.isEmpty()) {
-//      System.out.println("IMage is exist");
-//      String fileName = System.currentTimeMillis() + "_" + imageFile.getOriginalFilename();
-//      Path filePath = Paths.get(uploadDir+"/order", fileName);
-//      Files.createDirectories(filePath.getParent());
-//      Files.write(filePath, imageFile.getBytes());
-//      order.setScreenshot(fileName); // Save file name/path
-//    } else {
-//      order.setScreenshot(""); // Empty if no file uploaded
-//    }
-//
-//    OrderEntity savedOrder = orderRepository.save(order);
-//
-//    OrderResponse response = new OrderResponse();
-//    response.setId(savedOrder.getId());
-//    response.setCoupon_id(savedOrder.getCoupon().getId());
-//    response.setUser_id(savedOrder.getUser().getId());
-//    response.setPayment_id(savedOrder.getPayment().getId());
-//    response.setMessage(savedOrder.getMessage());
-//    response.setPhoneNumber(savedOrder.getPhoneNumber());
-//    response.setQuantity(savedOrder.getQuantity());
-//    response.setTotalPrice(savedOrder.getTotalPrice());
-//    response.setStatus(savedOrder.getStatus());
-//    response.setCreatedAt(savedOrder.getCreatedAt());
-//    response.setScreenshot(savedOrder.getScreenshot());
-//
-//    return response;
-//  }
 
     @Override
     public List<OrderResponse> saveOrders(
@@ -202,7 +84,7 @@ public class OrderServiceImpl implements OrderService {
 
             // Save the order
                 OrderEntity order = new OrderEntity();
-                order.setOrder_id(orderId); // Use the same order_id
+                order.setOrderId(orderId); // Use the same order_id
                 order.setUser(user);
                 order.setPayment(payment);
                 order.setCoupon(coupon);
@@ -228,7 +110,7 @@ public class OrderServiceImpl implements OrderService {
                 // Prepare response
                 OrderResponse response = new OrderResponse();
                 response.setId(savedOrder.getId());
-                response.setOrder_id(savedOrder.getOrder_id());
+                response.setOrder_id(savedOrder.getOrderId());
                 response.setCoupon_id(savedOrder.getCoupon() != null ? savedOrder.getCoupon().getId() : null);
                 response.setUser_id(savedOrder.getUser().getId());
                 response.setPayment_id(savedOrder.getPayment().getId());
@@ -258,12 +140,25 @@ public class OrderServiceImpl implements OrderService {
   @Override
   public List<OrderResponse> getAllOrderlist() {
     List<OrderEntity> orders=orderRepository.findAll();
+        // Filter to retain only one entry per order_id
 
-    System.out.println("Orders" + orders);
-    List<OrderResponse> response = orders.stream()
-      .map(order->mapper.map(orders, OrderResponse.class)).toList();
+      Map<Integer, OrderEntity> uniqueOrders = orders.stream()
+              .collect(Collectors.toMap(
+                      OrderEntity::getOrderId,  // Key: order_id
+                      order -> order,          // Value: order entity
+                      // Default: Keep the first occurrence
+                      (existing, replacement) -> existing
+                      // Uncomment below to keep the latest order based on createdAt
+                      //(existing, replacement) -> existing.getCreatedAt().isAfter(replacement.getCreatedAt()) ? existing : replacement
+              ));
 
-    return response;
+      // Convert the unique orders to response DTOs
+      return uniqueOrders.values().stream()
+              .map(this::mapToResponseDTO)
+              .collect(Collectors.toList());
+//      return orders.stream()
+//              .map(this::mapToResponseDTO)
+//              .collect(Collectors.toList());
   }
 
   @Override
@@ -282,8 +177,20 @@ public class OrderServiceImpl implements OrderService {
         .map(this::mapToResponseDTO)
         .collect(Collectors.toList());
   }
-  private OrderResponse mapToResponseDTO(OrderEntity order) {
+
+    @Override
+    public List<OrderResponse> getByOrderId(int id) {
+        List<OrderEntity> orderEntityList = orderRepository.findByOrderId(id);
+        return orderEntityList.stream()
+                .map(this::mapToResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    private OrderResponse mapToResponseDTO(OrderEntity order) {
     OrderResponse responseDTO = mapper.map(order, OrderResponse.class);
+    responseDTO.setOrder_id(order.getOrderId());
+    responseDTO.setUserName(order.getUser().getName());
+    responseDTO.setUserEmail(order.getUser().getEmail());
     responseDTO.setCoupon_id(order.getCoupon().getId());
     responseDTO.setPayment_id(order.getPayment().getId());
     responseDTO.setUser_id(order.getUser().getId());

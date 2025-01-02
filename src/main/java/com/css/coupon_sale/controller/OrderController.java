@@ -63,13 +63,21 @@ public class OrderController {
         }
     }
 
-
-
-    @GetMapping                 //list
-  public ResponseEntity<List<OrderResponse>> showAllOrderlist(){
+    @GetMapping
+  public ResponseEntity<List<OrderResponse>> showAllOrder(){
     List<OrderResponse> response =service.getAllOrderlist();
     return  ResponseEntity.ok(response);
   }
+
+  @GetMapping("/o/{id}")
+  public ResponseEntity<List<OrderResponse>> getByOrderId(@PathVariable("id")Integer id){
+      List<OrderResponse> responses = service.getByOrderId(id);
+      if(responses != null){
+          return ResponseEntity.ok(responses);
+      }
+      return ResponseEntity.notFound().build();
+  }
+
 
   @GetMapping("/p/{id}")
   public ResponseEntity<List<OrderResponse>> getByPayment(@PathVariable("id")Integer id){
