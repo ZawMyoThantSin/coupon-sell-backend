@@ -23,8 +23,8 @@ public class PaymentEntity {
     @Column(name = "account_name", nullable = false)
     private String accountName;
 
-    @Column(name = "account_number", nullable = false)
-    private int accountNumber;
+    @Column(name = "account_number", nullable = false )
+    private String  accountNumber;
 
     @Column(name = "qr_image")
     private String qrImage;
@@ -59,8 +59,12 @@ public class PaymentEntity {
         this.accountName = accountName;
     }
 
-    public int getAccountNumber() {
+    public String getAccountNumber() {
         return accountNumber;
+    }
+
+    public void setAccountNumber(String accountNumber) {
+        this.accountNumber = accountNumber;
     }
 
     public String getQrImage() {
@@ -71,9 +75,7 @@ public class PaymentEntity {
         this.qrImage = qrImage;
     }
 
-    public void setAccountNumber(int accountNumber) {
-        this.accountNumber = accountNumber;
-    }
+
 
     public LocalDateTime getCreatedAt() {
         return createdAt;

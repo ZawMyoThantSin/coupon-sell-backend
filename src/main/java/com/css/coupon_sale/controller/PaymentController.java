@@ -78,7 +78,7 @@ public class PaymentController {
         return ResponseEntity.ok(isUpdated);
     }
 
-    public record PaymentResponse(int id, String paymentType, String accountName, int accountNumber, String qrImage) {
+    public record PaymentResponse(int id, String paymentType, String accountName, String  accountNumber, String qrImage) {
         // Constructor and getters are automatically provided by the record
     }
 

@@ -18,6 +18,8 @@ public class OrderResponse {
   private String message;
   private int status;
   private int order_id;
+  private String userName;
+  private String userEmail;
 
   public int getId() {
     return id;
@@ -121,5 +123,21 @@ public class OrderResponse {
 
   public void setOrder_id(int order_id) {
     this.order_id = order_id;
+  }
+
+  public String getUserName() {
+    return userName;
+  }
+
+  public void setUserName(String userName) {
+    this.userName = userName;
+  }
+
+  public String getUserEmail() {
+    return userEmail;
+  }
+
+  public void setUserEmail(String userEmail) {
+    this.userEmail = userEmail;
   }
 }

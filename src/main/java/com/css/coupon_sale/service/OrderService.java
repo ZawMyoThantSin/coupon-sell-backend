@@ -23,4 +23,6 @@ public interface OrderService {
   List<OrderResponse> getByCouponId(Integer id);
   List<OrderResponse> getByUserId(long id);
 
+  List<OrderResponse> getByOrderId(int id);
+
 }
