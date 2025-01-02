@@ -48,7 +48,7 @@ public class BusinessEntity {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    public int getId() {
+    public BusinessEntity getId() {
         return id;
     }
 
