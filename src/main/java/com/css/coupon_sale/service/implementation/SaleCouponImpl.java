@@ -1,35 +1,69 @@
 package com.css.coupon_sale.service.implementation;
 
 import com.css.coupon_sale.entity.OrderEntity;
+import com.css.coupon_sale.entity.QrCodeEntity;
 import com.css.coupon_sale.entity.SaleCouponEntity;
+import com.css.coupon_sale.repository.OrderRepository;
+import com.css.coupon_sale.repository.QrCodeRepository;
 import com.css.coupon_sale.repository.SaleCouponRepository;
 import com.css.coupon_sale.service.SaleCouponService;
+import io.jsonwebtoken.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
+@Service
 public class SaleCouponImpl implements SaleCouponService {
     @Autowired
     private SaleCouponRepository saleCouponRepository;
-    @Override
-    public boolean saveSaleCouponFromOrder(OrderEntity orderEntity) {
-        try {
-            SaleCouponEntity saleCoupon = new SaleCouponEntity();
-            saleCoupon.setCoupon(orderEntity.getCoupon());
-            saleCoupon.setUser(orderEntity.getUser());
-            saleCoupon.setBusiness(orderEntity.getCoupon().getProduct().getBusiness().getId());
-            saleCoupon.setPayment(orderEntity.getPayment());
-            saleCoupon.setQuantity(orderEntity.getQuantity());
-            saleCoupon.setTotalPrice(orderEntity.getTotalPrice());
-            saleCoupon.setBuyDate(LocalDateTime.now());
-            saleCoupon.setExpiredDate(orderEntity.getCoupon().getExpiredDate()); // Assuming coupon has an expiration date
-            saleCoupon.setStatus(1); // Example status, update as per requirements
+    @Autowired
+    private OrderRepository orderRepository;
 
-            saleCouponRepository.save(saleCoupon);
-            return true;
+    @Autowired
+    private QrCodeRepository qrCodeRepository;
+
+    @Override
+    public boolean insertSaleCoupon(int orderId) throws IOException {
+        try {
+            // Fetch OrderEntity by orderId
+            List<OrderEntity> orderEntityList = orderRepository.findByOrderId(orderId);
+            if (orderEntityList.isEmpty()) {
+                throw new IllegalArgumentException("Order not found for ID: " + orderId);
+            }
+
+            // Loop through each OrderEntity and create corresponding SaleCouponEntities
+            for (OrderEntity order : orderEntityList) {
+                int quantity = order.getQuantity(); // Get the quantity from the order
+
+                for (int i = 0; i < quantity; i++) { // Loop for each unit of the quantity
+                    SaleCouponEntity saleCoupon = new SaleCouponEntity();
+                    saleCoupon.setBusiness(order.getCoupon().getProduct().getBusiness());
+                    saleCoupon.setUser(order.getUser());
+                    saleCoupon.setCoupon(order.getCoupon());
+                    saleCoupon.setPayment(order.getPayment());
+                    saleCoupon.setQuantity(1); // Set quantity to 1 for each row
+                    saleCoupon.setStatus(order.getStatus());
+                    saleCoupon.setTotalPrice(order.getCoupon().getPrice()); // Assuming totalPrice = price of one coupon
+                    saleCoupon.setBuyDate(order.getCreatedAt());
+                    saleCoupon.setExpiredDate(order.getCoupon().getExpiredDate()); // Example expiration logic
+
+
+                    // Save SaleCouponEntity to the database
+                    saleCouponRepository.save(saleCoupon);
+                    // Generate a unique code (UUID) for each coupon
+                    String uniqueCode = UUID.randomUUID().toString();
+                    System.out.println("Generated Unique Code for Sale Coupon: " + uniqueCode);
+
+
+                }
+            }
+            return true; // Return true if processing is successful
         } catch (Exception e) {
-            e.printStackTrace();
-            return false;
+            throw new RuntimeException("Error inserting Sale Coupons: " + e.getMessage(), e);
         }
     }
 

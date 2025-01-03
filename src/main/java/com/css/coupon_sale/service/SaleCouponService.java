@@ -6,5 +6,6 @@ import org.springframework.stereotype.Service;
 @Service
 public interface SaleCouponService {
 
-    boolean saveSaleCouponFromOrder(OrderEntity orderEntity);
+
+    boolean insertSaleCoupon(int orderId);
 }
