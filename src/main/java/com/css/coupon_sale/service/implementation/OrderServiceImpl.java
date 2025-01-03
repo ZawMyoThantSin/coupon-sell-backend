@@ -4,6 +4,7 @@ package com.css.coupon_sale.service.implementation;
 import com.css.coupon_sale.dto.request.OrderItemRequest;
 import com.css.coupon_sale.dto.request.OrderRequest;
 
+import com.css.coupon_sale.dto.response.OrderDetailResponse;
 import com.css.coupon_sale.dto.response.OrderResponse;
 
 
@@ -179,11 +180,87 @@ public class OrderServiceImpl implements OrderService {
   }
 
     @Override
-    public List<OrderResponse> getByOrderId(int id) {
-        List<OrderEntity> orderEntityList = orderRepository.findByOrderId(id);
-        return orderEntityList.stream()
-                .map(this::mapToResponseDTO)
-                .collect(Collectors.toList());
+    public List<OrderDetailResponse> getByOrderId(int id) {
+        try {
+            List<OrderEntity> orderEntityList = orderRepository.findByOrderId(id);
+            List<OrderDetailResponse> responses = new ArrayList<>();
+
+            if (!orderEntityList.isEmpty()) {
+                OrderEntity order = orderEntityList.get(0); // Get the first order entity
+                OrderDetailResponse response = new OrderDetailResponse();
+
+                // Set fields from the first order entity
+                response.setId(order.getId());
+                response.setOrder_id(order.getOrderId());
+                response.setUser_id(order.getUser().getId());
+                response.setQuantity(order.getQuantity());
+                response.setTotalPrice(order.getTotalPrice());
+                response.setStatus(order.getStatus());
+                response.setScreenshot(order.getScreenshot());
+                response.setOrder_date(order.getCreatedAt());
+                response.setMessage(order.getMessage());
+
+                // Set user details
+                response.setUserName(order.getUser().getName());
+                response.setPhoneNumber(order.getPhoneNumber());
+                response.setUserEmail(order.getUser().getEmail());
+
+                // Map payment info
+                OrderDetailResponse.PaymentInfo paymentInfo = new OrderDetailResponse.PaymentInfo(
+                        order.getPayment().getAccountName(),
+                        order.getPayment().getAccountNumber(),
+                        order.getPayment().getPaymentType()
+                );
+                response.setPaymentInfo(paymentInfo);
+
+                // Loop through the items (coupons) and set the order items
+                List<OrderDetailResponse.OrderItems> orderItems = new ArrayList<>();
+                for (OrderEntity orderEntity : orderEntityList) {
+                    OrderDetailResponse.OrderItems orderItem = new OrderDetailResponse.OrderItems(
+                            orderEntity.getCoupon().getProduct().getName(),
+                            orderEntity.getCoupon().getProduct().getImagePath(),
+                            orderEntity.getCoupon().getPrice(),
+                            orderEntity.getQuantity()
+                    );
+                    orderItems.add(orderItem);
+                }
+
+                response.setOrderItems(orderItems);  // Set the order items list
+
+                // Add the populated response object to the responses list
+                responses.add(response);
+            }
+
+            return responses;
+        }catch (Exception e){
+            System.out.println("IN ODSRV :"+e.getMessage());
+        }
+        return List.of();
+    }
+
+    @Override
+    public boolean acceptOrder(int orderId,String action) {
+        try {
+            List<OrderEntity> orderEntityList = orderRepository.findByOrderId(orderId);
+            if(!orderEntityList.isEmpty()){
+                if(action.equals("ACCEPT")){
+                    for (OrderEntity order : orderEntityList){
+                        order.setStatus(1);
+                        orderRepository.save(order);
+                    }
+                }else if (action.equals("REJECT")){
+                    for (OrderEntity order : orderEntityList){
+                        order.setStatus(2);
+                        orderRepository.save(order);
+                    }
+                }
+                return true;
+            }
+        }catch (Exception e){
+            System.out.println("ERROR IN ORSRV: " + e.getMessage());
+            return false;
+        }
+        return false;
     }
 
     private OrderResponse mapToResponseDTO(OrderEntity order) {

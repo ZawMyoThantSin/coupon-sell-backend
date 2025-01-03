@@ -2,6 +2,7 @@ package com.css.coupon_sale.service;
 
 import com.css.coupon_sale.dto.request.OrderItemRequest;
 import com.css.coupon_sale.dto.request.OrderRequest;
+import com.css.coupon_sale.dto.response.OrderDetailResponse;
 import com.css.coupon_sale.dto.response.OrderResponse;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,6 +24,6 @@ public interface OrderService {
   List<OrderResponse> getByCouponId(Integer id);
   List<OrderResponse> getByUserId(long id);
 
-  List<OrderResponse> getByOrderId(int id);
-
+  List<OrderDetailResponse> getByOrderId(int id);
+  boolean acceptOrder(int orderId,String action);
 }

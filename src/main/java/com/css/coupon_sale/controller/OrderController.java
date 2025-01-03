@@ -4,6 +4,7 @@ import com.css.coupon_sale.dto.request.OrderItemRequest;
 import com.css.coupon_sale.dto.request.OrderRequest;
 import com.css.coupon_sale.dto.request.ProductRequest;
 import com.css.coupon_sale.dto.response.BusinessResponse;
+import com.css.coupon_sale.dto.response.OrderDetailResponse;
 import com.css.coupon_sale.dto.response.OrderResponse;
 import com.css.coupon_sale.dto.response.ProductResponse;
 import com.css.coupon_sale.service.OrderService;
@@ -50,12 +51,12 @@ public class OrderController {
             List<Integer> couponIds = Arrays.asList(
                     objectMapper.readValue(couponIdsJson, Integer[].class)
             );
-
-            System.out.println("Quantities (list): " + quantities);
             // Call the service to save all orders with the same order_id
             List<OrderResponse> responses = service.saveOrders(userId, paymentId, phoneNumber, totalPrice, quantities, screenshot, couponIds);
-
-            return ResponseEntity.ok(responses);
+            if(!responses.isEmpty()){
+                return ResponseEntity.ok(responses);
+            }
+            return ResponseEntity.status(400).build();
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
@@ -70,13 +71,30 @@ public class OrderController {
   }
 
   @GetMapping("/o/{id}")
-  public ResponseEntity<List<OrderResponse>> getByOrderId(@PathVariable("id")Integer id){
-      List<OrderResponse> responses = service.getByOrderId(id);
+  public ResponseEntity<List<OrderDetailResponse>> getByOrderId(@PathVariable("id")Integer id){
+      List<OrderDetailResponse> responses = service.getByOrderId(id);
       if(responses != null){
           return ResponseEntity.ok(responses);
       }
       return ResponseEntity.notFound().build();
   }
+    @GetMapping("/accept/{id}")
+    public ResponseEntity<Boolean> acceptOrderByOrderId(@PathVariable("id")Integer id){
+        boolean response = service.acceptOrder(id,"ACCEPT");
+        if(response){
+            return ResponseEntity.ok(true);
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    @GetMapping("/reject/{id}")
+    public ResponseEntity<Boolean> rejectOrderByOrderId(@PathVariable("id")Integer id){
+        boolean response = service.acceptOrder(id,"REJECT");
+        if(response){
+            return ResponseEntity.ok(true);
+        }
+        return ResponseEntity.notFound().build();
+    }
 
 
   @GetMapping("/p/{id}")
