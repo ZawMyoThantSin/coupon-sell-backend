@@ -1,7 +1,7 @@
 package com.css.coupon_sale.service.implementation;
 
+import com.css.coupon_sale.dto.response.PurchaseCoupon;
 import com.css.coupon_sale.entity.OrderEntity;
-import com.css.coupon_sale.entity.QrCodeEntity;
 import com.css.coupon_sale.entity.SaleCouponEntity;
 import com.css.coupon_sale.repository.OrderRepository;
 import com.css.coupon_sale.repository.QrCodeRepository;
@@ -11,9 +11,8 @@ import io.jsonwebtoken.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -65,6 +64,26 @@ public class SaleCouponImpl implements SaleCouponService {
         } catch (Exception e) {
             throw new RuntimeException("Error inserting Sale Coupons: " + e.getMessage(), e);
         }
+    }
+
+    @Override
+    public List<PurchaseCoupon> getAllCouponsBYUserId(Long userId) {
+        List<SaleCouponEntity> saleCouponEntities=saleCouponRepository.findByUser_Id(userId);
+        List<PurchaseCoupon> response=new ArrayList<>();
+        for (SaleCouponEntity coupon : saleCouponEntities) {
+            PurchaseCoupon purchaseCoupon =new PurchaseCoupon();
+            purchaseCoupon.setSaleCouponId(coupon.getId());
+            purchaseCoupon.setStatus(coupon.getStatus());
+            purchaseCoupon.setDiscount(coupon.getCoupon().getProduct().getDiscount());
+            purchaseCoupon.setPrice(coupon.getTotalPrice());
+            purchaseCoupon.setExpiryDate(coupon.getExpiredDate());
+            purchaseCoupon.setProductName(coupon.getCoupon().getProduct().getName());
+            purchaseCoupon.setImageUrl(coupon.getCoupon().getProduct().getImagePath());
+            response.add(purchaseCoupon);
+
+        }
+
+        return response;
     }
 
 
