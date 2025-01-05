@@ -3,12 +3,10 @@ package com.css.coupon_sale.controller;
 import com.css.coupon_sale.dto.request.OrderItemRequest;
 import com.css.coupon_sale.dto.request.OrderRequest;
 import com.css.coupon_sale.dto.request.ProductRequest;
-import com.css.coupon_sale.dto.response.BusinessResponse;
-import com.css.coupon_sale.dto.response.OrderDetailResponse;
-import com.css.coupon_sale.dto.response.OrderResponse;
-import com.css.coupon_sale.dto.response.ProductResponse;
+import com.css.coupon_sale.dto.response.*;
 import com.css.coupon_sale.service.OrderService;
 import com.css.coupon_sale.service.ProductService;
+import com.css.coupon_sale.service.QrCodeService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,6 +30,9 @@ public class OrderController {
 
   @Autowired
   private OrderService service;
+
+  @Autowired
+  private QrCodeService qrCodeService;
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> saveOrders(
@@ -80,7 +81,7 @@ public class OrderController {
   }
     @GetMapping("/accept/{id}")
     public ResponseEntity<Boolean> acceptOrderByOrderId(@PathVariable("id")Integer id){
-        boolean response = service.acceptOrder(id,"ACCEPT");
+        boolean response = service.updateOrderStatus(id,"ACCEPT");
         if(response){
             return ResponseEntity.ok(true);
         }
@@ -89,7 +90,7 @@ public class OrderController {
 
     @GetMapping("/reject/{id}")
     public ResponseEntity<Boolean> rejectOrderByOrderId(@PathVariable("id")Integer id){
-        boolean response = service.acceptOrder(id,"REJECT");
+        boolean response = service.updateOrderStatus(id,"REJECT");
         if(response){
             return ResponseEntity.ok(true);
         }
@@ -111,8 +112,6 @@ public class OrderController {
     return ResponseEntity.ok(service.getByUserId(id));
 
   }
-
-
   @GetMapping("/c/{id}")
   public ResponseEntity<List<OrderResponse>> getByBusiness(@PathVariable("id")Integer id){
     List<OrderResponse> responses = service.getByCouponId(id);

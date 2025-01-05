@@ -14,4 +14,5 @@ public interface SaleCouponRepository extends JpaRepository<SaleCouponEntity , I
     @Query("SELECT o FROM OrderEntity o WHERE o.orderId = :orderId")
     List<OrderEntity> findByOrderId(@Param("orderId") int orderId);
 
+    List<SaleCouponEntity> findByUser_Id(Long userId);
 }

@@ -14,6 +14,7 @@ import com.css.coupon_sale.entity.PaymentEntity;
 import com.css.coupon_sale.entity.UserEntity;
 import com.css.coupon_sale.repository.*;
 import com.css.coupon_sale.service.OrderService;
+import com.css.coupon_sale.service.SaleCouponService;
 import org.hibernate.query.Order;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +46,9 @@ public class OrderServiceImpl implements OrderService {
 
   @Autowired
   private PaymentRepository PRepository;
+
+  @Autowired
+  private SaleCouponService saleCouponService;
 
   @Autowired
   private ModelMapper mapper;
@@ -239,7 +243,7 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public boolean acceptOrder(int orderId,String action) {
+    public boolean updateOrderStatus(int orderId,String action) {
         try {
             List<OrderEntity> orderEntityList = orderRepository.findByOrderId(orderId);
             if(!orderEntityList.isEmpty()){
@@ -248,6 +252,8 @@ public class OrderServiceImpl implements OrderService {
                         order.setStatus(1);
                         orderRepository.save(order);
                     }
+                    boolean status = saleCouponService.insertSaleCoupon(orderId);
+                    System.out.println("INSERT Success? "+ status);
                 }else if (action.equals("REJECT")){
                     for (OrderEntity order : orderEntityList){
                         order.setStatus(2);

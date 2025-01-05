@@ -1,5 +1,6 @@
 package com.css.coupon_sale.service.implementation;
 
+import com.css.coupon_sale.dto.response.QrDataResponse;
 import com.css.coupon_sale.entity.QrCodeEntity;
 import com.css.coupon_sale.entity.SaleCouponEntity;
 import com.css.coupon_sale.repository.QrCodeRepository;
@@ -22,30 +23,45 @@ public class QrCodeServiceImpl implements QrCodeService {
 
     @Override
     public boolean createAndSaveQrCode(int saleCouponId) {
-        SaleCouponEntity saleCoupon = saleCouponRepository.findById(saleCouponId).orElse(null);
+        SaleCouponEntity saleCoupon = saleCouponRepository.findById(saleCouponId)
+                .orElseThrow(()->new RuntimeException("Row not found"));
 
-        if (saleCoupon == null) {
-            throw new IllegalArgumentException("SaleCouponEntity cannot be null for ID: " + saleCouponId);
+        if(saleCoupon == null){
+            return  false;
         }
 
         try {
             QrCodeEntity qrCode = new QrCodeEntity();
             qrCode.setSaleCoupon(saleCoupon);
-
             // Generate UUID + SaleCoupon data
             String qrCodeValue = generateQrCodeValue(saleCoupon);
             qrCode.setQrCode(qrCodeValue);
-
             qrCode.setBusiness(saleCoupon.getBusiness());
-            qrCode.setStatus(1); // Example status
+            qrCode.setStatus(0); // Example status
             qrCode.setExpiredDate(saleCoupon.getExpiredDate());
             qrCode.setGeneratedDate(LocalDateTime.now());
-
             qrCodeRepository.save(qrCode);
             return true;
         } catch (Exception e) {
             throw new RuntimeException("Error creating and saving QR Code: " + e.getMessage(), e);
         }
+    }
+
+    @Override
+    public QrDataResponse getBySaleCouponId(int saleCouponId) {
+        QrCodeEntity qrCode = qrCodeRepository.findBySaleCoupon_Id(saleCouponId);
+        if (qrCode!=null){
+            QrDataResponse response = new QrDataResponse();
+            response.setId(qrCode.getId());
+            response.setQrcode(qrCode.getQrCode());
+            response.setGeneratedDate(qrCode.getGeneratedDate());
+            response.setStatus(qrCode.getStatus());
+            response.setExpiredDate(qrCode.getExpiredDate());
+            response.setBusinessName(qrCode.getBusiness().getName());
+            response.setBusinessImage(qrCode.getBusiness().getPhoto());
+            return  response;
+        }
+        return null;
     }
 
     private String generateQrCodeValue(SaleCouponEntity saleCoupon) {

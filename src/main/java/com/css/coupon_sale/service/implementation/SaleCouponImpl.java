@@ -1,17 +1,20 @@
 package com.css.coupon_sale.service.implementation;
 
+import com.css.coupon_sale.dto.response.PurchaseCouponResponse;
 import com.css.coupon_sale.entity.OrderEntity;
 import com.css.coupon_sale.entity.QrCodeEntity;
 import com.css.coupon_sale.entity.SaleCouponEntity;
 import com.css.coupon_sale.repository.OrderRepository;
 import com.css.coupon_sale.repository.QrCodeRepository;
 import com.css.coupon_sale.repository.SaleCouponRepository;
+import com.css.coupon_sale.service.QrCodeService;
 import com.css.coupon_sale.service.SaleCouponService;
 import io.jsonwebtoken.io.IOException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -24,7 +27,7 @@ public class SaleCouponImpl implements SaleCouponService {
     private OrderRepository orderRepository;
 
     @Autowired
-    private QrCodeRepository qrCodeRepository;
+    private QrCodeService qrCodeService;
 
     @Override
     public boolean insertSaleCoupon(int orderId) throws IOException {
@@ -45,7 +48,7 @@ public class SaleCouponImpl implements SaleCouponService {
                     saleCoupon.setUser(order.getUser());
                     saleCoupon.setCoupon(order.getCoupon());
                     saleCoupon.setPayment(order.getPayment());
-                    saleCoupon.setQuantity(1); // Set quantity to 1 for each row
+                    saleCoupon.setQuantity(1);
                     saleCoupon.setStatus(order.getStatus());
                     saleCoupon.setTotalPrice(order.getCoupon().getPrice()); // Assuming totalPrice = price of one coupon
                     saleCoupon.setBuyDate(order.getCreatedAt());
@@ -53,18 +56,41 @@ public class SaleCouponImpl implements SaleCouponService {
 
 
                     // Save SaleCouponEntity to the database
-                    saleCouponRepository.save(saleCoupon);
-                    // Generate a unique code (UUID) for each coupon
-                    String uniqueCode = UUID.randomUUID().toString();
-                    System.out.println("Generated Unique Code for Sale Coupon: " + uniqueCode);
-
+                    SaleCouponEntity savedCoupon = saleCouponRepository.save(saleCoupon);
+                    if (savedCoupon!=null) {
+//       QR GENERATE
+                        boolean status = qrCodeService.createAndSaveQrCode(savedCoupon.getId());
+                    }else {
+                        System.out.println("Error In Save Sale Coupon:");
+                    }
 
                 }
             }
             return true; // Return true if processing is successful
         } catch (Exception e) {
-            throw new RuntimeException("Error inserting Sale Coupons: " + e.getMessage(), e);
+            System.out.println("Error inserting Sale Coupons: " + e.getMessage());
+            return false;
         }
+    }
+
+    @Override
+    public List<PurchaseCouponResponse> getAllCouponsByUserId(Long userId) {
+        List<SaleCouponEntity> saleCouponEntities=saleCouponRepository.findByUser_Id(userId);
+        List<PurchaseCouponResponse> response=new ArrayList<>();
+        for (SaleCouponEntity coupon : saleCouponEntities) {
+            PurchaseCouponResponse purchaseCoupon =new PurchaseCouponResponse();
+            purchaseCoupon.setSaleCouponId(coupon.getId());
+            purchaseCoupon.setStatus(coupon.getStatus());
+            purchaseCoupon.setDiscount(coupon.getCoupon().getProduct().getDiscount());
+            purchaseCoupon.setPrice(coupon.getTotalPrice());
+            purchaseCoupon.setExpiryDate(coupon.getExpiredDate());
+            purchaseCoupon.setProductName(coupon.getCoupon().getProduct().getName());
+            purchaseCoupon.setImageUrl(coupon.getCoupon().getProduct().getImagePath());
+            response.add(purchaseCoupon);
+
+        }
+
+        return response;
     }
 
 
