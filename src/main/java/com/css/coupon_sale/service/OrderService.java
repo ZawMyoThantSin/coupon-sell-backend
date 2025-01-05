@@ -25,5 +25,5 @@ public interface OrderService {
   List<OrderResponse> getByUserId(long id);
 
   List<OrderDetailResponse> getByOrderId(int id);
-  boolean acceptOrder(int orderId,String action);
+  boolean updateOrderStatus(int orderId,String action);
 }

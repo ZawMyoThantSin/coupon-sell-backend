@@ -13,6 +13,30 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Table(name = "qr_code")
 public class QrCodeEntity {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+
+    @ManyToOne
+    @JoinColumn(name = "sale_coupon_id", nullable = false)
+    private SaleCouponEntity saleCoupon;
+
+    @Column(columnDefinition = "TEXT")
+    private String qrCode;
+
+    private int status;
+
+    @Column(name = "expired_date", nullable = false)
+    private LocalDateTime expiredDate;
+
+    @Column(name = "generated_date", nullable = false)
+    private LocalDateTime generatedDate;
+
+    @ManyToOne
+    @JoinColumn(name = "business_id", nullable = false)
+    private BusinessEntity business;
+
     public int getId() {
         return id;
     }
@@ -68,28 +92,5 @@ public class QrCodeEntity {
     public void setBusiness(BusinessEntity business) {
         this.business = business;
     }
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-
-    @ManyToOne
-    @JoinColumn(name = "sale_coupon_id", nullable = false)
-    private SaleCouponEntity saleCoupon;
-
-    @Column(columnDefinition = "TEXT")
-    private String qrCode;
-
-    private int status;
-
-    @Column(name = "expired_date", nullable = false)
-    private LocalDateTime expiredDate;
-
-    @Column(name = "generated_date", nullable = false)
-    private LocalDateTime generatedDate;
-
-    @ManyToOne
-    @JoinColumn(name = "business_id", nullable = false)
-    private BusinessEntity business;
 }
 

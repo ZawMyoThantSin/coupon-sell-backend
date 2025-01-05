@@ -212,6 +212,7 @@ public class BusinessServiceImpl implements BusinessService {
 
     private BusinessResponse mapToResponseDTO(BusinessEntity business) {
         BusinessResponse responseDTO = modelMapper.map(business, BusinessResponse.class);
+        responseDTO.setUserId(business.getUser().getId());
         responseDTO.setUserName(business.getUser().getName());
         responseDTO.setUserEmail(business.getUser().getEmail());
         responseDTO.setCategory(business.getCategory().getName());

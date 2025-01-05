@@ -15,6 +15,4 @@ public interface SaleCouponRepository extends JpaRepository<SaleCouponEntity , I
     List<OrderEntity> findByOrderId(@Param("orderId") int orderId);
 
     List<SaleCouponEntity> findByUser_Id(Long userId);
-
-
 }

@@ -12,8 +12,18 @@ public class BusinessResponse {
     private String photo;
     private String category;
     private boolean status;
+    private Long userId;
     private String userName;
     private String userEmail;
+
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
 
     public String getUserEmail() {
         return userEmail;
