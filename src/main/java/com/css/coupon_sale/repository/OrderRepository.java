@@ -19,6 +19,8 @@ public interface OrderRepository extends JpaRepository<OrderEntity,Integer> {
   @Query(value = "SELECT COUNT(*) > 0 FROM userorder WHERE order_id = :orderId", nativeQuery = true)
   boolean existsByOrderId(@Param("orderId") int orderId);
 
+  @Query(value = "SELECT COUNT(*) FROM userorder WHERE status = :status", nativeQuery = true)
+  int countByStatus(@Param("status") int status);
 //  @Query(value = "SELECT * FROM userorder WHERE order_id = :orderId LIMIT 1", nativeQuery = true)
 //  Optional<OrderEntity> findByOrderId(@Param("orderId") int orderId);
 

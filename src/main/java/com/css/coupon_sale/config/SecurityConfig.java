@@ -35,7 +35,7 @@ public class SecurityConfig {
                 .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
                 .csrf(AbstractHttpConfigurer::disable)// Disable CSRF for stateless APIs
                 .authorizeHttpRequests(registry -> {
-                            registry.requestMatchers("/","/signup", "/login").permitAll();
+                            registry.requestMatchers("/", "/signup", "/login", "/ws/**").permitAll();
                             registry.requestMatchers("/api/**").authenticated();
                             registry.requestMatchers("/public/**").permitAll();
                             registry.requestMatchers("/admin/**").hasRole("ADMIN");

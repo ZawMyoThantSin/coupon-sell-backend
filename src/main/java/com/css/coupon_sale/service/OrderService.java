@@ -26,4 +26,5 @@ public interface OrderService {
 
   List<OrderDetailResponse> getByOrderId(int id);
   boolean updateOrderStatus(int orderId,String action);
+  int getOrderCountWithStatusZero();
 }

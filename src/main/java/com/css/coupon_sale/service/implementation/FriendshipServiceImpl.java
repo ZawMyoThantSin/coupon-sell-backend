@@ -8,6 +8,7 @@ import com.css.coupon_sale.entity.UserEntity;
 import com.css.coupon_sale.repository.FriendshipRepository;
 import com.css.coupon_sale.repository.UserRepository;
 import com.css.coupon_sale.service.FriendshipService;
+import jakarta.persistence.EntityNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -70,19 +71,15 @@ public class FriendshipServiceImpl implements FriendshipService {
     }
 
     @Override
-    public FriendshipResponse denyFriendRequest(int id) {
+    public FriendshipResponse deleteFriendRequest(int id) {
         FriendShipEntity friendRequest = repo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Friend request not found"));
 
-        if (friendRequest.getStatus() != 0) {
-            throw new RuntimeException("Request is not in pending state");
-        }
+        // Delete the friendship record
+        repo.delete(friendRequest);
 
-        // Deny the request
-        friendRequest.setStatus(2); // Denied
-        FriendShipEntity updatedRequest = repo.save(friendRequest);
-
-        return mapToResponse  (updatedRequest, null);
+        // Return a response with the details of the deleted friend request
+        return mapToResponse(friendRequest, null);
     }
 
     @Override
@@ -137,6 +134,16 @@ public class FriendshipServiceImpl implements FriendshipService {
 
         repo.delete(friendships.get(0));
     }
+
+    @Override
+    public UserResponse getFriendDetailById(Long friendId) {
+        UserEntity friend = uRepo.findById(friendId)
+                .orElseThrow(() -> new EntityNotFoundException("Friend not found with ID: " + friendId));
+
+        // Map the user entity to a UserResponse DTO
+        return mapper.map(friend, UserResponse.class);
+    }
+
 
     private FriendshipResponse mapToResponse(FriendShipEntity friendship, UserEntity loggedInUser) {
         FriendshipResponse response = new FriendshipResponse();

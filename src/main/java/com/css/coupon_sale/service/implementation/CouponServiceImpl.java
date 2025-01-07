@@ -1,6 +1,7 @@
 package com.css.coupon_sale.service.implementation;
 
 import com.css.coupon_sale.dto.request.CouponRequest;
+import com.css.coupon_sale.dto.response.BusinessCouponSalesResponse;
 import com.css.coupon_sale.dto.response.CouponResponse;
 import com.css.coupon_sale.entity.CouponEntity;
 import com.css.coupon_sale.entity.ProductEntity;
@@ -14,6 +15,9 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -102,6 +106,49 @@ public class CouponServiceImpl implements CouponService {
         return productEntities.stream()
                 .map(this::mapToResponseDTO)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<BusinessCouponSalesResponse> getSoldCouponCountByBusiness(Integer businessId) {
+        try {
+            // Fetch results from the repository
+            List<Object[]> results = couponRepository.getSoldCouponCountByBusiness(businessId);
+
+            // Handle empty results gracefully
+            if (results == null || results.isEmpty()) {
+                System.out.println("No coupons found for business ID: " + businessId);
+                return List.of();
+            }
+
+            // Map results to BusinessCouponSalesResponse objects
+            List<BusinessCouponSalesResponse> responses = new ArrayList<>();
+            for (Object[] result : results) {
+                BusinessCouponSalesResponse response = new BusinessCouponSalesResponse(
+                        ((Number) result[0]).intValue(), // saleCouponId
+                        ((Number) result[1]).intValue(), // businessId
+                        ((Number) result[2]).intValue(), // soldCount
+                        (Date) result[3]                 // buyDate
+                );
+                responses.add(response);
+            }
+            return responses;
+//            return results.stream()
+//                    .map(result -> new BusinessCouponSalesResponse(
+//                            ((Number) result[0]).intValue(), // saleCouponId
+//                            ((Number) result[1]).intValue(), // businessId
+//                            ((Number) result[2]).intValue(), // soldCount
+//                            (Date) result[3]                 // buyDate
+//                    ))
+//                    .collect(Collectors.toList());
+
+        } catch (Exception e) {
+            // Log the error with full stack trace for better debugging
+            System.err.println("Error fetching sold coupons for business ID " + businessId);
+            e.printStackTrace();
+        }
+
+        // Return an empty list in case of error
+        return List.of();
     }
 
     private CouponResponse mapToResponseDTO(CouponEntity coupon) {

@@ -269,6 +269,11 @@ public class OrderServiceImpl implements OrderService {
         return false;
     }
 
+    @Override
+    public int getOrderCountWithStatusZero() {
+        return orderRepository.countByStatus(0);
+    }
+
     private OrderResponse mapToResponseDTO(OrderEntity order) {
     OrderResponse responseDTO = mapper.map(order, OrderResponse.class);
     responseDTO.setOrder_id(order.getOrderId());

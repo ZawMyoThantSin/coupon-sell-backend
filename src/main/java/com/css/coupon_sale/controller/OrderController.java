@@ -120,4 +120,10 @@ public class OrderController {
     }
     return ResponseEntity.notFound().build();
   }
+
+    @GetMapping("/pending")
+    public ResponseEntity<Integer> getOrderCountWithStatusZero() {
+        int count = service.getOrderCountWithStatusZero();
+        return ResponseEntity.ok(count);
+    }
 }

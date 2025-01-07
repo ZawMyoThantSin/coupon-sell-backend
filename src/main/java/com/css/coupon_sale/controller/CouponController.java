@@ -37,15 +37,11 @@ public class CouponController {
             System.out.println(FinalPrice);
             return ResponseEntity.ok(FinalPrice);
         } catch (IllegalArgumentException e) {
+            System.out.println("ERRor in Calculate"+ e.getMessage());
         }
         return ResponseEntity.badRequest().build();
     }
 
-
-    @GetMapping("/index")
-    public String index() {
-        return "This is business";
-    }
 
     @PostMapping
     public ResponseEntity<CouponResponse> createCoupon(@RequestBody CouponRequest requestDTO) {

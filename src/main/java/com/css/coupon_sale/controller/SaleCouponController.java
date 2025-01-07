@@ -1,8 +1,10 @@
 package com.css.coupon_sale.controller;
 
+import com.css.coupon_sale.dto.response.BusinessCouponSalesResponse;
 import com.css.coupon_sale.dto.response.PurchaseCouponResponse;
 import com.css.coupon_sale.dto.response.QrDataResponse;
 import com.css.coupon_sale.entity.OrderEntity;
+import com.css.coupon_sale.service.CouponService;
 import com.css.coupon_sale.service.QrCodeService;
 import com.css.coupon_sale.service.SaleCouponService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,6 +24,9 @@ public class SaleCouponController {
     @Autowired
     private QrCodeService qrCodeService;
 
+    @Autowired
+    private CouponService couponService;
+
 
     @GetMapping("/user/{userId}")
     public ResponseEntity<?> getAllCoupons(@PathVariable Long userId) {
@@ -39,5 +44,16 @@ public class SaleCouponController {
             return ResponseEntity.ok(response);
         }
         return ResponseEntity.notFound().build();
+    }
+
+    @GetMapping("/coupon-sales/{id}")
+    public ResponseEntity<?> getSoldCouponCountByBusiness(@PathVariable("id") Integer businessId) {
+        try {
+            List<BusinessCouponSalesResponse> salesData = couponService.getSoldCouponCountByBusiness(businessId);
+            return ResponseEntity.status(200).body(salesData);
+        }catch (Exception e){
+            System.out.println("ERR Conn:" + e.getMessage());
+        }
+        return ResponseEntity.ok("Hello");
     }
 }

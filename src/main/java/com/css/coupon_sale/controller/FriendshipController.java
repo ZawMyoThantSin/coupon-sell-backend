@@ -1,5 +1,6 @@
 package com.css.coupon_sale.controller;
 
+import com.css.coupon_sale.config.CustomWebSocketHandler;
 import com.css.coupon_sale.dto.request.FriendshipRequest;
 import com.css.coupon_sale.dto.response.FriendshipResponse;
 import com.css.coupon_sale.dto.response.UserResponse;
@@ -11,32 +12,65 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
+
 
 @RestController
 @RequestMapping("/friendship")
 public class FriendshipController {
 
-    @Autowired
-    private FriendshipService service;
+    private final FriendshipService service;
+    private final CustomWebSocketHandler webSocketHandler;
 
+    @Autowired
+    public FriendshipController(FriendshipService service, CustomWebSocketHandler webSocketHandler) {
+        this.service = service;
+        this.webSocketHandler = webSocketHandler;
+    }
 
     @PostMapping
     public ResponseEntity<FriendshipResponse> sendFriendRequest(@RequestBody FriendshipRequest request) {
-        System.out.println("Received Friend Request: " + request);
-        FriendshipResponse response = service.sendFriendRequest(request);
-        return ResponseEntity.ok(response);
+        try {
+            System.out.println("Received Friend Request Id: " + request.getAccepterId());
+            FriendshipResponse response = service.sendFriendRequest(request);
+            String message = "FRIEND_REQUEST_RECEIVED";
+            webSocketHandler.sendToUser((long) request.getAccepterId(), message);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(new FriendshipResponse());
+        }
     }
 
     @PutMapping("/{id}/accept")
     public ResponseEntity<FriendshipResponse> acceptFriendRequest(@PathVariable int id) {
-        FriendshipResponse response = service.acceptFriendRequest(id);
-        return ResponseEntity.ok(response);
+        try{
+            FriendshipResponse response = service.acceptFriendRequest(id);
+            String message = "FRIEND_REQUEST_ACCEPTED";
+            webSocketHandler.sendToUser((long) response.getFriendId(), message);
+            return ResponseEntity.ok(response);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @PutMapping("/{id}/deny")
     public ResponseEntity<FriendshipResponse> denyFriendRequest(@PathVariable int id) {
-        FriendshipResponse response = service.denyFriendRequest(id);
-        return ResponseEntity.ok(response);
+        try {
+            FriendshipResponse response = service.deleteFriendRequest(id);
+            String message = "FRIEND_REQUEST_DENIED";
+            webSocketHandler.sendToUser(response.getFriendId(), message);
+            return ResponseEntity.ok(response);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 
     @GetMapping("/{userId}/friends")
@@ -62,8 +96,30 @@ public class FriendshipController {
     public ResponseEntity<Void> unfriend(
             @PathVariable int userId,
             @PathVariable int friendId) {
-        service.unfriend(userId, friendId);
-        return ResponseEntity.noContent().build();
+        try {
+            service.unfriend(userId, friendId);
+            String message = "UNFRIENDED";
+            webSocketHandler.sendToUser((long) friendId, message);
+            return ResponseEntity.noContent().build();
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
+    @GetMapping("/friend/{friendId}")
+    public ResponseEntity<UserResponse> getFriendDetailById(@PathVariable Long friendId) {
+        try {
+            UserResponse response = service.getFriendDetailById(friendId);
+            return ResponseEntity.ok(response);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+        }
     }
 
     @ExceptionHandler(EntityNotFoundException.class)
