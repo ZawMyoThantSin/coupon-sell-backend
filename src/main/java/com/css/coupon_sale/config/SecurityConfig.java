@@ -38,6 +38,7 @@ public class SecurityConfig {
                             registry.requestMatchers("/","/signup", "/login").permitAll();
                             registry.requestMatchers("/api/**").authenticated();
                             registry.requestMatchers("/public/**").permitAll();
+                            registry.requestMatchers("/ws/**").permitAll();
                             registry.requestMatchers("/admin/**").hasRole("ADMIN");
                             registry.anyRequest().authenticated();
                         }
