@@ -153,6 +153,7 @@ public class CouponServiceImpl implements CouponService {
 
     private CouponResponse mapToResponseDTO(CouponEntity coupon) {
         CouponResponse responseDTO = modelMapper.map(coupon, CouponResponse.class);
+        responseDTO.setQuantity(coupon.getCouponRemain());
         responseDTO.setCouponCode(coupon.getProduct().getName());
 
         return responseDTO;

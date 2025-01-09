@@ -27,6 +27,14 @@ public class SaleCouponController {
     @Autowired
     private CouponService couponService;
 
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getBySaleCouponId(@PathVariable("id") int saleCouponId) {
+        PurchaseCouponResponse coupons = saleCouponService.getBySaleCouponId(saleCouponId);
+        if (coupons == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found or no coupons available for the given user.");
+        }
+        return ResponseEntity.ok(coupons);
+    }
 
     @GetMapping("/user/{userId}")
     public ResponseEntity<?> getAllCoupons(@PathVariable Long userId) {

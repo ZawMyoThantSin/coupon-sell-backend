@@ -93,5 +93,22 @@ public class SaleCouponImpl implements SaleCouponService {
         return response;
     }
 
+    @Override
+    public PurchaseCouponResponse getBySaleCouponId(int id) {
+        SaleCouponEntity saleCoupon = saleCouponRepository.findById(id)
+                .orElseThrow(()-> new RuntimeException("SaleCoupon Not Found"));
+        if (saleCoupon != null){
+            PurchaseCouponResponse response = new PurchaseCouponResponse();
+            response.setSaleCouponId(saleCoupon.getId());
+            response.setProductName(saleCoupon.getCoupon().getProduct().getName());
+            response.setStatus(saleCoupon.getStatus());
+            response.setExpiryDate(saleCoupon.getExpiredDate());
+            response.setDiscount(saleCoupon.getCoupon().getProduct().getDiscount());
+            response.setImageUrl(saleCoupon.getCoupon().getProduct().getImagePath());
+            return  response;
+        }
+        return null;
+    }
+
 
 }
