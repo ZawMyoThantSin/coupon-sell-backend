@@ -4,6 +4,8 @@ import com.css.coupon_sale.dto.request.OrderItemRequest;
 import com.css.coupon_sale.dto.request.OrderRequest;
 import com.css.coupon_sale.dto.request.ProductRequest;
 import com.css.coupon_sale.dto.response.*;
+import com.css.coupon_sale.entity.CouponEntity;
+import com.css.coupon_sale.repository.CouponRepository;
 import com.css.coupon_sale.service.OrderService;
 import com.css.coupon_sale.service.ProductService;
 import com.css.coupon_sale.service.QrCodeService;
@@ -20,6 +22,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/orders")
@@ -33,6 +36,9 @@ public class OrderController {
 
   @Autowired
   private QrCodeService qrCodeService;
+
+  @Autowired
+  private CouponRepository CRepository;
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> saveOrders(
@@ -52,12 +58,31 @@ public class OrderController {
             List<Integer> couponIds = Arrays.asList(
                     objectMapper.readValue(couponIdsJson, Integer[].class)
             );
+
+            // Validate each coupon
+            for (int i = 0; i < couponIds.size(); i++) {
+                int couponId = couponIds.get(i);
+                int quantity = i < quantities.size() ? quantities.get(i) : 1; // Default to 1 if not provided
+
+                CouponEntity coupon = CRepository.findById(couponId)
+                        .orElse(null);
+
+                if (coupon == null) {
+                    return ResponseEntity.badRequest().body("Coupon not found for ID: " + couponId);
+                }
+
+                if (coupon.getCouponRemain() < quantity) {
+                    return ResponseEntity.badRequest()
+                            .body(Map.of("status", "error", "message", "Insufficient quantity for coupon ID: " + couponId));
+                }
+            }
+
             // Call the service to save all orders with the same order_id
             List<OrderResponse> responses = service.saveOrders(userId, paymentId, phoneNumber, totalPrice, quantities, screenshot, couponIds);
             if(!responses.isEmpty()){
                 return ResponseEntity.ok(responses);
             }
-            return ResponseEntity.status(400).build();
+            return ResponseEntity.status(400).body("Failed to save orders.");
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

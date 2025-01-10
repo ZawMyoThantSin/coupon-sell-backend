@@ -106,6 +106,18 @@ public class FriendshipServiceImpl implements FriendshipService {
     }
 
     @Override
+    public List<FriendshipResponse> getSentPendingRequests(int userId) {
+        UserEntity user = uRepo.findById((long) userId)
+                .orElseThrow(() -> new RuntimeException("User  not found"));
+
+        List<FriendShipEntity> sentPendingRequests = repo.findAllBySenderAndStatus(user, 0);
+
+        return sentPendingRequests.stream()
+                .map(friendship -> mapToResponse(friendship, null))
+                .collect(Collectors.toList());
+    }
+
+    @Override
     public List<UserResponse> searchUsersByEmail(String email) {
         // Find matching users by email
         List<UserEntity> users = repo.findUsersByEmail(email);

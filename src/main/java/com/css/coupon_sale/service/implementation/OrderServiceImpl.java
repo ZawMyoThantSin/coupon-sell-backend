@@ -86,6 +86,12 @@ public class OrderServiceImpl implements OrderService {
             CouponEntity coupon = CRepository.findById(couponId)
                     .orElseThrow(() -> new RuntimeException("Coupon not found"));
 
+            if (coupon.getCouponRemain() < quantity) {
+                throw new RuntimeException("Insufficient quantity for coupon ID: " + couponId);
+            }
+
+            coupon.setCouponRemain(coupon.getCouponRemain() - quantity);
+            CRepository.save(coupon);
 
             // Save the order
                 OrderEntity order = new OrderEntity();
@@ -257,6 +263,10 @@ public class OrderServiceImpl implements OrderService {
                 }else if (action.equals("REJECT")){
                     for (OrderEntity order : orderEntityList){
                         order.setStatus(2);
+                        CouponEntity coupon = order.getCoupon();
+                        coupon.setCouponRemain(coupon.getCouponRemain() + order.getQuantity());
+                        CRepository.save(coupon);
+
                         orderRepository.save(order);
                     }
                 }
@@ -301,7 +311,5 @@ public class OrderServiceImpl implements OrderService {
   private  boolean isOrderIdUnique(int orderId) {
     return orderRepository.findByOrderId(orderId).isEmpty();
   }
-
-
 
 }
