@@ -12,10 +12,18 @@ public class BusinessResponse {
     private String photo;
     private String category;
     private boolean status;
+    private Integer categoryId;
     private Long userId;
     private String userName;
     private String userEmail;
 
+    public Integer getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(Integer categoryId) {
+        this.categoryId = categoryId;
+    }
 
     public Long getUserId() {
         return userId;

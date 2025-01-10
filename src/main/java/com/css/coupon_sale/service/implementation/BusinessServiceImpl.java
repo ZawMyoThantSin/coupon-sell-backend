@@ -210,8 +210,11 @@ public class BusinessServiceImpl implements BusinessService {
         return mapToResponseDTO(businessRepository.save(business));
     }
 
+
     private BusinessResponse mapToResponseDTO(BusinessEntity business) {
         BusinessResponse responseDTO = modelMapper.map(business, BusinessResponse.class);
+
+        responseDTO.setCategoryId(business.getCategory().getId());
         responseDTO.setUserId(business.getUser().getId());
         responseDTO.setUserName(business.getUser().getName());
         responseDTO.setUserEmail(business.getUser().getEmail());

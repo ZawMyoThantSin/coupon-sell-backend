@@ -1,12 +1,11 @@
 package com.css.coupon_sale.service.implementation;
 
 import com.css.coupon_sale.dto.response.PurchaseCouponResponse;
-import com.css.coupon_sale.entity.OrderEntity;
-import com.css.coupon_sale.entity.QrCodeEntity;
-import com.css.coupon_sale.entity.SaleCouponEntity;
+import com.css.coupon_sale.entity.*;
 import com.css.coupon_sale.repository.OrderRepository;
 import com.css.coupon_sale.repository.QrCodeRepository;
 import com.css.coupon_sale.repository.SaleCouponRepository;
+import com.css.coupon_sale.repository.TransferRepository;
 import com.css.coupon_sale.service.QrCodeService;
 import com.css.coupon_sale.service.SaleCouponService;
 import io.jsonwebtoken.io.IOException;
@@ -25,7 +24,8 @@ public class SaleCouponImpl implements SaleCouponService {
     private SaleCouponRepository saleCouponRepository;
     @Autowired
     private OrderRepository orderRepository;
-
+    @Autowired
+    private TransferRepository transferRepository;
     @Autowired
     private QrCodeService qrCodeService;
 
@@ -49,7 +49,7 @@ public class SaleCouponImpl implements SaleCouponService {
                     saleCoupon.setCoupon(order.getCoupon());
                     saleCoupon.setPayment(order.getPayment());
                     saleCoupon.setQuantity(1);
-                    saleCoupon.setStatus(order.getStatus());
+                    saleCoupon.setStatus(0);
                     saleCoupon.setTotalPrice(order.getCoupon().getPrice()); // Assuming totalPrice = price of one coupon
                     saleCoupon.setBuyDate(order.getCreatedAt());
                     saleCoupon.setExpiredDate(order.getCoupon().getExpiredDate()); // Example expiration logic
@@ -79,6 +79,9 @@ public class SaleCouponImpl implements SaleCouponService {
         List<PurchaseCouponResponse> response=new ArrayList<>();
         for (SaleCouponEntity coupon : saleCouponEntities) {
             PurchaseCouponResponse purchaseCoupon =new PurchaseCouponResponse();
+            purchaseCoupon.setBusinessId(coupon.getBusiness().getId());
+            purchaseCoupon.setBusinessName(coupon.getBusiness().getName());
+            purchaseCoupon.setBusinessLocation(coupon.getBusiness().getLocation());
             purchaseCoupon.setSaleCouponId(coupon.getId());
             purchaseCoupon.setStatus(coupon.getStatus());
             purchaseCoupon.setDiscount(coupon.getCoupon().getProduct().getDiscount());
@@ -92,6 +95,24 @@ public class SaleCouponImpl implements SaleCouponService {
 
         return response;
     }
-
+    @Override
+    public PurchaseCouponResponse getBySaleCouponId(int id) {
+        SaleCouponEntity saleCoupon = saleCouponRepository.findById(id)
+                .orElseThrow(()-> new RuntimeException("SaleCoupon Not Found"));
+        if (saleCoupon != null){
+            PurchaseCouponResponse response = new PurchaseCouponResponse();
+            response.setBusinessName(saleCoupon.getBusiness().getName());
+            response.setBusinessId(saleCoupon.getBusiness().getId());
+            response.setBusinessLocation(saleCoupon.getBusiness().getLocation());
+            response.setSaleCouponId(saleCoupon.getId());
+            response.setProductName(saleCoupon.getCoupon().getProduct().getName());
+            response.setStatus(saleCoupon.getStatus());
+            response.setExpiryDate(saleCoupon.getExpiredDate());
+            response.setDiscount(saleCoupon.getCoupon().getProduct().getDiscount());
+            response.setImageUrl(saleCoupon.getCoupon().getProduct().getImagePath());
+            return  response;
+        }
+        return null;
+    }
 
 }

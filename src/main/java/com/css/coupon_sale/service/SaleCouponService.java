@@ -12,4 +12,6 @@ public interface SaleCouponService {
     boolean insertSaleCoupon(int orderId);
 
     List<PurchaseCouponResponse> getAllCouponsByUserId(Long userId);
+
+    PurchaseCouponResponse getBySaleCouponId(int saleCouponId);
 }

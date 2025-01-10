@@ -11,12 +11,21 @@ public class FriendshipResponse {
     private String friendName;
     private String senderName;
     private String accepterName;
+    private String imageUrl;
     private int status;
     private LocalDateTime createdAt;
     private LocalDateTime acceptedDate;
 
     public int getId() {
         return id;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
     public void setId(int id) {

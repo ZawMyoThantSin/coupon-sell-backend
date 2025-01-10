@@ -10,6 +10,33 @@ public class PurchaseCouponResponse {
     private double price;
     private String imageUrl;
     private int status;
+    private String businessName;
+    private String businessLocation;
+    private Integer businessId;
+
+    public Integer getBusinessId() {
+        return businessId;
+    }
+
+    public void setBusinessId(Integer businessId) {
+        this.businessId = businessId;
+    }
+
+    public String getBusinessLocation() {
+        return businessLocation;
+    }
+
+    public void setBusinessLocation(String businessLocation) {
+        this.businessLocation = businessLocation;
+    }
+
+    public String getBusinessName() {
+        return businessName;
+    }
+
+    public void setBusinessName(String businessName) {
+        this.businessName = businessName;
+    }
 
     public Integer getSaleCouponId() {
         return saleCouponId;
