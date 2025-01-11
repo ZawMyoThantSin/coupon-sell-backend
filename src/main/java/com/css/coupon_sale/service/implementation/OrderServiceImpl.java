@@ -28,6 +28,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -85,7 +86,12 @@ public class OrderServiceImpl implements OrderService {
 
             CouponEntity coupon = CRepository.findById(couponId)
                     .orElseThrow(() -> new RuntimeException("Coupon not found"));
+            if (coupon.getCouponRemain() < quantity) {
+                throw new RuntimeException("Insufficient quantity for coupon ID: " + couponId);
+            }
 
+            coupon.setCouponRemain(coupon.getCouponRemain() - quantity);
+            CRepository.save(coupon);
 
             // Save the order
                 OrderEntity order = new OrderEntity();
@@ -175,12 +181,56 @@ public class OrderServiceImpl implements OrderService {
   }
 
   @Override
-  public List<OrderResponse> getByUserId(long id) {
+  public List<OrderDetailResponse> getByUserId(long userId) {
+      try {
+          List<OrderEntity> orderEntityList = orderRepository.findByUserId(userId);
+          Map<Integer, OrderDetailResponse> responseMap = new HashMap<>();
 
-      List<OrderEntity> orderEntityList = orderRepository.findByUserId(id);
-      return orderEntityList.stream()
-        .map(this::mapToResponseDTO)
-        .collect(Collectors.toList());
+          for (OrderEntity order : orderEntityList) {
+              OrderDetailResponse response;
+              if (responseMap.containsKey(order.getOrderId())) {
+                  response = responseMap.get(order.getOrderId());
+              } else {
+                  response = new OrderDetailResponse();
+                  response.setId(order.getId());
+                  response.setOrder_id(order.getOrderId());
+                  response.setUser_id(order.getUser().getId());
+                  response.setQuantity(order.getQuantity());
+                  response.setTotalPrice(order.getTotalPrice());
+                  response.setStatus(order.getStatus());
+                  response.setScreenshot(order.getScreenshot());
+                  response.setOrder_date(order.getCreatedAt());
+                  response.setMessage(order.getMessage());
+
+                  response.setUserName(order.getUser().getName());
+                  response.setPhoneNumber(order.getPhoneNumber());
+                  response.setUserEmail(order.getUser().getEmail());
+
+                  OrderDetailResponse.PaymentInfo paymentInfo = new OrderDetailResponse.PaymentInfo(
+                          order.getPayment().getAccountName(),
+                          order.getPayment().getAccountNumber(),
+                          order.getPayment().getPaymentType()
+                  );
+                  response.setPaymentInfo(paymentInfo);
+
+                  response.setOrderItems(new ArrayList<>());
+                  responseMap.put(order.getOrderId(), response);
+              }
+
+              OrderDetailResponse.OrderItems orderItem = new OrderDetailResponse.OrderItems(
+                      order.getCoupon().getProduct().getName(),
+                      order.getCoupon().getProduct().getImagePath(),
+                      order.getCoupon().getPrice(),
+                      order.getQuantity()
+              );
+              response.getOrderItems().add(orderItem);
+          }
+
+          return new ArrayList<>(responseMap.values());
+      } catch (Exception e) {
+          System.out.println("Error in getByUserId: " + e.getMessage());
+          return List.of();
+      }
   }
 
     @Override
@@ -257,6 +307,9 @@ public class OrderServiceImpl implements OrderService {
                 }else if (action.equals("REJECT")){
                     for (OrderEntity order : orderEntityList){
                         order.setStatus(2);
+                        CouponEntity coupon = order.getCoupon();
+                        coupon.setCouponRemain(coupon.getCouponRemain() + order.getQuantity());
+                        CRepository.save(coupon);
                         orderRepository.save(order);
                     }
                 }

@@ -12,6 +12,7 @@ import com.css.coupon_sale.exception.AppException;
 import com.css.coupon_sale.repository.BusinessCategoryRepository;
 import com.css.coupon_sale.repository.BusinessRepository;
 import com.css.coupon_sale.repository.UserRepository;
+import com.css.coupon_sale.service.BusinessReviewService;
 import com.css.coupon_sale.service.BusinessService;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
@@ -52,17 +53,20 @@ public class BusinessServiceImpl implements BusinessService {
 
     private final BusinessCategoryRepository categoryRepository;
 
+    private final BusinessReviewService businessReviewService;
+
     @Value("${product.image.upload-dir}") // Specify folder path in application.properties
     private String uploadDir;
 
     @Autowired
     public BusinessServiceImpl(BusinessRepository businessRepository, PasswordEncoder passwordEncoder, UserRepository userRepository, ModelMapper modelMapper,
-                               BusinessCategoryRepository categoryRepository) {
+                               BusinessCategoryRepository categoryRepository, BusinessReviewService businessReviewService) {
         this.businessRepository = businessRepository;
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
         this.modelMapper = modelMapper;
         this.categoryRepository = categoryRepository;
+        this.businessReviewService = businessReviewService;
     }
 
     @Override
@@ -212,10 +216,13 @@ public class BusinessServiceImpl implements BusinessService {
 
     private BusinessResponse mapToResponseDTO(BusinessEntity business) {
         BusinessResponse responseDTO = modelMapper.map(business, BusinessResponse.class);
+        responseDTO.setCategoryId(business.getCategory().getId());
         responseDTO.setUserId(business.getUser().getId());
         responseDTO.setUserName(business.getUser().getName());
         responseDTO.setUserEmail(business.getUser().getEmail());
         responseDTO.setCategory(business.getCategory().getName());
+        double count = businessReviewService.calculateOverviewCount(business.getId());
+        responseDTO.setCount(count);
         return responseDTO;
     }
 

@@ -114,6 +114,7 @@ public class CartServiceImpl implements CartService {
         responseDTO.setUserId(cart.getUser().getId());
         responseDTO.setCouponId(cart.getCoupon().getId());
         responseDTO.setQuantity(cart.getQuantity());
+        responseDTO.setCouponRemain(cart.getCoupon().getCouponRemain());
         responseDTO.setPrice(cart.getCoupon().getPrice());
         responseDTO.setProductName(cart.getCoupon().getProduct().getName());
         responseDTO.setProductImage(cart.getCoupon().getProduct().getImagePath());

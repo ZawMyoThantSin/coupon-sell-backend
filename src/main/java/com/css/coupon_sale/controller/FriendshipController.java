@@ -73,6 +73,21 @@ public class FriendshipController {
         }
     }
 
+    @PutMapping("/{id}/cancel")
+    public ResponseEntity<FriendshipResponse> cancelFriendRequest(@PathVariable int id) {
+        try {
+            FriendshipResponse response = service.deleteFriendRequest(id);
+            String message = "FRIEND_REQUEST_CANCELLED";
+            webSocketHandler.sendToUser(response.getFriendId(), message);
+            return ResponseEntity.ok(response);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+
     @GetMapping("/{userId}/friends")
     public ResponseEntity<List<FriendshipResponse>> getFriends(@PathVariable int userId) {
         List<FriendshipResponse> friends = service.getFriends(userId);
@@ -83,6 +98,12 @@ public class FriendshipController {
     public ResponseEntity<List<FriendshipResponse>> getPendingRequests(@PathVariable int userId) {
         List<FriendshipResponse> pendingRequests = service.getPendingRequests(userId);
         return ResponseEntity.ok(pendingRequests);
+    }
+
+    @GetMapping("/{userId}/sent-pending")
+    public ResponseEntity<List<FriendshipResponse>> getSentPendingRequests(@PathVariable int userId) {
+        List<FriendshipResponse> sentPendingRequests = service.getSentPendingRequests(userId);
+        return ResponseEntity.ok(sentPendingRequests);
     }
 
     @GetMapping("/search")

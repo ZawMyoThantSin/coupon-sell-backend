@@ -49,7 +49,7 @@ public class SaleCouponImpl implements SaleCouponService {
                     saleCoupon.setCoupon(order.getCoupon());
                     saleCoupon.setPayment(order.getPayment());
                     saleCoupon.setQuantity(1);
-                    saleCoupon.setStatus(order.getStatus());
+                    saleCoupon.setStatus(0);
                     saleCoupon.setTotalPrice(order.getCoupon().getPrice()); // Assuming totalPrice = price of one coupon
                     saleCoupon.setBuyDate(order.getCreatedAt());
                     saleCoupon.setExpiredDate(order.getCoupon().getExpiredDate()); // Example expiration logic
@@ -79,6 +79,9 @@ public class SaleCouponImpl implements SaleCouponService {
         List<PurchaseCouponResponse> response=new ArrayList<>();
         for (SaleCouponEntity coupon : saleCouponEntities) {
             PurchaseCouponResponse purchaseCoupon =new PurchaseCouponResponse();
+            purchaseCoupon.setBusinessId(coupon.getBusiness().getId());
+            purchaseCoupon.setBusinessName(coupon.getBusiness().getName());
+            purchaseCoupon.setBusinessLocation(coupon.getBusiness().getLocation());
             purchaseCoupon.setSaleCouponId(coupon.getId());
             purchaseCoupon.setStatus(coupon.getStatus());
             purchaseCoupon.setDiscount(coupon.getCoupon().getProduct().getDiscount());
@@ -99,6 +102,9 @@ public class SaleCouponImpl implements SaleCouponService {
                 .orElseThrow(()-> new RuntimeException("SaleCoupon Not Found"));
         if (saleCoupon != null){
             PurchaseCouponResponse response = new PurchaseCouponResponse();
+            response.setBusinessName(saleCoupon.getBusiness().getName());
+            response.setBusinessId(saleCoupon.getBusiness().getId());
+            response.setBusinessLocation(saleCoupon.getBusiness().getLocation());
             response.setSaleCouponId(saleCoupon.getId());
             response.setProductName(saleCoupon.getCoupon().getProduct().getName());
             response.setStatus(saleCoupon.getStatus());

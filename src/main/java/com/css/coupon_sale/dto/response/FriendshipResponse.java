@@ -11,6 +11,7 @@ public class FriendshipResponse {
     private String friendName;
     private String senderName;
     private String accepterName;
+    private String imageUrl;
     private int status;
     private LocalDateTime createdAt;
     private LocalDateTime acceptedDate;
@@ -21,6 +22,14 @@ public class FriendshipResponse {
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public String getImageUrl() {
+        return imageUrl;
+    }
+
+    public void setImageUrl(String imageUrl) {
+        this.imageUrl = imageUrl;
     }
 
     public Long getFriendId() {

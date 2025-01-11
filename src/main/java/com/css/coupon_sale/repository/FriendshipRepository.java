@@ -20,6 +20,8 @@ public interface FriendshipRepository extends JpaRepository<FriendShipEntity, In
 
     List<FriendShipEntity> findAllByAccepterAndStatus(UserEntity user, int status);
 
+    List<FriendShipEntity> findAllBySenderAndStatus(UserEntity user, int status);
+
     // Search users by email with partial match
     @Query("SELECT u FROM UserEntity u WHERE u.email LIKE %:email%")
     List<UserEntity> findUsersByEmail(@Param("email") String email);

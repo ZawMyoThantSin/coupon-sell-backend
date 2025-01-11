@@ -22,7 +22,7 @@ public interface OrderService {
   List<OrderResponse> getByPaymentId(Integer id);
   List<OrderResponse> getAllOrderlist();
   List<OrderResponse> getByCouponId(Integer id);
-  List<OrderResponse> getByUserId(long id);
+  List<OrderDetailResponse> getByUserId(long id);
 
   List<OrderDetailResponse> getByOrderId(int id);
   boolean updateOrderStatus(int orderId,String action);

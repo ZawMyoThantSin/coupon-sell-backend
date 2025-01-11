@@ -11,11 +11,21 @@ public class BusinessResponse {
     private String contactNumber;
     private String photo;
     private String category;
+    private Integer categoryId;
     private boolean status;
     private Long userId;
     private String userName;
     private String userEmail;
+    private double count;
 
+
+    public double getCount() {
+        return count;
+    }
+
+    public void setCount(double count) {
+        this.count = count;
+    }
 
     public Long getUserId() {
         return userId;
@@ -47,6 +57,14 @@ public class BusinessResponse {
 
     public void setCategory(String category) {
         this.category = category;
+    }
+
+    public Integer getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(Integer categoryId) {
+        this.categoryId = categoryId;
     }
 
     public String getPhoto() {
