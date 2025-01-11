@@ -4,6 +4,10 @@ import com.css.coupon_sale.config.CustomWebSocketHandler;
 import com.css.coupon_sale.dto.request.FriendshipRequest;
 import com.css.coupon_sale.dto.response.FriendshipResponse;
 import com.css.coupon_sale.dto.response.UserResponse;
+import com.css.coupon_sale.entity.FriendShipEntity;
+import com.css.coupon_sale.entity.UserEntity;
+import com.css.coupon_sale.repository.FriendshipRepository;
+import com.css.coupon_sale.repository.UserRepository;
 import com.css.coupon_sale.service.FriendshipService;
 import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +17,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 
 @RestController
@@ -21,11 +26,16 @@ public class FriendshipController {
 
     private final FriendshipService service;
     private final CustomWebSocketHandler webSocketHandler;
+    private final UserRepository URepository;
+    private final FriendshipRepository friendshipRepository;
 
     @Autowired
-    public FriendshipController(FriendshipService service, CustomWebSocketHandler webSocketHandler) {
+    public FriendshipController(FriendshipService service, CustomWebSocketHandler webSocketHandler,
+                                UserRepository URepository, FriendshipRepository friendshipRepository) {
         this.service = service;
         this.webSocketHandler = webSocketHandler;
+        this.URepository = URepository;
+        this.friendshipRepository = friendshipRepository;
     }
 
     @PostMapping
@@ -63,6 +73,7 @@ public class FriendshipController {
         try {
             FriendshipResponse response = service.deleteFriendRequest(id);
             String message = "FRIEND_REQUEST_DENIED";
+            System.out.println("Denied Friend ID : " + response.getFriendId());
             webSocketHandler.sendToUser(response.getFriendId(), message);
             return ResponseEntity.ok(response);
         } catch (EntityNotFoundException e) {
@@ -76,9 +87,27 @@ public class FriendshipController {
     @PutMapping("/{id}/cancel")
     public ResponseEntity<FriendshipResponse> cancelFriendRequest(@PathVariable int id) {
         try {
+            System.out.println("Canceled id " + id);
+
+            // Fetch the FriendShipEntity using the ID
+            Optional<FriendShipEntity> friendshipOptional = friendshipRepository.findById(id);
+
+            if (friendshipOptional.isEmpty()) {
+                // Return 404 if the friendship entity is not found
+                System.err.println("Friendship entity not found with ID: " + id);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+            }
+
+            FriendShipEntity friendshipEntity = friendshipOptional.get();
+
+            // Extract the accepter's ID directly from the FriendShipEntity
+            Long accepterId = friendshipEntity.getAccepter().getId();
+            System.out.println("Accepter ID: " + accepterId);
+
             FriendshipResponse response = service.deleteFriendRequest(id);
+            System.out.println("Friend Id " + response.getFriendId());
             String message = "FRIEND_REQUEST_CANCELLED";
-            webSocketHandler.sendToUser(response.getFriendId(), message);
+            webSocketHandler.sendToUser(accepterId, message);
             return ResponseEntity.ok(response);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
