@@ -7,6 +7,7 @@ import com.css.coupon_sale.entity.OrderEntity;
 import com.css.coupon_sale.service.CouponService;
 import com.css.coupon_sale.service.QrCodeService;
 import com.css.coupon_sale.service.SaleCouponService;
+import com.css.coupon_sale.service.TransferService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +28,9 @@ public class SaleCouponController {
     @Autowired
     private CouponService couponService;
 
+    @Autowired
+    private TransferService transferService;
+
     @GetMapping("/{id}")
     public ResponseEntity<?> getBySaleCouponId(@PathVariable("id") int saleCouponId) {
         PurchaseCouponResponse coupons = saleCouponService.getBySaleCouponId(saleCouponId);
@@ -34,6 +38,17 @@ public class SaleCouponController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found or no coupons available for the given user.");
         }
         return ResponseEntity.ok(coupons);
+    }
+
+    @PostMapping("/transfer/{saleCouponId}/{acceptorId}")
+    public ResponseEntity<Boolean> transferCoupon(@PathVariable("saleCouponId") int saleCouponId, @PathVariable("acceptorId") Long acceptorId) {
+        boolean isTransferred = transferService.transferCoupon(saleCouponId, acceptorId);
+
+        if (isTransferred) {
+            return ResponseEntity.ok(true);
+        } else {
+            return ResponseEntity.status(500).body(false);
+        }
     }
 
     @GetMapping("/user/{userId}")

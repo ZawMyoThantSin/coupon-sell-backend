@@ -6,6 +6,7 @@ import com.css.coupon_sale.entity.SaleCouponEntity;
 import com.css.coupon_sale.entity.TransferEntity;
 import com.css.coupon_sale.entity.UserEntity;
 import com.css.coupon_sale.repository.FriendshipRepository;
+import com.css.coupon_sale.repository.SaleCouponRepository;
 import com.css.coupon_sale.repository.TransferRepository;
 import com.css.coupon_sale.repository.UserRepository;
 import com.css.coupon_sale.service.TransferService;
@@ -30,6 +31,9 @@ public class TransferServiceImpl implements TransferService {
 
     @Autowired
     private FriendshipRepository friendshipRepository;
+
+    @Autowired
+    private SaleCouponRepository saleCouponRepository;
 
     @Override
     public TransferResponse transferCoupon(TransferRequest requestDTO) {
@@ -107,6 +111,58 @@ public class TransferServiceImpl implements TransferService {
         return transfers.stream()
                 .map(this::mapToResponseDTO)
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<TransferResponse> getCouponsForAcceptor(Long acceptorId) {
+        List<TransferEntity> transfers = transferRepository.findByAccepter_Id(acceptorId);
+        return transfers.stream()
+                .map(this::mapToResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public boolean transferCoupon(int saleCouponId, Long acceptorId) {
+        try {
+
+            SaleCouponEntity saleCoupon = saleCouponRepository.findById(saleCouponId)
+                    .orElseThrow(() -> new RuntimeException("Sale Coupon ID not found: " + saleCouponId));
+
+
+            if (saleCoupon.getStatus() == 2) {
+                System.out.println("Sale Coupon has already been transferred. Transfer not allowed.");
+                return false;
+            }
+
+
+            saleCoupon.setStatus(2); // Set status to 2 (transferred)
+            saleCouponRepository.save(saleCoupon); // Save the updated SaleCoupon
+
+            System.out.println("Sender: " + saleCoupon.getUser().getId());
+            System.out.println("Acceptor: " + acceptorId);
+
+            // Create a TransferEntity and set its properties
+            UserEntity acceptor = new UserEntity();
+            acceptor.setId(acceptorId);
+
+            TransferEntity transferEntity = new TransferEntity();
+            transferEntity.setSaleCoupon(saleCoupon);
+            transferEntity.setSender(saleCoupon.getUser()); // Assuming sender is stored in SaleCoupon
+            transferEntity.setAccepter(acceptor); // Assuming accepter is stored in SaleCoupon
+            transferEntity.setStatus(0); // Status of transfer, can be adjusted (e.g., 1 = successful)
+            transferEntity.setTransferAt(LocalDateTime.now()); // Set the timestamp of the transfer
+
+            // Save the transfer data
+            transferRepository.save(transferEntity);
+
+            return true; // Return true if transfer is successful
+        } catch (RuntimeException e) {
+            System.out.println("Error transferring Sale Coupon: " + e.getMessage());
+            return false; // Return false in case of an error
+        } catch (Exception e) {
+            System.out.println("Unexpected error: " + e.getMessage());
+            return false; // Return false for unexpected errors
+        }
     }
 
 

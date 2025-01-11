@@ -1,7 +1,9 @@
 package com.css.coupon_sale.controller;
 
 import com.css.coupon_sale.entity.QrCodeEntity;
+import com.css.coupon_sale.entity.SaleCouponEntity;
 import com.css.coupon_sale.repository.QrCodeRepository;
+import com.css.coupon_sale.repository.SaleCouponRepository;
 import com.css.coupon_sale.service.QrCodeService;
 import com.css.coupon_sale.service.SaleCouponService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +21,9 @@ public class QrCodeController {
     @Autowired
     private QrCodeRepository qrCodeRepository;
 
+    @Autowired
+    private SaleCouponRepository saleCouponRepository;
+
     @GetMapping("/code/{qrCode}")
     public ResponseEntity<ResponseData> findByQrCode(@PathVariable("qrCode")String qrCode){
         QrCodeEntity qrCode1 =  qrCodeRepository.findByQrCode(qrCode);
@@ -29,6 +34,23 @@ public class QrCodeController {
                 qrCode1.getBusiness().getId()
                 );
         return ResponseEntity.ok(responseData);
+    }
+
+    @GetMapping("/validate/{id}")
+    public ResponseEntity<Boolean> validateUserCoupon(@PathVariable("id") Integer id){
+        SaleCouponEntity saleCoupon = saleCouponRepository.findById(id)
+                .orElseThrow(()-> new RuntimeException("Coupon Not Found!"));
+        if (saleCoupon != null){
+            try{
+                saleCoupon.setStatus(1);
+                saleCouponRepository.save(saleCoupon);
+                return ResponseEntity.ok(true);
+            }catch (Exception e){
+                System.out.println("ERROR"+ e.getMessage());
+                return ResponseEntity.ok(false);
+            }
+        }
+        return ResponseEntity.notFound().build();
     }
 
     public record ResponseData(LocalDateTime expireDate, int status, int saleCouponId, int businessId){}

@@ -15,4 +15,7 @@ public interface TransferService {
 
     List<TransferResponse> getTransferHistory(Long userId);
 
+    List<TransferResponse> getCouponsForAcceptor(Long acceptorId);
+
+    boolean transferCoupon(int saleCouponId, Long acceptorId);
 }

@@ -37,8 +37,8 @@ public class OrderController {
   @Autowired
   private QrCodeService qrCodeService;
 
-  @Autowired
-  private CouponRepository CRepository;
+    @Autowired
+    private CouponRepository CRepository;
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<?> saveOrders(
@@ -76,7 +76,6 @@ public class OrderController {
                             .body(Map.of("status", "error", "message", "Insufficient quantity for coupon ID: " + couponId));
                 }
             }
-
             // Call the service to save all orders with the same order_id
             List<OrderResponse> responses = service.saveOrders(userId, paymentId, phoneNumber, totalPrice, quantities, screenshot, couponIds);
             if(!responses.isEmpty()){
@@ -133,10 +132,11 @@ public class OrderController {
   }
 
   @GetMapping("/user/{id}")
-  public ResponseEntity<List<OrderResponse>> getByUserId(@PathVariable int id) {
-    return ResponseEntity.ok(service.getByUserId(id));
+  public ResponseEntity<List<OrderDetailResponse>> getByUserId(@PathVariable long id) {
+        List<OrderDetailResponse> response = service.getByUserId(id);
+        return ResponseEntity.ok(response);
+    }
 
-  }
   @GetMapping("/c/{id}")
   public ResponseEntity<List<OrderResponse>> getByBusiness(@PathVariable("id")Integer id){
     List<OrderResponse> responses = service.getByCouponId(id);

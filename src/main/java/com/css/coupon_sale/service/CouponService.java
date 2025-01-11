@@ -3,6 +3,7 @@ package com.css.coupon_sale.service;
 import com.css.coupon_sale.dto.request.CouponRequest;
 import com.css.coupon_sale.dto.response.BusinessCouponSalesResponse;
 import com.css.coupon_sale.dto.response.CouponResponse;
+import net.sf.jasperreports.engine.JRException;
 
 import java.util.List;
 
@@ -13,4 +14,7 @@ public interface CouponService {
     CouponResponse saveCoupon(CouponRequest requestDTO);
     List<CouponResponse> showByBusinessId(Integer id);
     List<BusinessCouponSalesResponse> getSoldCouponCountByBusiness(Integer businessId);
+    byte[] saleCouponReportForWeekly(Integer businessId, String reportType) throws JRException;
+
+    byte[] saleCouponReportForMonthly(Integer businessId, String reportType) throws JRException;
 }

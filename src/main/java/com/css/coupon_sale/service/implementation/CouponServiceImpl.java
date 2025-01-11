@@ -3,22 +3,27 @@ package com.css.coupon_sale.service.implementation;
 import com.css.coupon_sale.dto.request.CouponRequest;
 import com.css.coupon_sale.dto.response.BusinessCouponSalesResponse;
 import com.css.coupon_sale.dto.response.CouponResponse;
+import com.css.coupon_sale.dto.response.CouponSalesBusinessResponse;
 import com.css.coupon_sale.entity.CouponEntity;
 import com.css.coupon_sale.entity.ProductEntity;
 import com.css.coupon_sale.repository.CouponRepository;
 import com.css.coupon_sale.repository.ProductRepository;
 import com.css.coupon_sale.service.CouponService;
+import net.sf.jasperreports.engine.*;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
+import net.sf.jasperreports.export.SimpleExporterInput;
+import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
+import net.sf.jasperreports.export.SimpleXlsxReportConfiguration;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayOutputStream;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -149,6 +154,168 @@ public class CouponServiceImpl implements CouponService {
 
         // Return an empty list in case of error
         return List.of();
+    }
+
+    //Report
+    @Override
+    public byte[] saleCouponReportForWeekly(Integer businessId, String reportType) throws JRException {
+        if (reportType == null) {
+            throw new IllegalArgumentException("Report type cannot be null");
+        }
+        // Fetch data from repository
+        List<Object[]> saleData = couponRepository.saleCouponReport(businessId);
+        if (saleData == null || saleData.isEmpty()) {
+            throw new RuntimeException("No sales data available for the given business ID");
+        }
+        // Get the current date and date 7 days ago
+        Date currentDate = new Date(System.currentTimeMillis());
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(currentDate);
+        calendar.add(Calendar.DATE, -7);
+        Date sevenDaysAgo = calendar.getTime();
+        // Convert Object[] data into CouponSalesBusinessResponse list, filtering for the last 7 days
+        List<CouponSalesBusinessResponse> salesData = saleData.stream()
+                .map(row -> {
+                    Date buyDate = (Date) row[2];
+
+                    // Filter out records older than 7 days
+                    if (buyDate.before(sevenDaysAgo) || buyDate.after(currentDate)) {
+                        return null; // Exclude data outside the last 7 days
+                    }
+
+                    CouponSalesBusinessResponse response = new CouponSalesBusinessResponse(
+                            (Integer) row[0],  // businessId
+                            (String) row[1],   // businessName
+                            buyDate,           // buyDate
+                            ((Number) row[3]).longValue(),  // soldQuantity
+                            ((Number) row[4]).doubleValue() // totalPrice
+                    );
+
+                    System.out.println("Transformed record: " + response);
+
+                    return response;
+                })
+                .filter(Objects::nonNull) // Remove any null entries (records outside the last 7 days)
+                .collect(Collectors.toList());
+
+        // Debug: Print the transformed data
+        salesData.forEach(record -> {
+            System.out.println("Record: " + record.getBuyDate() + ", " + record.getSoldQuantity() + ", " + record.getTotalPrice());
+        });
+
+        // Prepare the data source
+        JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(salesData);
+        System.out.println("Data source size: " + dataSource.getData().size()); // Check size
+
+        // Prepare the parameters for the report
+        String businessName = salesData.isEmpty() ? "" : salesData.get(0).getBusinessName();
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("businessName", businessName); // Ensure the parameter name matches the JRXML
+
+        // Fill the report
+        JasperReport jasperReport = JasperCompileManager.compileReport(getClass().getResourceAsStream("/sale-coupon-b.jrxml"));
+        JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
+
+        // Return the report in the requested format
+        if ("pdf".equalsIgnoreCase(reportType)) {
+            return JasperExportManager.exportReportToPdf(jasperPrint);
+        } else if ("excel".equalsIgnoreCase(reportType)) {
+            return exportToExcel(jasperPrint);
+        } else {
+            throw new IllegalArgumentException("Unsupported report type: " + reportType);
+        }
+    }
+
+    @Override
+    public byte[] saleCouponReportForMonthly(Integer businessId, String reportType) throws JRException {
+        if (reportType == null) {
+            throw new IllegalArgumentException("Report type cannot be null");
+        }
+
+        // Fetch data from repository
+        List<Object[]> saleData = couponRepository.saleCouponReport(businessId);
+
+        if (saleData == null || saleData.isEmpty()) {
+            throw new RuntimeException("No sales data available for the given business ID");
+        }
+
+        // Get the current date and date 7 days ago
+        Date currentDate = new Date(System.currentTimeMillis());
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(currentDate);
+        calendar.add(Calendar.DATE, -30);
+        Date sevenDaysAgo = calendar.getTime();
+
+        // Convert Object[] data into CouponSalesBusinessResponse list, filtering for the last 7 days
+        List<CouponSalesBusinessResponse> salesData = saleData.stream()
+                .map(row -> {
+                    Date buyDate = (Date) row[2];
+
+                    // Filter out records older than 7 days
+                    if (buyDate.before(sevenDaysAgo) || buyDate.after(currentDate)) {
+                        return null; // Exclude data outside the last 7 days
+                    }
+
+                    CouponSalesBusinessResponse response = new CouponSalesBusinessResponse(
+                            (Integer) row[0],  // businessId
+                            (String) row[1],   // businessName
+                            buyDate,           // buyDate
+                            ((Number) row[3]).longValue(),  // soldQuantity
+                            ((Number) row[4]).doubleValue() // totalPrice
+                    );
+
+                    System.out.println("Transformed record: " + response);
+
+                    return response;
+                })
+                .filter(Objects::nonNull) // Remove any null entries (records outside the last 7 days)
+                .collect(Collectors.toList());
+
+        // Debug: Print the transformed data
+        salesData.forEach(record -> {
+            System.out.println("Record: " + record.getBuyDate() + ", " + record.getSoldQuantity() + ", " + record.getTotalPrice());
+        });
+
+        // Prepare the data source
+        JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(salesData);
+        System.out.println("Data source size: " + dataSource.getData().size()); // Check size
+
+        // Prepare the parameters for the report
+        String businessName = salesData.isEmpty() ? "" : salesData.get(0).getBusinessName();
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("businessName", businessName); // Ensure the parameter name matches the JRXML
+
+        // Fill the report
+        JasperReport jasperReport = JasperCompileManager.compileReport(getClass().getResourceAsStream("/sale-coupon-b.jrxml"));
+        JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
+
+        // Return the report in the requested format
+        if ("pdf".equalsIgnoreCase(reportType)) {
+            return JasperExportManager.exportReportToPdf(jasperPrint);
+        } else if ("excel".equalsIgnoreCase(reportType)) {
+            return exportToExcel(jasperPrint);
+        } else {
+            throw new IllegalArgumentException("Unsupported report type: " + reportType);
+        }
+    }
+
+    private byte[] exportToExcel(JasperPrint jasperPrint) throws JRException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        JRXlsxExporter exporter = new JRXlsxExporter();
+        exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+        exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(baos));
+
+        SimpleXlsxReportConfiguration configuration = new SimpleXlsxReportConfiguration();
+        configuration.setOnePagePerSheet(true);
+        configuration.setRemoveEmptySpaceBetweenRows(true);
+        configuration.setDetectCellType(true);
+        configuration.setCollapseRowSpan(false);
+        configuration.setAutoFitPageHeight(true);
+        configuration.setColumnWidthRatio(1.5f);
+        exporter.setConfiguration(configuration);
+
+        exporter.exportReport();
+        return baos.toByteArray();
     }
 
     private CouponResponse mapToResponseDTO(CouponEntity coupon) {
