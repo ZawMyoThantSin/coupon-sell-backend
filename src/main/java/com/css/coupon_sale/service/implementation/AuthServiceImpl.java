@@ -1,6 +1,7 @@
 package com.css.coupon_sale.service.implementation;
 
 import com.css.coupon_sale.dto.request.SignupRequest;
+import com.css.coupon_sale.dto.response.UserResponse;
 import com.css.coupon_sale.entity.UserEntity;
 import com.css.coupon_sale.exception.AppException;
 import com.css.coupon_sale.repository.UserRepository;
@@ -12,7 +13,9 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.nio.CharBuffer;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static java.time.LocalDateTime.now;
 
@@ -43,5 +46,19 @@ public class AuthServiceImpl implements AuthService {
         userEntity.setCreated_at(now());
 
         return  userRepository.save(userEntity);
+    }
+
+    @Override
+    public UserResponse searchUserByEmail(String email) {
+        // Find matching users by email
+        UserEntity users = userRepository.findByEmail(email)
+                .orElseThrow(()-> new RuntimeException("User Not Found with this email: "+ email));
+        if (users!= null){
+            UserResponse response = new UserResponse();
+            response.setEmail(users.getEmail());
+            return response;
+        }
+        return new UserResponse();
+        // Map the user entities to user responses
     }
 }
