@@ -43,11 +43,11 @@ public class BusinessReviewServiceImpl implements BusinessReviewService {
     }
 
     @Override
-    public List<BusinessReviewResponse> getAllRatingList() {
-        return businessReviewRepository.findAll().stream()
+    public List<BusinessReviewResponse> getAllRatingsByBusinessId(int business_id) {
+        List<BusinessReviewEntity> reviews = businessReviewRepository.findAllByBusinessId(business_id);
+        return reviews.stream()
                 .map(this::mapToResponseDTO)
                 .collect(Collectors.toList());
-
     }
 
     @Override

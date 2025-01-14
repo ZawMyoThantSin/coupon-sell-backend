@@ -14,7 +14,7 @@ public interface FriendshipService {
     List<FriendshipResponse> getFriends(int userId);
     List<FriendshipResponse> getPendingRequests(int userId);
     List<FriendshipResponse> getSentPendingRequests(int userId);
-    List<UserResponse> searchUsersByEmail(String email);
+    List<UserResponse> searchUsersByEmail(String email, int loggedInUserId);
     void unfriend(int userId, int friendId);
     UserResponse getFriendDetailById(Long friendId);
 }

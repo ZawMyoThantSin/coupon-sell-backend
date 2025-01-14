@@ -29,10 +29,11 @@ public class FriendshipController {
     private final FriendshipRepository friendshipRepository;
 
     @Autowired
-    public FriendshipController(FriendshipService service, CustomWebSocketHandler webSocketHandler, UserRepository uRepository, FriendshipRepository friendshipRepository) {
+    public FriendshipController(FriendshipService service, CustomWebSocketHandler webSocketHandler,
+                                 UserRepository uRepository, FriendshipRepository friendshipRepository) {
         this.service = service;
         this.webSocketHandler = webSocketHandler;
-        URepository = uRepository;
+        this.URepository = uRepository;
         this.friendshipRepository = friendshipRepository;
     }
 
@@ -134,8 +135,9 @@ public class FriendshipController {
 
     @GetMapping("/search")
     public ResponseEntity<List<UserResponse>> searchUsersByEmail(
-            @RequestParam("email") String email) {
-        List<UserResponse> responses = service.searchUsersByEmail(email);
+            @RequestParam("email") String email,
+            @RequestParam("loggedInUserId") int loggedInUserId) {
+        List<UserResponse> responses = service.searchUsersByEmail(email, loggedInUserId);
         return ResponseEntity.ok(responses);
     }
 

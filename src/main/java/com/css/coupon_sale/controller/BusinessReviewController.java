@@ -45,11 +45,14 @@ public class BusinessReviewController {
         }
     }
 
-    @GetMapping
-    public ResponseEntity<List<BusinessReviewResponse>> getAllBusinesses() {
-        List<BusinessReviewResponse> rating = businessReviewService.getAllRatingList();
-        return ResponseEntity.ok(rating);
+//
+
+    @GetMapping("/{business_id}/reviews")
+    public ResponseEntity<List<BusinessReviewResponse>> getAllRatingsByBusinessId(@PathVariable("business_id") int business_id) {
+        List<BusinessReviewResponse> ratings = businessReviewService.getAllRatingsByBusinessId(business_id);
+        return ResponseEntity.ok(ratings);
     }
+
 
     @GetMapping("/overview/{business_id}")
     public ResponseEntity<Double> getOverviewCount(@PathVariable String business_id) {

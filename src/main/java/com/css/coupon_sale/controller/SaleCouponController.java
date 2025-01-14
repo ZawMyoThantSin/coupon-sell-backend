@@ -1,5 +1,6 @@
 package com.css.coupon_sale.controller;
 
+import com.css.coupon_sale.config.CustomWebSocketHandler;
 import com.css.coupon_sale.dto.response.BusinessCouponSalesResponse;
 import com.css.coupon_sale.dto.response.PurchaseCouponResponse;
 import com.css.coupon_sale.dto.response.QrDataResponse;
@@ -31,6 +32,9 @@ public class SaleCouponController {
     @Autowired
     private TransferService transferService;
 
+    @Autowired
+    private CustomWebSocketHandler webSocketHandler;
+
     @GetMapping("/{id}")
     public ResponseEntity<?> getBySaleCouponId(@PathVariable("id") int saleCouponId) {
         PurchaseCouponResponse coupons = saleCouponService.getBySaleCouponId(saleCouponId);
@@ -42,12 +46,20 @@ public class SaleCouponController {
 
     @PostMapping("/transfer/{saleCouponId}/{acceptorId}")
     public ResponseEntity<Boolean> transferCoupon(@PathVariable("saleCouponId") int saleCouponId, @PathVariable("acceptorId") Long acceptorId) {
-        boolean isTransferred = transferService.transferCoupon(saleCouponId, acceptorId);
+        try {
+            boolean isTransferred = transferService.transferCoupon(saleCouponId, acceptorId);
 
-        if (isTransferred) {
-            return ResponseEntity.ok(true);
-        } else {
-            return ResponseEntity.status(500).body(false);
+            if (isTransferred) {
+                // Send WebSocket message
+                String message = "COUPON_TRANSFER_TRANSFERRED";
+                webSocketHandler.sendToUser(acceptorId, message);
+                return ResponseEntity.ok(true);
+            } else {
+                return ResponseEntity.status(500).body(false);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 

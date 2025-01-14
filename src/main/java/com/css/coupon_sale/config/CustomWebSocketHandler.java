@@ -28,11 +28,14 @@ public class CustomWebSocketHandler extends TextWebSocketHandler {
             String token = getTokenFromSession(session); // Extract token from session
             if (token != null && validateToken(token)) {
                 Long userId = extractUserIdFromToken(token);
+                String role = extractUserRoleFromToken(token);
                 if (userId != null) {
+                    session.getAttributes().put("userId", userId);
+                    session.getAttributes().put("role", role);
                     userSessions.put(userId, session);
                     String message = "This is websocket testing";
                     sendToUser(userId,  message);
-                    System.out.println("WebSocket connection established for user ID: " + userId);
+                    System.out.println("WebSocket connection established for user ID: " + userId + "Role: "+ role);
                 } else {
                     closeSessionWithError(session, "Failed to extract user ID from token.");
                 }
@@ -68,6 +71,19 @@ public class CustomWebSocketHandler extends TextWebSocketHandler {
                 }
             });
         }
+
+        public void sendToRole(String role, String message) {
+            for (WebSocketSession session : userSessions.values()) {
+                if (session.isOpen() && role.equals(session.getAttributes().get("role"))) {
+                    try {
+                        session.sendMessage(new TextMessage(message));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+
 
         public void sendToUser(Long userId, String message) {
             WebSocketSession session = userSessions.get(userId);
@@ -133,4 +149,15 @@ public class CustomWebSocketHandler extends TextWebSocketHandler {
                 return null;
             }
         }
+        private String  extractUserRoleFromToken(String token) {
+            try {
+                Claims claims = jwtUtil.extractAllClaims(token);
+                return claims.get("role", String.class);
+            } catch (Exception e) {
+                System.err.println("Failed to extract user ID from token: " + e.getMessage());
+                return null;
+        }
+    }
+
+
 }

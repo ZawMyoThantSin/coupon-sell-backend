@@ -18,5 +18,5 @@ public interface BusinessReviewService {
 
     BusinessReviewResponse getByBusinessId(int id);
 
-    List<BusinessReviewResponse> getAllRatingList();
+    List<BusinessReviewResponse> getAllRatingsByBusinessId(int business_id);
 }

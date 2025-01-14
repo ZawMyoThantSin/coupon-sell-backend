@@ -7,6 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
+
 @Repository
 public interface BusinessReviewRepository extends JpaRepository<BusinessReviewEntity, Integer> {
 
@@ -19,4 +21,6 @@ public interface BusinessReviewRepository extends JpaRepository<BusinessReviewEn
 
     // Custom query method to check if a review exists for a given businessId and userId
     boolean existsByBusinessIdAndUserId(int business_id, Long user_id);
+
+    List<BusinessReviewEntity> findAllByBusinessId(int business_id);
 }

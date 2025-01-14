@@ -10,4 +10,6 @@ public interface AuthService {
     UserEntity register(SignupRequest request);
 
     UserResponse searchUserByEmail(String email);
+
+    void changePassword(Long userId, String oldPassword, String newPassword);
 }

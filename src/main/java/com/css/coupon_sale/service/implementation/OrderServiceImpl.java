@@ -1,6 +1,7 @@
 package com.css.coupon_sale.service.implementation;
 
 
+import com.css.coupon_sale.config.CustomWebSocketHandler;
 import com.css.coupon_sale.dto.request.OrderItemRequest;
 import com.css.coupon_sale.dto.request.OrderRequest;
 
@@ -206,6 +207,8 @@ public class OrderServiceImpl implements OrderService {
                   response.setPhoneNumber(order.getPhoneNumber());
                   response.setUserEmail(order.getUser().getEmail());
 
+                  response.setPhoto(order.getCoupon().getProduct().getImagePath());
+
                   OrderDetailResponse.PaymentInfo paymentInfo = new OrderDetailResponse.PaymentInfo(
                           order.getPayment().getAccountName(),
                           order.getPayment().getAccountNumber(),
@@ -329,6 +332,7 @@ public class OrderServiceImpl implements OrderService {
 
     private OrderResponse mapToResponseDTO(OrderEntity order) {
     OrderResponse responseDTO = mapper.map(order, OrderResponse.class);
+    responseDTO.setPhoto(order.getCoupon().getProduct().getImagePath());
     responseDTO.setOrder_id(order.getOrderId());
     responseDTO.setUserName(order.getUser().getName());
     responseDTO.setUserEmail(order.getUser().getEmail());

@@ -1,11 +1,14 @@
 package com.css.coupon_sale.controller;
 
+import com.css.coupon_sale.config.CustomWebSocketHandler;
 import com.css.coupon_sale.dto.request.OrderItemRequest;
 import com.css.coupon_sale.dto.request.OrderRequest;
 import com.css.coupon_sale.dto.request.ProductRequest;
 import com.css.coupon_sale.dto.response.*;
 import com.css.coupon_sale.entity.CouponEntity;
+import com.css.coupon_sale.entity.OrderEntity;
 import com.css.coupon_sale.repository.CouponRepository;
+import com.css.coupon_sale.repository.OrderRepository;
 import com.css.coupon_sale.service.OrderService;
 import com.css.coupon_sale.service.ProductService;
 import com.css.coupon_sale.service.QrCodeService;
@@ -32,10 +35,16 @@ public class OrderController {
   private String uploadDir;
 
   @Autowired
+  private OrderRepository orderRepository;
+
+  @Autowired
   private OrderService service;
 
   @Autowired
   private QrCodeService qrCodeService;
+
+  @Autowired
+  private CustomWebSocketHandler webSocketHandler;
 
     @Autowired
     private CouponRepository CRepository;
@@ -79,6 +88,7 @@ public class OrderController {
             // Call the service to save all orders with the same order_id
             List<OrderResponse> responses = service.saveOrders(userId, paymentId, phoneNumber, totalPrice, quantities, screenshot, couponIds);
             if(!responses.isEmpty()){
+                webSocketHandler.sendToRole("ROLE_ADMIN","ORDER_CREATED");
                 return ResponseEntity.ok(responses);
             }
             return ResponseEntity.status(400).body("Failed to save orders.");
@@ -105,8 +115,15 @@ public class OrderController {
   }
     @GetMapping("/accept/{id}")
     public ResponseEntity<Boolean> acceptOrderByOrderId(@PathVariable("id")Integer id){
+        List<OrderEntity> orderEntityList = orderRepository.findByOrderId(id);
+        Long userId = 0L;
+        if (!orderEntityList.isEmpty()) {
+            OrderEntity order = orderEntityList.get(0);
+            userId = order.getUser().getId();
+        }
         boolean response = service.updateOrderStatus(id,"ACCEPT");
         if(response){
+            webSocketHandler.sendToUser(userId,"ORDER_ACCEPTED");
             return ResponseEntity.ok(true);
         }
         return ResponseEntity.notFound().build();
@@ -114,8 +131,15 @@ public class OrderController {
 
     @GetMapping("/reject/{id}")
     public ResponseEntity<Boolean> rejectOrderByOrderId(@PathVariable("id")Integer id){
+        List<OrderEntity> orderEntityList = orderRepository.findByOrderId(id);
+        Long userId = 0L;
+        if (!orderEntityList.isEmpty()) {
+            OrderEntity order = orderEntityList.get(0);
+            userId = order.getUser().getId();
+        }
         boolean response = service.updateOrderStatus(id,"REJECT");
         if(response){
+            webSocketHandler.sendToUser(userId,"ORDER_REJECTED");
             return ResponseEntity.ok(true);
         }
         return ResponseEntity.notFound().build();
