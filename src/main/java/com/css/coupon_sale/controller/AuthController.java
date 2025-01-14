@@ -6,10 +6,12 @@ import com.css.coupon_sale.dto.request.SignupRequest;
 import com.css.coupon_sale.dto.response.HttpResponse;
 import com.css.coupon_sale.dto.response.LoginResponse;
 import com.css.coupon_sale.dto.response.SignupResponse;
+import com.css.coupon_sale.dto.response.UserResponse;
 import com.css.coupon_sale.entity.UserEntity;
 import com.css.coupon_sale.exception.AppException;
 import com.css.coupon_sale.repository.UserRepository;
 import com.css.coupon_sale.service.AuthService;
+import com.css.coupon_sale.service.EmailService;
 import com.css.coupon_sale.service.implementation.CustomUserDetailService;
 import com.css.coupon_sale.util.JwtUtil;
 import io.jsonwebtoken.Claims;
@@ -29,6 +31,7 @@ import org.springframework.web.bind.annotation.*;
 import java.security.SignatureException;
 import java.time.LocalDateTime;
 import java.util.Collections;
+import java.util.List;
 
 @RestController
 public class AuthController {
@@ -38,15 +41,17 @@ public class AuthController {
     private final JwtUtil jwtUtil;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final EmailService emailService;
 
     @Autowired
-    public AuthController(AuthService authService, AuthenticationManager authenticationManager, CustomUserDetailService userDetailService, JwtUtil jwtUtil, UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public AuthController(AuthService authService, AuthenticationManager authenticationManager, CustomUserDetailService userDetailService, JwtUtil jwtUtil, UserRepository userRepository, PasswordEncoder passwordEncoder, EmailService emailService) {
         this.authService = authService;
         this.authenticationManager = authenticationManager;
         this.userDetailService = userDetailService;
         this.jwtUtil = jwtUtil;
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.emailService = emailService;
     }
 
     @PostMapping("/login")
@@ -175,9 +180,55 @@ public class AuthController {
         }
     }
 
+    @PostMapping("/public/password-reset")
+    public ResponseEntity<?> passwordReset(@RequestBody PasswordReset request){
+        UserEntity user = userRepository.findByEmail(request.email)
+                .orElseThrow(()-> new UsernameNotFoundException("User Not Found with this email: "+ request.email));
+        try{
+            if (user != null){
+                user.setPassword(passwordEncoder.encode(request.password));
+                user.setUpdated_at(LocalDateTime.now());
+                userRepository.save(user);
+                return ResponseEntity.ok().build();
+            }
+        }catch (Exception e){
+            System.out.println("ERROR: " + e.getMessage());
+            return ResponseEntity.badRequest().build();
+        }
+        return ResponseEntity.badRequest().build();
+    }
+
     @ExceptionHandler(SignatureException.class)
     public ResponseEntity<String> handleInvalidSignature(SignatureException ex) {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token signature");
     }
 
+    @GetMapping("/search-user")
+    public ResponseEntity<UserResponse> searchUsersByEmail(
+            @RequestParam("email") String email) {
+        UserResponse responses = authService.searchUserByEmail(email);
+        return ResponseEntity.ok(responses);
+    }
+
+    @GetMapping("/public/send-otp/{email}")
+    public ResponseEntity<String> sendOTPMail(@PathVariable("email") String email){
+        String otp = emailService.generateOtp();
+        emailService.sendOtp(email, otp);
+        emailService.saveOtp(email, otp);
+        return ResponseEntity.ok("OTP sent successfully");
+    }
+
+    @PostMapping("/public/validate")
+    public ResponseEntity<Boolean> validateOtp(@RequestBody OtpRequest otpRequest) {
+        String status = emailService.validateOtp(otpRequest.email, otpRequest.otp);
+        if ("SUCCESS".equals(status)) {
+            return ResponseEntity.ok(true);
+        } else if("EXP".equals(status)){
+            return ResponseEntity.ok(false);
+        }
+        return ResponseEntity.badRequest().body(false);
+    }
+
+    public record OtpRequest(String email,String otp){};
+    public record PasswordReset(String email, String password){};
 }
