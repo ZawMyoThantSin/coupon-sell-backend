@@ -118,15 +118,16 @@ public class FriendshipServiceImpl implements FriendshipService {
     }
 
     @Override
-    public List<UserResponse> searchUsersByEmail(String email) {
-        // Find matching users by email
-        List<UserEntity> users = repo.findUsersByEmail(email);
+    public List<UserResponse> searchUsersByEmail(String email, int loggedInUserId) {
+        // Fetch eligible users from the repository
+        List<UserEntity> users = repo.searchEligibleUsersByEmail(email, loggedInUserId);
 
         // Map the user entities to user responses
         return users.stream()
                 .map(user -> mapper.map(user, UserResponse.class))
                 .collect(Collectors.toList());
     }
+
 
     @Override
     public void unfriend(int userId, int friendId) {
@@ -152,9 +153,19 @@ public class FriendshipServiceImpl implements FriendshipService {
         UserEntity friend = uRepo.findById(friendId)
                 .orElseThrow(() -> new EntityNotFoundException("Friend not found with ID: " + friendId));
 
-        // Map the user entity to a UserResponse DTO
-        return mapper.map(friend, UserResponse.class);
+        List<FriendShipEntity> friendships = repo.findByAccepterOrSenderAndStatus(friend, 1);
+        if (friendships.isEmpty()) {
+            throw new EntityNotFoundException("Friendship not found for friend ID: " + friendId);
+        }
+
+        FriendShipEntity friendship = friendships.get(0); // Get the first record
+
+        UserResponse response = mapper.map(friend, UserResponse.class);
+        response.setAcceptedDate(friendship.getAcceptedDate());
+        return response;
     }
+
+
 
 
     private FriendshipResponse mapToResponse(FriendShipEntity friendship, UserEntity loggedInUser) {

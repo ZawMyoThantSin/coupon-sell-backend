@@ -32,4 +32,17 @@ public interface FriendshipRepository extends JpaRepository<FriendShipEntity, In
             "AND f.status = 1")
     List<FriendShipEntity> findByUsers(@Param("user1") UserEntity user1, @Param("user2") UserEntity user2);
 
+    @Query("SELECT u FROM UserEntity u WHERE u.email LIKE %:email% " +
+            "AND u.id <> :loggedInUserId " + // Exclude logged-in user
+            "AND u.id NOT IN (SELECT f.sender.id FROM FriendShipEntity f WHERE f.accepter.id = :loggedInUserId AND f.status = 1) " + // Exclude friends
+            "AND u.id NOT IN (SELECT f.accepter.id FROM FriendShipEntity f WHERE f.sender.id = :loggedInUserId AND f.status = 1) " + // Exclude friends
+            "AND u.id NOT IN (SELECT f.sender.id FROM FriendShipEntity f WHERE f.accepter.id = :loggedInUserId AND f.status = 0) " + // Exclude pending sent requests
+            "AND u.id NOT IN (SELECT f.accepter.id FROM FriendShipEntity f WHERE f.sender.id = :loggedInUserId AND f.status = 0)") // Exclude pending received requests
+    List<UserEntity> searchEligibleUsersByEmail(@Param("email") String email, @Param("loggedInUserId") int loggedInUserId);
+
+    @Query("SELECT f FROM FriendShipEntity f " +
+            "WHERE (f.sender = :friend OR f.accepter = :friend) " +
+            "AND f.status = :status")
+    List<FriendShipEntity> findByAccepterOrSenderAndStatus(@Param("friend") UserEntity friend, @Param("status") int status);
+
 }

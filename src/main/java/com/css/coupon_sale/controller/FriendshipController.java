@@ -137,10 +137,12 @@ public class FriendshipController {
 
     @GetMapping("/search")
     public ResponseEntity<List<UserResponse>> searchUsersByEmail(
-            @RequestParam("email") String email) {
-        List<UserResponse> responses = service.searchUsersByEmail(email);
+            @RequestParam("email") String email,
+            @RequestParam("loggedInUserId") int loggedInUserId) {
+        List<UserResponse> responses = service.searchUsersByEmail(email, loggedInUserId);
         return ResponseEntity.ok(responses);
     }
+
 
     @DeleteMapping("/{userId}/unfriend/{friendId}")
     public ResponseEntity<Void> unfriend(
@@ -163,6 +165,7 @@ public class FriendshipController {
     public ResponseEntity<UserResponse> getFriendDetailById(@PathVariable Long friendId) {
         try {
             UserResponse response = service.getFriendDetailById(friendId);
+            System.out.println("Accepted Date from controller : " + response.getAcceptedDate());
             return ResponseEntity.ok(response);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);

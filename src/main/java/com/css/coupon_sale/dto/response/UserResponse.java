@@ -4,6 +4,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDateTime;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -17,6 +19,8 @@ public class UserResponse {
     private String email;
 
     private String profile;
+
+    private LocalDateTime acceptedDate;
 
     public Integer getId() {
         return id;
@@ -49,5 +53,13 @@ public class UserResponse {
 
     public void setProfile(String profile) {
         this.profile = profile;
+    }
+
+    public LocalDateTime getAcceptedDate() {
+        return acceptedDate;
+    }
+
+    public void setAcceptedDate(LocalDateTime acceptedDate) {
+        this.acceptedDate = acceptedDate;
     }
 }
