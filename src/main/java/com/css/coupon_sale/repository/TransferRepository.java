@@ -18,6 +18,8 @@ public interface TransferRepository extends JpaRepository<TransferEntity, Intege
 //    @Query("SELECT t FROM TransferEntity t WHERE t.accepter.id = :accepterId")
     List<TransferEntity> findByAccepter_Id(Long accepterId);
 
+    List<TransferEntity> findBySender_Id(Long senderId);
+
 //    @Query("SELECT new com.example.dto.CouponResponse(sc.id, sc.productName, sc.discount, sc.expiryDate, sc.imageUrl) " +
 //            "FROM Transfer t " +
 //            "JOIN SaleCoupon sc ON t.saleCouponId = sc.id " +

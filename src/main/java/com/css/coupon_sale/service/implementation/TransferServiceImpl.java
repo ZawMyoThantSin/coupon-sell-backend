@@ -124,10 +124,18 @@ public class TransferServiceImpl implements TransferService {
         dto.setSaleCouponId(transfer.getSaleCoupon().getId());
         dto.setStatus(transfer.getStatus());
         dto.setTransferAt(transfer.getTransferAt());
+        dto.setSenderName(transfer.getSender().getName());
+        dto.setAccepterName(transfer.getAccepter().getName());
         return dto;
     }
     public List<TransferResponse> getCouponsForAccepter(Long accepterId) {
         List<TransferEntity> transfers = transferRepository.findByAccepter_Id(accepterId);
+        return transfers.stream()
+                .map(this::mapToResponseDTO)
+                .collect(Collectors.toList());
+    }
+    public List<TransferResponse> getCouponsForSender(Long senderId) {
+        List<TransferEntity> transfers = transferRepository.findBySender_Id(senderId);
         return transfers.stream()
                 .map(this::mapToResponseDTO)
                 .collect(Collectors.toList());

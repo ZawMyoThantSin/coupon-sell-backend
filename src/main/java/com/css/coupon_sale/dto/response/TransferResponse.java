@@ -13,6 +13,24 @@ public class TransferResponse {
     private int saleCouponId;
     private int status;
     private LocalDateTime transferAt;
+    private String senderName;
+    private String accepterName;
+
+    public String getAccepterName() {
+        return accepterName;
+    }
+
+    public void setAccepterName(String accepterName) {
+        this.accepterName = accepterName;
+    }
+
+    public String getSenderName() {
+        return senderName;
+    }
+
+    public void setSenderName(String senderName) {
+        this.senderName = senderName;
+    }
 
     public int getTransferId() {
         return transferId;

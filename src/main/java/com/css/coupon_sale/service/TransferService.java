@@ -22,5 +22,5 @@ public interface TransferService {
     boolean transferCoupon(int saleCouponId, Long acceptorId);
 
 
-
+    List<TransferResponse> getCouponsForSender(Long senderId);
 }
