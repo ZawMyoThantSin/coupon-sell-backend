@@ -29,8 +29,8 @@ public class CustomOAuth2LoginSuccessHandler implements AuthenticationSuccessHan
         String email = oAuth2User.getAttribute("email");
 
         UserEntity user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
-        System.out.println("User Id"+user.getId());
-        String token = jwtUtil.generateToken(email,user.getRole(),user.getId());
+//        System.out.println("User Id"+user.getId());
+        String token = jwtUtil.generateToken(email,"ROLE_USER",user.getId());
 
         response.setContentType("application/json");
         response.getWriter().write("{\"token\":\"" + token + "\"}");

@@ -18,4 +18,6 @@ public interface TransferService {
     List<TransferResponse> getCouponsForAcceptor(Long acceptorId);
 
     boolean transferCoupon(int saleCouponId, Long acceptorId);
+
+    List<TransferResponse> getCouponsForSender(Long senderId);
 }

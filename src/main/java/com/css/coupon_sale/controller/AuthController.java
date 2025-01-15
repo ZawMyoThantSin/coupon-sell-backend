@@ -82,7 +82,7 @@ public class AuthController {
         String role = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .findFirst()
-                .orElse("USER"); // Default role if no roles are found
+                .orElse("USER");
         System.out.println("In Login role:"+ role);
 
         if ("OWNER".equals(oUser.getRole())) {
@@ -96,12 +96,15 @@ public class AuthController {
                 return ResponseEntity.ok(new LoginResponse(token, "LOGIN_SUCCESSFUL"));
             }
         }
+        if(oUser.getStatus()==1){
+            return ResponseEntity.ok(new LoginResponse("NOT_VERIFY","You haven't verify your account!"));
+        }else {
+            // Generate JWT
+            String jwt = jwtUtil.generateToken(userDetails.getUsername(),role,oUser.getId());//error
 
-        // Generate JWT
-        String jwt = jwtUtil.generateToken(userDetails.getUsername(),role,oUser.getId());//error
-
-        // Return response with JWT
-        return ResponseEntity.ok(new LoginResponse(jwt,"Success"));
+            // Return response with JWT
+            return ResponseEntity.ok(new LoginResponse(jwt,"Success"));
+        }
     }
 
 
@@ -203,7 +206,7 @@ public class AuthController {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Invalid token signature");
     }
 
-    @GetMapping("/search-user")
+    @GetMapping("/public/search-user")
     public ResponseEntity<UserResponse> searchUsersByEmail(
             @RequestParam("email") String email) {
         UserResponse responses = authService.searchUserByEmail(email);
@@ -229,6 +232,21 @@ public class AuthController {
         return ResponseEntity.badRequest().body(false);
     }
 
+    @PostMapping("/public/change-password")
+    public ResponseEntity<?> changePassword(@RequestBody ChangePasswordRequest request) {
+        try {
+            authService.changePassword(request.userId, request.oldPassword, request.newPassword);
+            return ResponseEntity.ok().build();
+        } catch (AppException ex) {
+            // Return specific error message and status
+            return ResponseEntity.status(ex.getHttpStatus()).body(ex.getMessage());
+        } catch (Exception ex) {
+            // Handle unexpected exceptions
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("An unexpected error occurred");
+        }
+    }
+
+    public record ChangePasswordRequest(Long userId, String oldPassword, String newPassword){};
     public record OtpRequest(String email,String otp){};
     public record PasswordReset(String email, String password){};
 }

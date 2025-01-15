@@ -14,4 +14,7 @@ public interface TransferRepository extends JpaRepository<TransferEntity, Intege
     boolean existsBySenderAndAccepterAndSaleCouponAndStatus(UserEntity sender, UserEntity accepter, SaleCouponEntity saleCoupon, int status);
 
     List<TransferEntity> findByAccepter_Id(Long acceptorId);
+
+    List<TransferEntity> findBySender_Id(Long senderId);
+
 }

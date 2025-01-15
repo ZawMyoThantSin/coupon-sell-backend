@@ -5,7 +5,6 @@ import com.css.coupon_sale.dto.request.FriendshipRequest;
 import com.css.coupon_sale.dto.response.FriendshipResponse;
 import com.css.coupon_sale.dto.response.UserResponse;
 import com.css.coupon_sale.entity.FriendShipEntity;
-import com.css.coupon_sale.entity.UserEntity;
 import com.css.coupon_sale.repository.FriendshipRepository;
 import com.css.coupon_sale.repository.UserRepository;
 import com.css.coupon_sale.service.FriendshipService;
@@ -31,10 +30,10 @@ public class FriendshipController {
 
     @Autowired
     public FriendshipController(FriendshipService service, CustomWebSocketHandler webSocketHandler,
-                                UserRepository URepository, FriendshipRepository friendshipRepository) {
+                                 UserRepository uRepository, FriendshipRepository friendshipRepository) {
         this.service = service;
         this.webSocketHandler = webSocketHandler;
-        this.URepository = URepository;
+        this.URepository = uRepository;
         this.friendshipRepository = friendshipRepository;
     }
 
@@ -103,7 +102,6 @@ public class FriendshipController {
             // Extract the accepter's ID directly from the FriendShipEntity
             Long accepterId = friendshipEntity.getAccepter().getId();
             System.out.println("Accepter ID: " + accepterId);
-
             FriendshipResponse response = service.deleteFriendRequest(id);
             System.out.println("Friend Id " + response.getFriendId());
             String message = "FRIEND_REQUEST_CANCELLED";
@@ -143,7 +141,6 @@ public class FriendshipController {
         return ResponseEntity.ok(responses);
     }
 
-
     @DeleteMapping("/{userId}/unfriend/{friendId}")
     public ResponseEntity<Void> unfriend(
             @PathVariable int userId,
@@ -165,7 +162,6 @@ public class FriendshipController {
     public ResponseEntity<UserResponse> getFriendDetailById(@PathVariable Long friendId) {
         try {
             UserResponse response = service.getFriendDetailById(friendId);
-            System.out.println("Accepted Date from controller : " + response.getAcceptedDate());
             return ResponseEntity.ok(response);
         } catch (EntityNotFoundException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);

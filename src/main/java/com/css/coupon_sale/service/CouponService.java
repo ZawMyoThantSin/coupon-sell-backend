@@ -14,6 +14,7 @@ public interface CouponService {
     CouponResponse saveCoupon(CouponRequest requestDTO);
     List<CouponResponse> showByBusinessId(Integer id);
     List<BusinessCouponSalesResponse> getSoldCouponCountByBusiness(Integer businessId);
+    void increaseViewCount(Integer couponId);
     byte[] saleCouponReportForWeekly(Integer businessId, String reportType) throws JRException;
 
     byte[] saleCouponReportForMonthly(Integer businessId, String reportType) throws JRException;

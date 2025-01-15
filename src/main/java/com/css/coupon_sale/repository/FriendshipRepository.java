@@ -44,5 +44,4 @@ public interface FriendshipRepository extends JpaRepository<FriendShipEntity, In
             "WHERE (f.sender = :friend OR f.accepter = :friend) " +
             "AND f.status = :status")
     List<FriendShipEntity> findByAccepterOrSenderAndStatus(@Param("friend") UserEntity friend, @Param("status") int status);
-
 }

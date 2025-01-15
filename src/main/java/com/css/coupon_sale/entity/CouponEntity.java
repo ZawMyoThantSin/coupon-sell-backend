@@ -41,6 +41,9 @@ public class CouponEntity {
     @Column(name = "expired_date", nullable = false)
     private LocalDateTime expiredDate;
 
+    @Column(name = "view_count", columnDefinition = "INT DEFAULT 0")
+    private int viewCount;
+
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
@@ -117,6 +120,14 @@ public class CouponEntity {
 
     public void setExpiredDate(LocalDateTime expiredDate) {
         this.expiredDate = expiredDate;
+    }
+
+    public int getViewCount() {
+        return viewCount;
+    }
+
+    public void setViewCount(int viewCount) {
+        this.viewCount = viewCount;
     }
 
     public LocalDateTime getCreatedAt() {

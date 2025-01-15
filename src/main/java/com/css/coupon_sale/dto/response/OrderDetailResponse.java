@@ -13,6 +13,7 @@ public class OrderDetailResponse {
     private String screenshot;
     private LocalDateTime order_date;
     private String message;
+    private String photo;
 
     private String userName;
     private String phoneNumber;
@@ -73,6 +74,14 @@ public class OrderDetailResponse {
 
     public void setStatus(int status) {
         this.status = status;
+    }
+
+    public String getPhoto() {
+        return photo;
+    }
+
+    public void setPhoto(String photo) {
+        this.photo = photo;
     }
 
     public String getScreenshot() {

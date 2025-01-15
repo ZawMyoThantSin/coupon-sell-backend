@@ -77,6 +77,7 @@ public class TransferController {
         List<TransferResponse> history = transferService.getTransferHistory(userId);
         return ResponseEntity.ok(history);
     }
+
     @GetMapping("/couponAcepter/{accepterId}")
     public ResponseEntity<?> getAcceptTransfersCoupern(@PathVariable("accepterId") Long accepterId) {
         // Check if the accepterId exists
@@ -87,5 +88,14 @@ public class TransferController {
         }
         return ResponseEntity.ok(transfer);
     }
+    @GetMapping("/couponSender/{senderId}")
+    public ResponseEntity<?> getSendTransfersCoupern(@PathVariable("senderId") Long senderId) {
+        // Check if the accepterId exists
+        List<TransferResponse> transfer = transferService.getCouponsForSender(senderId);
 
+        if (transfer == null || transfer.isEmpty()) {
+            return ResponseEntity.status(404).body("No coupons found for the given accepter ID.");
+        }
+        return ResponseEntity.ok(transfer);
+    }
 }

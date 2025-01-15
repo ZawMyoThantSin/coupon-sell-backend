@@ -16,6 +16,7 @@ public class OrderResponse {
   private LocalDateTime createdAt;
   private String updatedAt;
   private String message;
+  private String photo;
   private int status;
   private int order_id;
   private String userName;
@@ -23,6 +24,14 @@ public class OrderResponse {
 
   public int getId() {
     return id;
+  }
+
+  public String getPhoto() {
+    return photo;
+  }
+
+  public void setPhoto(String photo) {
+    this.photo = photo;
   }
 
   public void setId(int id) {
