@@ -50,7 +50,7 @@ public class TransferController {
         }
         return ResponseEntity.ok(transfer);
     }
-    @GetMapping("/couponSenderv/{senderId}")
+    @GetMapping("/couponSender/{senderId}")
     public ResponseEntity<?> getSendTransfersCoupern(@PathVariable("senderId") Long senderId) {
         // Check if the accepterId exists
         List<TransferResponse> transfer = transferService.getCouponsForSender(senderId);
