@@ -12,7 +12,25 @@ public class TransferResponse {
     private Long accepterId;
     private int saleCouponId;
     private int status;
+    private String senderName;
+    private String accepterName;
     private LocalDateTime transferAt;
+
+    public String getSenderName() {
+        return senderName;
+    }
+
+    public String getAccepterName() {
+        return accepterName;
+    }
+
+    public void setAccepterName(String accepterName) {
+        this.accepterName = accepterName;
+    }
+
+    public void setSenderName(String senderName) {
+        this.senderName = senderName;
+    }
 
     public int getTransferId() {
         return transferId;

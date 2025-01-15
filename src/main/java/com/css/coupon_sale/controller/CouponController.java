@@ -59,6 +59,12 @@ public class CouponController {
         return ResponseEntity.ok(business);
     }
 
+    @GetMapping("/view/{id}")
+    public ResponseEntity<Boolean> increaseViewCount(@PathVariable Integer id) {
+        couponService.increaseViewCount(id);
+        return ResponseEntity.ok(true);
+    }
+
     @GetMapping
     public ResponseEntity<List<CouponResponse>> getAllCoupon() {
         List<CouponResponse> businesses = couponService.getAllCouponlist();

@@ -156,6 +156,19 @@ public class CouponServiceImpl implements CouponService {
         return List.of();
     }
 
+    @Override
+    public void increaseViewCount(Integer couponId) {
+        try{
+            CouponEntity coupon = couponRepository.findById(couponId)
+                    .orElseThrow(() -> new RuntimeException("Business not found"));
+            coupon.setViewCount(coupon.getViewCount() + 1);
+            coupon.setUpdatedAt(LocalDateTime.now());
+            couponRepository.save(coupon);
+        }catch (Exception e){
+            System.out.println("E: "+ e.getMessage());
+        }
+    }
+
     //Report
     @Override
     public byte[] saleCouponReportForWeekly(Integer businessId, String reportType) throws JRException {

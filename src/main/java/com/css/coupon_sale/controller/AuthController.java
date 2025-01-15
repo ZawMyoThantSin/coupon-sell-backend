@@ -96,12 +96,15 @@ public class AuthController {
                 return ResponseEntity.ok(new LoginResponse(token, "LOGIN_SUCCESSFUL"));
             }
         }
+        if(oUser.getStatus()==1){
+            return ResponseEntity.ok(new LoginResponse("NOT_VERIFY","You haven't verify your account!"));
+        }else {
+            // Generate JWT
+            String jwt = jwtUtil.generateToken(userDetails.getUsername(),role,oUser.getId());//error
 
-        // Generate JWT
-        String jwt = jwtUtil.generateToken(userDetails.getUsername(),role,oUser.getId());//error
-
-        // Return response with JWT
-        return ResponseEntity.ok(new LoginResponse(jwt,"Success"));
+            // Return response with JWT
+            return ResponseEntity.ok(new LoginResponse(jwt,"Success"));
+        }
     }
 
 
