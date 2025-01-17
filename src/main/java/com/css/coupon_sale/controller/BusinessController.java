@@ -7,6 +7,7 @@ import com.css.coupon_sale.dto.request.UpdateBusinessRequest;
 import com.css.coupon_sale.dto.response.BusinessResponse;
 import com.css.coupon_sale.dto.response.HttpResponse;
 import com.css.coupon_sale.dto.response.SignupResponse;
+import com.css.coupon_sale.entity.BusinessEntity;
 import com.css.coupon_sale.entity.UserEntity;
 import com.css.coupon_sale.service.BusinessService;
 import org.modelmapper.ModelMapper;
@@ -106,4 +107,6 @@ public class BusinessController {
         BusinessResponse b = businessService.softDeleteBusiness(id);
         return ResponseEntity.ok("Business deleted successfully");
     }
+
+
 }

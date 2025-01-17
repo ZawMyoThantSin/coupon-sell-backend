@@ -127,6 +127,13 @@ public class AuthController {
         }else return  ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Fail to create User");
     }
 
+    @GetMapping("/public/validate-email")
+    public String validateEmail(
+            @RequestParam String email,
+            @RequestParam String ipAddress) {
+        return emailService.validateEmail(email, ipAddress);
+    }
+
     @PostMapping("/reset-password")
     public ResponseEntity<?> resetPassword(@RequestBody ResetPasswordRequest request, @RequestHeader("Authorization") String authHeader) {
         // Validate and parse token

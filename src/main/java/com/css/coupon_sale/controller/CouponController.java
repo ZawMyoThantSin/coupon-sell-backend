@@ -3,6 +3,7 @@ package com.css.coupon_sale.controller;
 import com.css.coupon_sale.dto.request.CouponRequest;
 import com.css.coupon_sale.dto.request.ProductRequest;
 import com.css.coupon_sale.dto.response.CouponResponse;
+import com.css.coupon_sale.dto.response.CouponUsedResponse;
 import com.css.coupon_sale.dto.response.ProductResponse;
 import com.css.coupon_sale.service.CouponService;
 import com.css.coupon_sale.service.ProductService;
@@ -15,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/coupon")
@@ -158,5 +160,10 @@ public class CouponController {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(("Error: " + e.getMessage()).getBytes());
         }
+    }
+    @GetMapping("/usages/{shopId}")
+    public ResponseEntity<List<CouponUsedResponse>> getAllCouponUsages(@PathVariable Integer shopId) {
+        List<CouponUsedResponse> usages = couponService.getAllCouponUsages(shopId);
+        return ResponseEntity.ok(usages);
     }
 }

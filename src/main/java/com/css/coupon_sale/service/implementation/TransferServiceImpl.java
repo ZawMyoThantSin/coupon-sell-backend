@@ -1,6 +1,8 @@
 package com.css.coupon_sale.service.implementation;
 
 import com.css.coupon_sale.dto.request.TransferRequest;
+import com.css.coupon_sale.dto.response.CouponResponse;
+import com.css.coupon_sale.dto.response.PurchaseCouponResponse;
 import com.css.coupon_sale.dto.response.TransferResponse;
 import com.css.coupon_sale.entity.SaleCouponEntity;
 import com.css.coupon_sale.entity.TransferEntity;
@@ -184,6 +186,19 @@ public class TransferServiceImpl implements TransferService {
         dto.setSaleCouponId(transfer.getSaleCoupon().getId());
         dto.setStatus(transfer.getStatus());
         dto.setTransferAt(transfer.getTransferAt());
+        dto.setSenderName(transfer.getSender().getName());
+        dto.setAccepterName(transfer.getAccepter().getName());
         return dto;
     }
-}
+    public List<TransferResponse> getCouponsForAccepter(Long accepterId) {
+        List<TransferEntity> transfers = transferRepository.findByAccepter_Id(accepterId);
+        return transfers.stream()
+                .map(this::mapToResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    }
+
+   
+
+

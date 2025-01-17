@@ -4,9 +4,11 @@ import com.css.coupon_sale.dto.request.CouponRequest;
 import com.css.coupon_sale.dto.response.BusinessCouponSalesResponse;
 import com.css.coupon_sale.dto.response.CouponResponse;
 import com.css.coupon_sale.dto.response.CouponSalesBusinessResponse;
+import com.css.coupon_sale.dto.response.CouponUsedResponse;
 import com.css.coupon_sale.entity.CouponEntity;
 import com.css.coupon_sale.entity.ProductEntity;
 import com.css.coupon_sale.repository.CouponRepository;
+import com.css.coupon_sale.repository.CouponValidationRepository;
 import com.css.coupon_sale.repository.ProductRepository;
 import com.css.coupon_sale.service.CouponService;
 import net.sf.jasperreports.engine.*;
@@ -31,14 +33,15 @@ public class CouponServiceImpl implements CouponService {
     private final CouponRepository couponRepository;
 
     private final ProductRepository productRepository;
-
+    private final CouponValidationRepository couponValidationRepository;
     private final ModelMapper modelMapper;
 
     @Autowired
-    public CouponServiceImpl(CouponRepository couponRepository, ProductRepository productRepository, ModelMapper modelMapper) {
+    public CouponServiceImpl(CouponRepository couponRepository, ProductRepository productRepository, ModelMapper modelMapper,CouponValidationRepository couponValidationRepository) {
         this.couponRepository = couponRepository;
         this.productRepository = productRepository;
         this.modelMapper = modelMapper;
+        this.couponValidationRepository=couponValidationRepository;
     }
 
     @Override
@@ -238,7 +241,28 @@ public class CouponServiceImpl implements CouponService {
             throw new IllegalArgumentException("Unsupported report type: " + reportType);
         }
     }
+    @Override
+    public List<CouponUsedResponse> getAllCouponUsages(Integer shopId) {
+        // Fetching the raw data from the repository
+        List<Object[]> results = couponValidationRepository.findAllCouponUsages(shopId);
 
+        // Creating a list to hold the CouponUsageDTO objects
+        List<CouponUsedResponse> usages = new ArrayList<>();
+
+        // Iterating over the results and converting them into CouponUsageDTO
+        for (Object[] row : results) {
+            String userName = (String) row[0];
+            String email = (String) row[1];
+            LocalDateTime usedAt = (LocalDateTime) row[2];
+            String productName = (String) row[3];
+
+            // Creating a new CouponUsageDTO object and adding it to the list
+            CouponUsedResponse couponUsageDTO = new CouponUsedResponse(userName, email, usedAt, productName);
+            usages.add(couponUsageDTO);
+        }
+
+        return usages;
+    }
     @Override
     public byte[] saleCouponReportForMonthly(Integer businessId, String reportType) throws JRException {
         if (reportType == null) {

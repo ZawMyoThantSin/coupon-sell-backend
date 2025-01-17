@@ -16,6 +16,7 @@ public class TransferResponse {
     private String accepterName;
     private LocalDateTime transferAt;
 
+
     public String getSenderName() {
         return senderName;
     }
