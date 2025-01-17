@@ -14,7 +14,7 @@ import org.springframework.web.socket.server.HandshakeInterceptor;
 import java.util.Map;
 
 @Component
-public class AuthHandshakeInterceptor implements HandshakeInterceptor {
+public class                                                                                                   AuthHandshakeInterceptor implements HandshakeInterceptor {
 
     @Autowired
     private JwtUtil jwtUtil;
