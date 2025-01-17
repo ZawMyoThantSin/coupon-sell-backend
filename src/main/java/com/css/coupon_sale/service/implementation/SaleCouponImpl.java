@@ -1,5 +1,6 @@
 package com.css.coupon_sale.service.implementation;
 
+import com.css.coupon_sale.dto.response.BusinessEarningsDTO;
 import com.css.coupon_sale.dto.response.PurchaseCouponResponse;
 import com.css.coupon_sale.entity.OrderEntity;
 import com.css.coupon_sale.entity.QrCodeEntity;
@@ -10,14 +11,14 @@ import com.css.coupon_sale.repository.SaleCouponRepository;
 import com.css.coupon_sale.service.QrCodeService;
 import com.css.coupon_sale.service.SaleCouponService;
 import io.jsonwebtoken.io.IOException;
+import jakarta.persistence.EntityNotFoundException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Service
 public class SaleCouponImpl implements SaleCouponService {
@@ -114,6 +115,68 @@ public class SaleCouponImpl implements SaleCouponService {
             return  response;
         }
         return null;
+    }
+
+    @Override
+    public List<BusinessEarningsDTO> getBusinessEarnings() {
+        List<Object[]> results = saleCouponRepository.groupTotalEarningsByBusinessId();
+        return results.stream()
+                .map(row -> new BusinessEarningsDTO((Integer) row[0], (Double) row[1]))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public BusinessEarningsDTO getEarningsByBusinessId(int businessId) {
+        try {
+            List<Object[]> results = saleCouponRepository.findTotalEarningsByBusinessId(businessId);
+
+            if (!results.isEmpty()) {
+                Object[] row = results.get(0);
+//                System.out.println("Row: " + Arrays.toString(row));
+
+                Integer businessIdResult = ((Number) row[0]).intValue();
+                Double totalEarnings = ((Number) row[1]).doubleValue();
+
+                return new BusinessEarningsDTO(businessIdResult, totalEarnings);
+            } else {
+                throw new EntityNotFoundException("No earnings found for business ID " + businessId);
+            }
+        } catch (Exception e) {
+            System.out.println("ERROR: " + e.getMessage());
+            return null;
+        }
+    }
+
+    @Override
+    public Double getCurrentMonthEarnings(int businessId) {
+        // Get today's date
+        LocalDate today = LocalDate.now();
+
+        // Calculate the start of the current month
+        LocalDateTime startOfMonth = today.withDayOfMonth(1).atStartOfDay();
+
+        // Calculate the start of the next month
+        LocalDateTime startOfNextMonth = startOfMonth.plusMonths(1);
+
+        // Call repository method to fetch earnings
+        return saleCouponRepository.findMonthlyEarningsByBusinessIdAndMonth(
+                businessId, startOfMonth, startOfNextMonth);
+    }
+
+    @Override
+    public Double getCurrentYearEarnings(int businessId) {
+        // Get today's date
+        LocalDate today = LocalDate.now();
+
+        // Calculate the start of the current year
+        LocalDateTime startOfYear = today.withDayOfYear(1).atStartOfDay();
+
+        // Calculate the start of the next year
+        LocalDateTime startOfNextYear = startOfYear.plusYears(1);
+
+        // Call repository method to fetch earnings
+        return saleCouponRepository.findYearlyEarningsByBusinessIdAndYear(
+                businessId, startOfYear, startOfNextYear);
     }
 
 

@@ -1,7 +1,5 @@
 package com.css.coupon_sale.service;
 
-import com.css.coupon_sale.dto.request.OrderItemRequest;
-import com.css.coupon_sale.dto.request.OrderRequest;
 import com.css.coupon_sale.dto.response.OrderDetailResponse;
 import com.css.coupon_sale.dto.response.OrderResponse;
 import org.springframework.web.multipart.MultipartFile;
