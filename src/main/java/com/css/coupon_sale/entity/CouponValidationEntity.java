@@ -32,8 +32,44 @@ public class CouponValidationEntity {
     @Column(name = "used_at", nullable = false)
     private LocalDateTime usedAt;
 
-    @ManyToOne
-    @JoinColumn(name = "validator_id", nullable = false)
-    private UserEntity validator;
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public UserEntity getCustomer() {
+        return customer;
+    }
+
+    public void setCustomer(UserEntity customer) {
+        this.customer = customer;
+    }
+
+    public SaleCouponEntity getSaleCoupon() {
+        return saleCoupon;
+    }
+
+    public void setSaleCoupon(SaleCouponEntity saleCoupon) {
+        this.saleCoupon = saleCoupon;
+    }
+
+    public BusinessEntity getShop() {
+        return shop;
+    }
+
+    public void setShop(BusinessEntity shop) {
+        this.shop = shop;
+    }
+
+    public LocalDateTime getUsedAt() {
+        return usedAt;
+    }
+
+    public void setUsedAt(LocalDateTime usedAt) {
+        this.usedAt = usedAt;
+    }
 }
 

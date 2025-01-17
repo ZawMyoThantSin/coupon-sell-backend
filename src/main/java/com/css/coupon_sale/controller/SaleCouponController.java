@@ -1,8 +1,11 @@
 package com.css.coupon_sale.controller;
 
+import com.css.coupon_sale.config.CustomWebSocketHandler;
+import com.css.coupon_sale.dto.response.BusinessCouponSalesResponse;
 import com.css.coupon_sale.dto.response.PurchaseCouponResponse;
 import com.css.coupon_sale.dto.response.QrDataResponse;
 import com.css.coupon_sale.entity.OrderEntity;
+import com.css.coupon_sale.service.CouponService;
 import com.css.coupon_sale.service.QrCodeService;
 import com.css.coupon_sale.service.SaleCouponService;
 import com.css.coupon_sale.service.TransferService;
@@ -24,8 +27,41 @@ public class SaleCouponController {
     private QrCodeService qrCodeService;
 
     @Autowired
+    private CouponService couponService;
+
+    @Autowired
     private TransferService transferService;
 
+    @Autowired
+    private CustomWebSocketHandler webSocketHandler;
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getBySaleCouponId(@PathVariable("id") int saleCouponId) {
+        PurchaseCouponResponse coupons = saleCouponService.getBySaleCouponId(saleCouponId);
+        if (coupons == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found or no coupons available for the given user.");
+        }
+        return ResponseEntity.ok(coupons);
+    }
+
+    @PostMapping("/transfer/{saleCouponId}/{acceptorId}")
+    public ResponseEntity<Boolean> transferCoupon(@PathVariable("saleCouponId") int saleCouponId, @PathVariable("acceptorId") Long acceptorId) {
+        try {
+            boolean isTransferred = transferService.transferCoupon(saleCouponId, acceptorId);
+
+            if (isTransferred) {
+                // Send WebSocket message
+                String message = "COUPON_TRANSFER_TRANSFERRED";
+                webSocketHandler.sendToUser(acceptorId, message);
+                return ResponseEntity.ok(true);
+            } else {
+                return ResponseEntity.status(500).body(false);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
 
     @GetMapping("/user/{userId}")
     public ResponseEntity<?> getAllCoupons(@PathVariable Long userId) {
@@ -45,22 +81,14 @@ public class SaleCouponController {
         return ResponseEntity.notFound().build();
     }
 
-    @PostMapping("/transfer/{saleCouponId}/{acceptorId}")
-    public ResponseEntity<Boolean> transferCoupon(@PathVariable("saleCouponId") int saleCouponId, @PathVariable("acceptorId") Long acceptorId) {
-        boolean isTransferred = transferService.transferCoupon(saleCouponId, acceptorId);
-
-        if (isTransferred) {
-            return ResponseEntity.ok(true);
-        } else {
-            return ResponseEntity.status(500).body(false);
+    @GetMapping("/coupon-sales/{id}")
+    public ResponseEntity<?> getSoldCouponCountByBusiness(@PathVariable("id") Integer businessId) {
+        try {
+            List<BusinessCouponSalesResponse> salesData = couponService.getSoldCouponCountByBusiness(businessId);
+            return ResponseEntity.status(200).body(salesData);
+        }catch (Exception e){
+            System.out.println("ERR Conn:" + e.getMessage());
         }
-    }
-    @GetMapping("/{id}")
-    public ResponseEntity<?> getBySaleCouponId(@PathVariable("id") int saleCouponId) {
-        PurchaseCouponResponse coupons = saleCouponService.getBySaleCouponId(saleCouponId);
-        if (coupons == null) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("User not found or no coupons available for the given user.");
-        }
-        return ResponseEntity.ok(coupons);
+        return ResponseEntity.ok("Hello");
     }
 }

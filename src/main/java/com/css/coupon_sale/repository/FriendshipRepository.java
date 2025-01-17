@@ -20,6 +20,8 @@ public interface FriendshipRepository extends JpaRepository<FriendShipEntity, In
 
     List<FriendShipEntity> findAllByAccepterAndStatus(UserEntity user, int status);
 
+    List<FriendShipEntity> findAllBySenderAndStatus(UserEntity user, int status);
+
     // Search users by email with partial match
     @Query("SELECT u FROM UserEntity u WHERE u.email LIKE %:email%")
     List<UserEntity> findUsersByEmail(@Param("email") String email);
@@ -30,19 +32,16 @@ public interface FriendshipRepository extends JpaRepository<FriendShipEntity, In
             "AND f.status = 1")
     List<FriendShipEntity> findByUsers(@Param("user1") UserEntity user1, @Param("user2") UserEntity user2);
 
+    @Query("SELECT u FROM UserEntity u WHERE u.email LIKE %:email% " +
+            "AND u.id <> :loggedInUserId " + // Exclude logged-in user
+            "AND u.id NOT IN (SELECT f.sender.id FROM FriendShipEntity f WHERE f.accepter.id = :loggedInUserId AND f.status = 1) " + // Exclude friends
+            "AND u.id NOT IN (SELECT f.accepter.id FROM FriendShipEntity f WHERE f.sender.id = :loggedInUserId AND f.status = 1) " + // Exclude friends
+            "AND u.id NOT IN (SELECT f.sender.id FROM FriendShipEntity f WHERE f.accepter.id = :loggedInUserId AND f.status = 0) " + // Exclude pending sent requests
+            "AND u.id NOT IN (SELECT f.accepter.id FROM FriendShipEntity f WHERE f.sender.id = :loggedInUserId AND f.status = 0)") // Exclude pending received requests
+    List<UserEntity> searchEligibleUsersByEmail(@Param("email") String email, @Param("loggedInUserId") int loggedInUserId);
 
-    @Query("SELECT COUNT(f) > 0 FROM FriendShipEntity f WHERE " +
-            "((f.sender = :user1 AND f.accepter = :user2) OR " +
-            "(f.sender = :user2 AND f.accepter = :user1)) " +
-            "AND f.status = 1")
-    boolean existsActiveFriendship(@Param("user1") UserEntity user1, @Param("user2") UserEntity user2);
-
-    @Query("SELECT f FROM FriendShipEntity f WHERE (f.sender = :user OR f.accepter = :user) AND f.status = :status")
-    List<FriendShipEntity> findAllByUserAndStatus(@Param("user") UserEntity user, @Param("status") int status);
-
-    @Query("SELECT f FROM FriendShipEntity f WHERE " +
-            "(f.sender = :user1 AND f.accepter = :user2) OR " +
-            "(f.sender = :user2 AND f.accepter = :user1)")
-    Optional<FriendShipEntity> findFriendshipBetweenUsers(@Param("user1") UserEntity user1, @Param("user2") UserEntity user2);
-
+    @Query("SELECT f FROM FriendShipEntity f " +
+            "WHERE (f.sender = :friend OR f.accepter = :friend) " +
+            "AND f.status = :status")
+    List<FriendShipEntity> findByAccepterOrSenderAndStatus(@Param("friend") UserEntity friend, @Param("status") int status);
 }

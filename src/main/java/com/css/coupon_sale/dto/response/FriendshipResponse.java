@@ -20,16 +20,16 @@ public class FriendshipResponse {
         return id;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public String getImageUrl() {
         return imageUrl;
     }
 
     public void setImageUrl(String imageUrl) {
         this.imageUrl = imageUrl;
-    }
-
-    public void setId(int id) {
-        this.id = id;
     }
 
     public Long getFriendId() {

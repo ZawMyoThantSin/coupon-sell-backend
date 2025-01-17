@@ -45,7 +45,17 @@ spring:
       enabled: true
       max-file-size: 10MB
       max-request-size: 20MB
-
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: teamichgo.group1@gmail.com
+    password: leleuibvaueadnib
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
   resources:
     static-locations: classpath:/static/, file:uploads/
 cors:
@@ -56,5 +66,5 @@ product:
 jwt:
   secret: GDGfx/xcaSqCWZtVqxCzZ5f5j8BPYRnR0lG7vatfAOAt6tgpiGgc7X1Jxw8I96abS8+5ChS4W/hOhtHasM+bHQ==
 #server:
-#  address: 192.168.1.5
+#  address: 192.168.58.81
 #  port: 8080

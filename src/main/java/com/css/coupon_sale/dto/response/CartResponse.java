@@ -7,6 +7,7 @@ public class CartResponse {
     private Long userId;
     private int couponId;
     private int quantity;
+    private int couponRemain;
     private double price;
     private String productImage;
     private String productName;
@@ -42,6 +43,14 @@ public class CartResponse {
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
+    }
+
+    public int getCouponRemain() {
+        return couponRemain;
+    }
+
+    public void setCouponRemain(int couponRemain) {
+        this.couponRemain = couponRemain;
     }
 
     public double getPrice() {

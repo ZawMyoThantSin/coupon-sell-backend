@@ -1,9 +1,7 @@
 package com.css.coupon_sale.service;
 
 import com.css.coupon_sale.dto.request.TransferRequest;
-import com.css.coupon_sale.dto.response.PurchaseCouponResponse;
 import com.css.coupon_sale.dto.response.TransferResponse;
-import com.css.coupon_sale.entity.TransferEntity;
 
 import java.util.List;
 
@@ -17,10 +15,9 @@ public interface TransferService {
 
     List<TransferResponse> getTransferHistory(Long userId);
 
-    List<TransferResponse> getCouponsForAccepter(Long accepterId);
+    List<TransferResponse> getCouponsForAcceptor(Long acceptorId);
 
     boolean transferCoupon(int saleCouponId, Long acceptorId);
-
 
     List<TransferResponse> getCouponsForSender(Long senderId);
 }

@@ -12,9 +12,14 @@ public class TransferResponse {
     private Long accepterId;
     private int saleCouponId;
     private int status;
-    private LocalDateTime transferAt;
     private String senderName;
     private String accepterName;
+    private LocalDateTime transferAt;
+
+
+    public String getSenderName() {
+        return senderName;
+    }
 
     public String getAccepterName() {
         return accepterName;
@@ -22,10 +27,6 @@ public class TransferResponse {
 
     public void setAccepterName(String accepterName) {
         this.accepterName = accepterName;
-    }
-
-    public String getSenderName() {
-        return senderName;
     }
 
     public void setSenderName(String senderName) {

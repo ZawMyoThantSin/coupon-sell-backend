@@ -8,6 +8,7 @@ import com.css.coupon_sale.entity.UserEntity;
 import com.css.coupon_sale.repository.FriendshipRepository;
 import com.css.coupon_sale.repository.UserRepository;
 import com.css.coupon_sale.service.FriendshipService;
+import jakarta.persistence.EntityNotFoundException;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -70,19 +71,15 @@ public class FriendshipServiceImpl implements FriendshipService {
     }
 
     @Override
-    public FriendshipResponse denyFriendRequest(int id) {
+    public FriendshipResponse deleteFriendRequest(int id) {
         FriendShipEntity friendRequest = repo.findById(id)
                 .orElseThrow(() -> new RuntimeException("Friend request not found"));
 
-        if (friendRequest.getStatus() != 0) {
-            throw new RuntimeException("Request is not in pending state");
-        }
+        // Delete the friendship record
+        repo.delete(friendRequest);
 
-        // Deny the request
-        friendRequest.setStatus(2); // Denied
-        FriendShipEntity updatedRequest = repo.save(friendRequest);
-
-        return mapToResponse  (updatedRequest, null);
+        // Return a response with the details of the deleted friend request
+        return mapToResponse(friendRequest, null);
     }
 
     @Override
@@ -109,9 +106,21 @@ public class FriendshipServiceImpl implements FriendshipService {
     }
 
     @Override
-    public List<UserResponse> searchUsersByEmail(String email) {
-        // Find matching users by email
-        List<UserEntity> users = repo.findUsersByEmail(email);
+    public List<FriendshipResponse> getSentPendingRequests(int userId) {
+        UserEntity user = uRepo.findById((long) userId)
+                .orElseThrow(() -> new RuntimeException("User  not found"));
+
+        List<FriendShipEntity> sentPendingRequests = repo.findAllBySenderAndStatus(user, 0);
+
+        return sentPendingRequests.stream()
+                .map(friendship -> mapToResponse(friendship, null))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<UserResponse> searchUsersByEmail(String email, int loggedInUserId) {
+        // Fetch eligible users from the repository
+        List<UserEntity> users = repo.searchEligibleUsersByEmail(email, loggedInUserId);
 
         // Map the user entities to user responses
         return users.stream()
@@ -137,6 +146,24 @@ public class FriendshipServiceImpl implements FriendshipService {
 
         repo.delete(friendships.get(0));
     }
+
+    @Override
+    public UserResponse getFriendDetailById(Long friendId) {
+        UserEntity friend = uRepo.findById(friendId)
+                .orElseThrow(() -> new EntityNotFoundException("Friend not found with ID: " + friendId));
+
+        List<FriendShipEntity> friendships = repo.findByAccepterOrSenderAndStatus(friend, 1);
+        if (friendships.isEmpty()) {
+            throw new EntityNotFoundException("Friendship not found for friend ID: " + friendId);
+        }
+
+        FriendShipEntity friendship = friendships.get(0); // Get the first record
+
+        UserResponse response = mapper.map(friend, UserResponse.class);
+        response.setAcceptedDate(friendship.getAcceptedDate());
+        return response;
+    }
+
 
     private FriendshipResponse mapToResponse(FriendShipEntity friendship, UserEntity loggedInUser) {
         FriendshipResponse response = new FriendshipResponse();

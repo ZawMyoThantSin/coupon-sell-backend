@@ -10,9 +10,11 @@ public interface FriendshipService {
 
     FriendshipResponse sendFriendRequest(FriendshipRequest request);
     FriendshipResponse acceptFriendRequest(int id);
-    FriendshipResponse denyFriendRequest(int id);
+    FriendshipResponse deleteFriendRequest(int id);
     List<FriendshipResponse> getFriends(int userId);
     List<FriendshipResponse> getPendingRequests(int userId);
-    List<UserResponse> searchUsersByEmail(String email);
+    List<FriendshipResponse> getSentPendingRequests(int userId);
+    List<UserResponse> searchUsersByEmail(String email, int loggedInUserId);
     void unfriend(int userId, int friendId);
+    UserResponse getFriendDetailById(Long friendId);
 }

@@ -1,11 +1,12 @@
 package com.css.coupon_sale.service.implementation;
 
 import com.css.coupon_sale.dto.response.PurchaseCouponResponse;
-import com.css.coupon_sale.entity.*;
+import com.css.coupon_sale.entity.OrderEntity;
+import com.css.coupon_sale.entity.QrCodeEntity;
+import com.css.coupon_sale.entity.SaleCouponEntity;
 import com.css.coupon_sale.repository.OrderRepository;
 import com.css.coupon_sale.repository.QrCodeRepository;
 import com.css.coupon_sale.repository.SaleCouponRepository;
-import com.css.coupon_sale.repository.TransferRepository;
 import com.css.coupon_sale.service.QrCodeService;
 import com.css.coupon_sale.service.SaleCouponService;
 import io.jsonwebtoken.io.IOException;
@@ -24,8 +25,7 @@ public class SaleCouponImpl implements SaleCouponService {
     private SaleCouponRepository saleCouponRepository;
     @Autowired
     private OrderRepository orderRepository;
-    @Autowired
-    private TransferRepository transferRepository;
+
     @Autowired
     private QrCodeService qrCodeService;
 
@@ -95,6 +95,7 @@ public class SaleCouponImpl implements SaleCouponService {
 
         return response;
     }
+
     @Override
     public PurchaseCouponResponse getBySaleCouponId(int id) {
         SaleCouponEntity saleCoupon = saleCouponRepository.findById(id)
@@ -114,5 +115,6 @@ public class SaleCouponImpl implements SaleCouponService {
         }
         return null;
     }
+
 
 }

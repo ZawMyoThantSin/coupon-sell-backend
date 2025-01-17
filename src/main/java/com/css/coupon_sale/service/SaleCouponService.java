@@ -13,5 +13,5 @@ public interface SaleCouponService {
 
     List<PurchaseCouponResponse> getAllCouponsByUserId(Long userId);
 
-    PurchaseCouponResponse getBySaleCouponId(int saleCouponId);
+    PurchaseCouponResponse getBySaleCouponId(int id);
 }

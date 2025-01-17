@@ -6,5 +6,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface QrCodeRepository extends JpaRepository<QrCodeEntity, Integer> {
+    QrCodeEntity findByQrCode(String qrCode);
     QrCodeEntity findBySaleCoupon_Id(int id);
 }

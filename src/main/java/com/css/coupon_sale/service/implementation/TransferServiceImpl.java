@@ -115,31 +115,14 @@ public class TransferServiceImpl implements TransferService {
                 .collect(Collectors.toList());
     }
 
+    @Override
+    public List<TransferResponse> getCouponsForAcceptor(Long acceptorId) {
+        List<TransferEntity> transfers = transferRepository.findByAccepter_Id(acceptorId);
+        return transfers.stream()
+                .map(this::mapToResponseDTO)
+                .collect(Collectors.toList());
+    }
 
-    private TransferResponse mapToResponseDTO(TransferEntity transfer) {
-        TransferResponse dto = new TransferResponse();
-        dto.setTransferId(transfer.getId());
-        dto.setSenderId(transfer.getSender().getId());
-        dto.setAccepterId(transfer.getAccepter().getId());
-        dto.setSaleCouponId(transfer.getSaleCoupon().getId());
-        dto.setStatus(transfer.getStatus());
-        dto.setTransferAt(transfer.getTransferAt());
-        dto.setSenderName(transfer.getSender().getName());
-        dto.setAccepterName(transfer.getAccepter().getName());
-        return dto;
-    }
-    public List<TransferResponse> getCouponsForAccepter(Long accepterId) {
-        List<TransferEntity> transfers = transferRepository.findByAccepter_Id(accepterId);
-        return transfers.stream()
-                .map(this::mapToResponseDTO)
-                .collect(Collectors.toList());
-    }
-    public List<TransferResponse> getCouponsForSender(Long senderId) {
-        List<TransferEntity> transfers = transferRepository.findBySender_Id(senderId);
-        return transfers.stream()
-                .map(this::mapToResponseDTO)
-                .collect(Collectors.toList());
-    }
     @Override
     public boolean transferCoupon(int saleCouponId, Long acceptorId) {
         try {
@@ -183,6 +166,39 @@ public class TransferServiceImpl implements TransferService {
             return false; // Return false for unexpected errors
         }
     }
+
+    @Override
+    public List<TransferResponse> getCouponsForSender(Long senderId) {
+        List<TransferEntity> transfers = transferRepository.findBySender_Id(senderId);
+        return transfers.stream()
+                .map(this::mapToResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+
+    private TransferResponse mapToResponseDTO(TransferEntity transfer) {
+        TransferResponse dto = new TransferResponse();
+        dto.setTransferId(transfer.getId());
+        dto.setSenderId(transfer.getSender().getId());
+        dto.setSenderName(transfer.getSender().getName());
+        dto.setAccepterName(transfer.getAccepter().getName());
+        dto.setAccepterId(transfer.getAccepter().getId());
+        dto.setSaleCouponId(transfer.getSaleCoupon().getId());
+        dto.setStatus(transfer.getStatus());
+        dto.setTransferAt(transfer.getTransferAt());
+        dto.setSenderName(transfer.getSender().getName());
+        dto.setAccepterName(transfer.getAccepter().getName());
+        return dto;
+    }
+    public List<TransferResponse> getCouponsForAccepter(Long accepterId) {
+        List<TransferEntity> transfers = transferRepository.findByAccepter_Id(accepterId);
+        return transfers.stream()
+                .map(this::mapToResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    }
+
    
 
-}
+
