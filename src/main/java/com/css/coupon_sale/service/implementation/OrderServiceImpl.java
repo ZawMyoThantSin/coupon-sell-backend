@@ -9,6 +9,7 @@ import com.css.coupon_sale.dto.response.OrderDetailResponse;
 import com.css.coupon_sale.dto.response.OrderResponse;
 
 
+import com.css.coupon_sale.dto.response.OwnerOrderResponse;
 import com.css.coupon_sale.entity.CouponEntity;
 import com.css.coupon_sale.entity.OrderEntity;
 import com.css.coupon_sale.entity.PaymentEntity;
@@ -58,6 +59,11 @@ public class OrderServiceImpl implements OrderService {
   @Value("${product.image.upload-dir}") // Specify folder path in application.properties
   private String uploadDir;
 
+  public List<OrderEntity> getOrdersByBusinessId(int businessId) {
+    List<OrderEntity> orderEntityList = orderRepository.findByBusinessId(businessId);
+
+    return orderRepository.findByBusinessId(businessId);
+  }
     @Override
     public List<OrderResponse> saveOrders(
             long userId,
@@ -359,6 +365,31 @@ public class OrderServiceImpl implements OrderService {
     return orderRepository.findByOrderId(orderId).isEmpty();
   }
 
+  public OwnerOrderResponse mapToOwnerOrderResponse(OrderEntity order) {
+    OwnerOrderResponse response = new OwnerOrderResponse();
 
+    // Set user details
+    response.setUserName(order.getUser().getName());
+    response.setUserEmail(order.getUser().getEmail());
+
+    // Set product details
+    response.setProductName(order.getCoupon().getProduct().getName());
+    response.setQuantity(order.getQuantity());
+    int quantity = order.getQuantity();
+    double unitPrice = order.getCoupon().getPrice();
+    response.setTotalPrice( quantity * unitPrice);
+    response.setProductPhoto(order.getCoupon().getProduct().getImagePath());
+    // Set order date
+    response.setOrderDate(order.getCreatedAt());
+
+    return response;
+  }
+  // Method to handle a list of OrderEntity
+  public List<OwnerOrderResponse> getOwnerOrderResponsesByBusinessId(int businessId) {
+    List<OrderEntity> orders = orderRepository.findByBusinessId(businessId);
+    return orders.stream()
+      .map(this::mapToOwnerOrderResponse) // Convert each OrderEntity to OwnerOrderResponse
+      .collect(Collectors.toList());
+  }
 
 }

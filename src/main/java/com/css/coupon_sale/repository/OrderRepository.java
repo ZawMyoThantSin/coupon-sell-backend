@@ -24,4 +24,6 @@ public interface OrderRepository extends JpaRepository<OrderEntity,Integer> {
 //  @Query(value = "SELECT * FROM userorder WHERE order_id = :orderId LIMIT 1", nativeQuery = true)
 //  Optional<OrderEntity> findByOrderId(@Param("orderId") int orderId);
 
+  @Query("SELECT o FROM OrderEntity o WHERE o.coupon.product.business.id = :businessId AND o.status = 1")
+  List<OrderEntity> findByBusinessId(@Param("businessId") int businessId);
 }

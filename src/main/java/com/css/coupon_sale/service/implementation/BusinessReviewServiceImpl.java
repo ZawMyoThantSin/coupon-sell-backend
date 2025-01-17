@@ -93,6 +93,7 @@ public class BusinessReviewServiceImpl implements BusinessReviewService {
         responseDTO.setProfile(business.getUser().getProfile());
         responseDTO.setUser_id(business.getUser().getId());
         responseDTO.setBusiness_id(business.getBusiness().getId());
+        responseDTO.setCreatedAt(business.getCreatedAt());
         return responseDTO;
     }
 }
