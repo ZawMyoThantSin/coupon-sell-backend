@@ -175,4 +175,10 @@ public class OrderController {
         int count = service.getOrderCountWithStatusZero();
         return ResponseEntity.ok(count);
     }
+
+  @GetMapping("/business/{businessId}")
+  public ResponseEntity<List<OwnerOrderResponse>> getOrdersByBusinessId(@PathVariable int businessId) {
+    List<OwnerOrderResponse> responses = service.getOwnerOrderResponsesByBusinessId(businessId);
+    return ResponseEntity.ok(responses);
+  }
 }
