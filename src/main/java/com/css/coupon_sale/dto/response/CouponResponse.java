@@ -12,6 +12,8 @@ public class CouponResponse {
         private String expiredDate;
         private String createdDate;
         private String description;
+        private int originalQuantity;
+
 
     public String getCreatedDate() {
         return createdDate;
@@ -84,7 +86,15 @@ public class CouponResponse {
         public void setExpiredDate(String expiredDate) {
             this.expiredDate = expiredDate;
         }
+
+    public int getOriginalQuantity() {
+        return originalQuantity;
     }
+
+    public void setOriginalQuantity(int originalQuantity) {
+        this.originalQuantity = originalQuantity;
+    }
+}
 
 
 
