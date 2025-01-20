@@ -4,18 +4,25 @@ import com.css.coupon_sale.dto.request.ProductRequest;
 import com.css.coupon_sale.dto.request.ProductUpdateRequest;
 import com.css.coupon_sale.dto.response.ProductResponse;
 import com.css.coupon_sale.service.ProductService;
+import net.sf.jasperreports.engine.*;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
+import net.sf.jasperreports.export.SimpleExporterInput;
+import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
+import net.sf.jasperreports.export.SimpleXlsxReportConfiguration;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.stereotype.Service;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.DirectoryNotEmptyException;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
+
 import com.css.coupon_sale.entity.BusinessEntity;
 import com.css.coupon_sale.entity.ProductEntity;
 import com.css.coupon_sale.repository.BusinessRepository;
@@ -33,7 +40,6 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -268,6 +274,94 @@ public class ProductServiceImpl implements ProductService {
         ProductResponse responseDTO = mapper.map(product, ProductResponse.class);
         responseDTO.setBusinessName(product.getBusiness().getName());
         return responseDTO;
+    }
+
+
+
+    @Override
+    public byte[] generateProductListReportForBusiness(Integer businessId, String reportType) throws JRException {
+        if (reportType == null) {
+            throw new IllegalArgumentException("Report type cannot be null");
+        }
+
+        // Fetch product data based on business ID
+        List<ProductEntity> products = repo.findByBusiness_Id(businessId);
+
+        // Filter products with status 1
+        // Filter products with status true (assuming status is a boolean)
+        List<ProductEntity> activeProducts = products.stream()
+                .filter(product -> product.isStatus())  // This checks if the status is true
+                .collect(Collectors.toList());
+
+        // Log the filtered products for debugging
+        System.out.println("Fetched active products for businessId " + businessId + " with status 1:");
+        if (activeProducts != null && !activeProducts.isEmpty()) {
+            for (ProductEntity product : activeProducts) {
+                System.out.println("Product Name: " + product.getName() + ", Category: " + product.getCategory() +
+                        ", Price: " + product.getPrice() + ", Description: " + product.getDescription());
+            }
+        } else {
+            System.out.println("No active products found for businessId " + businessId);
+        }
+
+        // Prepare report parameters
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("businessId", businessId);
+        parameters.put("reportDate", new java.util.Date());
+
+        // Log the parameters for debugging
+        System.out.println("Report parameters: " + parameters);
+
+        // Load the JRXML file (make sure the path is correct)
+        InputStream reportInputStream = getClass().getResourceAsStream("/product-b.jrxml");
+        if (reportInputStream == null) {
+            throw new IllegalArgumentException("Report template (product-b.jrxml) not found");
+        }
+
+        // Compile the JasperReport
+        JasperReport jasperReport = JasperCompileManager.compileReport(reportInputStream);
+
+        // Fill the report with data from the filtered products
+        JRDataSource dataSource = new JRBeanCollectionDataSource(activeProducts);
+        JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
+
+        // Log JasperPrint object for debugging
+        System.out.println("JasperPrint filled successfully. Number of pages: " + jasperPrint.getPages().size());
+
+        // Export the report to the requested format
+        if ("pdf".equalsIgnoreCase(reportType)) {
+            byte[] pdfData = JasperExportManager.exportReportToPdf(jasperPrint);
+            System.out.println("Generated PDF report.");
+            return pdfData;
+        } else if ("excel".equalsIgnoreCase(reportType)) {
+            byte[] excelData = exportToExcel(jasperPrint);
+            System.out.println("Generated Excel report.");
+            return excelData;
+        } else {
+            throw new IllegalArgumentException("Unsupported report type: " + reportType);
+        }
+    }
+
+
+
+
+    private byte[] exportToExcel(JasperPrint jasperPrint) throws JRException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        JRXlsxExporter exporter = new JRXlsxExporter();
+        exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+        exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(baos));
+
+        SimpleXlsxReportConfiguration configuration = new SimpleXlsxReportConfiguration();
+        configuration.setOnePagePerSheet(true);
+        configuration.setRemoveEmptySpaceBetweenRows(true);
+        configuration.setDetectCellType(true);
+        configuration.setCollapseRowSpan(false);
+        configuration.setAutoFitPageHeight(true);
+        configuration.setColumnWidthRatio(1.5f);
+        exporter.setConfiguration(configuration);
+
+        exporter.exportReport();
+        return baos.toByteArray();
     }
 
 

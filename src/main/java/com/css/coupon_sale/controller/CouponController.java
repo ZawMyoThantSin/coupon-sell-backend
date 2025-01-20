@@ -7,6 +7,7 @@ import com.css.coupon_sale.dto.response.CouponUsedResponse;
 import com.css.coupon_sale.dto.response.ProductResponse;
 import com.css.coupon_sale.service.CouponService;
 import com.css.coupon_sale.service.ProductService;
+import jakarta.servlet.http.HttpServletResponse;
 import net.sf.jasperreports.engine.JRException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -161,9 +162,47 @@ public class CouponController {
                     .body(("Error: " + e.getMessage()).getBytes());
         }
     }
-    @GetMapping("/usages/{shopId}")
-    public ResponseEntity<List<CouponUsedResponse>> getAllCouponUsages(@PathVariable Integer shopId) {
-        List<CouponUsedResponse> usages = couponService.getAllCouponUsages(shopId);
+    @GetMapping("/usages/{businessId}")
+    public ResponseEntity<List<CouponUsedResponse>> getAllCouponUsages(@PathVariable Integer businessId) {
+        List<CouponUsedResponse> usages = couponService.getAllCouponUsages(businessId);
         return ResponseEntity.ok(usages);
+    }
+
+
+    @GetMapping("/coupon-usage/weekly/{businessId}")
+    public ResponseEntity<byte[]> generateCouponUsageReportweekly(
+            @PathVariable Integer businessId,
+            @RequestParam String reportType,
+
+            HttpServletResponse response
+    ) throws JRException {
+        // Generate the report
+        byte[] reportBytes = couponService.generateCouponUsageReportweekly(businessId, reportType);
+
+        // Set the response headers for file download
+        String fileName = "coupon-usage-report." + (reportType.equalsIgnoreCase("pdf") ? "pdf" : "xlsx");
+        response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
+        response.setContentType(reportType.equalsIgnoreCase("pdf") ? "application/pdf" : "application/vnd.ms-excel");
+
+        return ResponseEntity.ok().body(reportBytes);
+    }
+
+
+    @GetMapping("/coupon-usage/monthly/{businessId}")
+    public ResponseEntity<byte[]> generateCouponUsageReportmonthly(
+            @PathVariable Integer businessId,
+            @RequestParam String reportType,
+
+            HttpServletResponse response
+    ) throws JRException {
+        // Generate the report
+        byte[] reportBytes = couponService.generateCouponUsageReportmonthly(businessId, reportType);
+
+        // Set the response headers for file download
+        String fileName = "coupon-usage-report." + (reportType.equalsIgnoreCase("pdf") ? "pdf" : "xlsx");
+        response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
+        response.setContentType(reportType.equalsIgnoreCase("pdf") ? "application/pdf" : "application/vnd.ms-excel");
+
+        return ResponseEntity.ok().body(reportBytes);
     }
 }

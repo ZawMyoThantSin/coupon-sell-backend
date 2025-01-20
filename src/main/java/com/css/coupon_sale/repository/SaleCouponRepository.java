@@ -18,12 +18,12 @@ public interface SaleCouponRepository extends JpaRepository<SaleCouponEntity , I
 
     List<SaleCouponEntity> findByUser_Id(Long userId);
 
-    @Query("SELECT s.business.id AS businessId, SUM(s.totalPrice) AS totalEarnings " +
+    @Query("SELECT s.business.id AS businessId,s.business.name AS businessName, SUM(s.totalPrice) AS totalEarnings " +
             "FROM SaleCouponEntity s " +
             "GROUP BY s.business.id")
     List<Object[]> groupTotalEarningsByBusinessId();
 
-    @Query("SELECT s.business.id AS businessId, SUM(s.totalPrice) AS totalEarnings " +
+    @Query("SELECT s.business.id AS businessId,s.business.name AS businessName, SUM(s.totalPrice) AS totalEarnings " +
             "FROM SaleCouponEntity s " +
             "WHERE s.business.id = :businessId " +
             "GROUP BY s.business.id")

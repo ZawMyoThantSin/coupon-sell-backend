@@ -1,10 +1,7 @@
 package com.css.coupon_sale.service.implementation;
 
 import com.css.coupon_sale.dto.request.CouponRequest;
-import com.css.coupon_sale.dto.response.BusinessCouponSalesResponse;
-import com.css.coupon_sale.dto.response.CouponResponse;
-import com.css.coupon_sale.dto.response.CouponSalesBusinessResponse;
-import com.css.coupon_sale.dto.response.CouponUsedResponse;
+import com.css.coupon_sale.dto.response.*;
 import com.css.coupon_sale.entity.CouponEntity;
 import com.css.coupon_sale.entity.ProductEntity;
 import com.css.coupon_sale.repository.CouponRepository;
@@ -25,6 +22,7 @@ import java.io.ByteArrayOutputStream;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -242,9 +240,9 @@ public class CouponServiceImpl implements CouponService {
         }
     }
     @Override
-    public List<CouponUsedResponse> getAllCouponUsages(Integer shopId) {
+    public List<CouponUsedResponse> getAllCouponUsages(Integer businessId) {
         // Fetching the raw data from the repository
-        List<Object[]> results = couponValidationRepository.findAllCouponUsages(shopId);
+        List<Object[]> results = couponValidationRepository.findAllCouponUsages(businessId);
 
         // Creating a list to hold the CouponUsageDTO objects
         List<CouponUsedResponse> usages = new ArrayList<>();
@@ -323,7 +321,7 @@ public class CouponServiceImpl implements CouponService {
         parameters.put("businessName", businessName); // Ensure the parameter name matches the JRXML
 
         // Fill the report
-        JasperReport jasperReport = JasperCompileManager.compileReport(getClass().getResourceAsStream("/sale-coupon-b.jrxml"));
+        JasperReport jasperReport = JasperCompileManager.compileReport(getClass().getResourceAsStream("/sale-coupon-b-m.jrxml"));
         JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
 
         // Return the report in the requested format
@@ -363,4 +361,152 @@ public class CouponServiceImpl implements CouponService {
 
         return responseDTO;
     }
+
+
+
+    @Override
+    public byte[] generateCouponUsageReportweekly(Integer businessId, String reportType) throws JRException {
+        if (reportType == null) {
+            throw new IllegalArgumentException("Report type cannot be null");
+        }
+        // Fetch data from the repository
+        List<Object[]> couponUsageData = couponValidationRepository.findAllCouponUsages(businessId);
+
+        if (couponUsageData == null || couponUsageData.isEmpty()) {
+            throw new RuntimeException("No coupon usage data available for the given shop ID");
+        }
+        // Get the current date and adjust the date range based on the period
+        Date currentDate = new Date(System.currentTimeMillis());
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(currentDate);
+        calendar.add(Calendar.DATE, -7);  // Last 7 days
+        Date sevenDaysAgo = calendar.getTime();
+
+        // Transform data to DTO, filtering for the specified period
+        List<CouponUsageResoponse> usageData = couponUsageData.stream()
+                .map(row -> {
+                    // Safely access the elements
+                    String userName = (String) row[0];  // userName
+                    String email = (String) row[1];     // email
+                    Object usedAtObj = row[2];          // usedAt
+                    String productName = (String) row[3]; // productName
+                    String businessName = (String)row[4]; //businessName
+                    // Handle the usedAt value conversion
+                    Date usedAt = null;
+                    if (usedAtObj instanceof LocalDateTime) {
+                        LocalDateTime localDateTime = (LocalDateTime) usedAtObj;
+                        usedAt = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
+                    } else if (usedAtObj instanceof Date) {
+                        usedAt = (Date) usedAtObj;
+                    }
+                    // Filter out rows not in the last 7 days
+                    if (usedAt == null || usedAt.before(sevenDaysAgo)|| usedAt.after(currentDate))  {
+                        return null;
+                    }
+                    // Create DTO object from the row data
+                    CouponUsageResoponse response = new CouponUsageResoponse(userName, email, usedAt, productName,businessName);
+                    return response;
+                })
+                .filter(Objects::nonNull) // Remove null entries (excluded records)
+                .collect(Collectors.toList());
+        usageData.forEach(record ->{
+        });
+        // Prepare data source
+        JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(usageData);
+
+        // Prepare report parameters
+        String businessName = usageData.isEmpty() ? "" : usageData.get(0).getBusinessName();
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("shopName", businessName);  // Replace with actual shop name if needed
+
+        // Compile and fill the report
+        JasperReport jasperReport = JasperCompileManager.compileReport(getClass().getResourceAsStream("/usedCoupon.jrxml"));
+        JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
+
+        // Export report based on the type
+        if ("pdf".equalsIgnoreCase(reportType)) {
+            return JasperExportManager.exportReportToPdf(jasperPrint);
+        } else if ("excel".equalsIgnoreCase(reportType)) {
+            return exportToExcel(jasperPrint);
+        } else {
+            throw new IllegalArgumentException("Unsupported report type: " + reportType);
+        }
+    }
+
+
+
+
+
+
+
+    @Override
+    public byte[] generateCouponUsageReportmonthly(Integer businessId, String reportType) throws JRException {
+        if (reportType == null) {
+            throw new IllegalArgumentException("Report type cannot be null");
+        }
+        // Fetch data from the repository
+        List<Object[]> couponUsageData = couponValidationRepository.findAllCouponUsages(businessId);
+
+        if (couponUsageData == null || couponUsageData.isEmpty()) {
+            throw new RuntimeException("No coupon usage data available for the given shop ID");
+        }
+        // Get the current date and adjust the date range based on the period
+        Date currentDate = new Date(System.currentTimeMillis());
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(currentDate);
+        calendar.add(Calendar.DATE, -30);  // Last 7 days
+        Date sevenDaysAgo = calendar.getTime();
+
+        // Transform data to DTO, filtering for the specified period
+        List<CouponUsageResoponse> usageData = couponUsageData.stream()
+                .map(row -> {
+                    // Safely access the elements
+                    String userName = (String) row[0];  // userName
+                    String email = (String) row[1];     // email
+                    Object usedAtObj = row[2];          // usedAt
+                    String productName = (String) row[3]; // productName
+                    String businessName = (String)row[4]; //businessName
+
+                    // Handle the usedAt value conversion
+                    Date usedAt = null;
+                    if (usedAtObj instanceof LocalDateTime) {
+                        LocalDateTime localDateTime = (LocalDateTime) usedAtObj;
+                        usedAt = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
+                    } else if (usedAtObj instanceof Date) {
+                        usedAt = (Date) usedAtObj;
+                    }
+                    // Filter out rows not in the last 7 days
+                    if (usedAt == null || usedAt.before(sevenDaysAgo)|| usedAt.after(currentDate))  {
+                        return null;
+                    }
+                    // Create DTO object from the row data
+                    CouponUsageResoponse response = new CouponUsageResoponse(userName, email, usedAt, productName,businessName);
+                    return response;
+                })
+                .filter(Objects::nonNull) // Remove null entries (excluded records)
+                .collect(Collectors.toList());
+        usageData.forEach(record ->{
+        });
+        // Prepare data source
+        JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(usageData);
+
+        // Prepare report parameters
+        String businessName = usageData.isEmpty() ? "" : usageData.get(0).getBusinessName();
+        Map<String, Object> parameters = new HashMap<>();
+        parameters.put("shopName", businessName);  // Replace with actual shop name if needed
+
+        // Compile and fill the report
+        JasperReport jasperReport = JasperCompileManager.compileReport(getClass().getResourceAsStream("/usedCoupon-m.jrxml"));
+        JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
+
+        // Export report based on the type
+        if ("pdf".equalsIgnoreCase(reportType)) {
+            return JasperExportManager.exportReportToPdf(jasperPrint);
+        } else if ("excel".equalsIgnoreCase(reportType)) {
+            return exportToExcel(jasperPrint);
+        } else {
+            throw new IllegalArgumentException("Unsupported report type: " + reportType);
+        }
+    }
+
 }

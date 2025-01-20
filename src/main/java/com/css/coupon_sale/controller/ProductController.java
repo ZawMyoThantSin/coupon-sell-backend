@@ -5,11 +5,13 @@ import com.css.coupon_sale.dto.request.ProductUpdateRequest;
 import com.css.coupon_sale.dto.response.BusinessResponse;
 import com.css.coupon_sale.dto.response.ProductResponse;
 import com.css.coupon_sale.service.ProductService;
+import net.sf.jasperreports.engine.JRException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -97,6 +99,42 @@ public class ProductController {
             return ResponseEntity.ok("Products imported successfully!");
         } catch (Exception e) {
             return ResponseEntity.badRequest().body("Error importing products: " + e.getMessage());
+        }
+    }
+
+
+    @GetMapping("/preport/{id}")
+    public ResponseEntity<byte[]> saleCouponReport(@PathVariable("id") Integer businessId, @RequestParam String reportType) {
+        try {
+
+            // Validate inputs
+            if (businessId == null || reportType == null || reportType.trim().isEmpty()) {
+                return ResponseEntity.badRequest().body("Invalid request parameters".getBytes());
+            }
+
+            byte[] reportBytes = service.generateProductListReportForBusiness(businessId,reportType);
+
+            HttpHeaders headers = new HttpHeaders();
+            if ("pdf".equalsIgnoreCase(reportType)) {
+                headers.setContentType(MediaType.APPLICATION_PDF);
+                headers.add(HttpHeaders.CONTENT_DISPOSITION, "inline;filename=product_list.pdf");
+            } else if ("excel".equalsIgnoreCase(reportType)) {
+                headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+                headers.add(HttpHeaders.CONTENT_DISPOSITION, "attachment;filename=product_list.xlsx");
+            } else {
+                return ResponseEntity.badRequest().body("Invalid report type".getBytes());
+            }
+            headers.setCacheControl("must-revalidate, post-check=0,pre-check=0");
+
+            return ResponseEntity.ok().headers(headers).body(reportBytes);
+        } catch (JRException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(("Error generating report: " + e.getMessage()).getBytes());
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(("Error: " + e.getMessage()).getBytes());
         }
     }
 }

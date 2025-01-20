@@ -24,7 +24,7 @@
 				<textElement>
 					<font size="22"/>
 				</textElement>
-				<text><![CDATA[Sale Coupon Weekly]]></text>
+				<text><![CDATA[Sale Coupon Monthly]]></text>
 			</staticText>
 		</band>
 	</title>
