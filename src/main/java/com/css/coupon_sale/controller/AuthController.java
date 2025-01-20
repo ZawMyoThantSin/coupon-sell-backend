@@ -124,7 +124,7 @@ public class AuthController {
             res.setData(response);
 
             return ResponseEntity.status(HttpStatus.CREATED).body(res);
-        }else return  ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Fail to create User");
+        }else return  ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Email Already Exist.");
     }
 
     @GetMapping("/public/validate-email")

@@ -34,7 +34,7 @@ public class AuthServiceImpl implements AuthService {
     public UserEntity register(SignupRequest request) {
         Optional<UserEntity> oUser = userRepository.findByEmail(request.getEmail());
         if (oUser.isPresent()){
-            throw new AppException("Login already exists", HttpStatus.BAD_REQUEST);
+            return null;
         }
         UserEntity userEntity = new UserEntity();
         BeanUtils.copyProperties(request, userEntity);
