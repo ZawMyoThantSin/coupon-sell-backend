@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.20.5.final using JasperReports Library version 6.20.5-3efcf2e67f959db3888d79f73dde2dbd7acb4f8e  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="usedCoupon" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="b72eea1f-9ceb-48bb-935b-9762879d183d">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+	<queryString language="SQL">
+		<![CDATA[]]>
+	</queryString>
+	<field name="email" class="java.lang.String"/>
+	<field name="userName" class="java.lang.String"/>
+	<field name="productName" class="java.lang.String"/>
+	<field name="usedAt" class="java.util.Date"/>
+	<field name="businessName" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="79" splitType="Stretch">
+			<textField pattern="MMMMM dd, yyyy">
+				<reportElement x="470" y="49" width="90" height="20" uuid="cf0853be-258f-45d7-86ca-c4ad6c821732"/>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+			<staticText>
+				<reportElement x="194" y="24" width="218" height="30" uuid="c9830fc7-dec2-4138-8bd3-fa4b6011d3ed"/>
+				<textElement>
+					<font size="22"/>
+				</textElement>
+				<text><![CDATA[Used Coupon Monthly]]></text>
+			</staticText>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="70" splitType="Stretch">
+			<textField>
+				<reportElement x="440" y="13" width="101" height="31" uuid="6f9a44ac-0185-4b41-8cbb-ecfa3ce6a047"/>
+				<textFieldExpression><![CDATA[$F{businessName}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="53" splitType="Stretch">
+			<staticText>
+				<reportElement x="8" y="17" width="122" height="30" uuid="16d448e3-69d9-4b8b-9883-acb0fe3902be"/>
+				<textElement>
+					<font size="20"/>
+				</textElement>
+				<text><![CDATA[User Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="155" y="17" width="113" height="30" uuid="ff1845a9-6fe7-42d1-a022-8a94649e0f68"/>
+				<textElement>
+					<font size="20"/>
+				</textElement>
+				<text><![CDATA[Email]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="300" y="17" width="150" height="30" uuid="26c9c604-e6f5-47fb-94ca-861b8164b3da"/>
+				<textElement>
+					<font size="20"/>
+				</textElement>
+				<text><![CDATA[Product Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="475" y="17" width="94" height="30" uuid="9b049d22-4ea8-440d-9151-d8eb3eaf8aa2"/>
+				<textElement>
+					<font size="20"/>
+				</textElement>
+				<text><![CDATA[Date]]></text>
+			</staticText>
+			<frame>
+				<reportElement x="-24" y="10" width="601" height="41" uuid="baf5215f-3c7c-44ca-b190-61f0299788fe"/>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+			</frame>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="52" splitType="Stretch">
+			<textField>
+				<reportElement x="10" y="14" width="100" height="31" uuid="118be0b2-19e0-4280-968e-1ed1bf2f84bb"/>
+				<textElement>
+					<font size="14"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{userName}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="145" y="14" width="160" height="31" uuid="f4d8e785-57b2-4bba-918b-1bc5c919dedd"/>
+				<textElement>
+					<font size="14"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{email}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="320" y="13" width="101" height="31" uuid="855ac148-175c-4474-b414-fae192a537f1"/>
+				<textElement>
+					<font size="14"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{productName}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="469" y="14" width="101" height="31" uuid="6c7a15cc-3971-4d2f-9797-3aecf3268bf7"/>
+				<textElement>
+					<font size="14"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{usedAt}]]></textFieldExpression>
+			</textField>
+			<frame>
+				<reportElement x="-18" y="-2" width="591" height="52" uuid="dec52597-f165-414b-bdb9-d6c7f155786b"/>
+				<box>
+					<pen lineStyle="Solid"/>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+			</frame>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="45" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch">
+			<textField>
+				<reportElement x="480" y="8" width="80" height="40" uuid="dd78df86-ad75-4d28-b022-0791c605c568"/>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

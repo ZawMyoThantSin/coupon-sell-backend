@@ -21,5 +21,10 @@ public interface CouponService {
 
     byte[] saleCouponReportForMonthly(Integer businessId, String reportType) throws JRException;
 
-    List<CouponUsedResponse> getAllCouponUsages(Integer shopId);
+    List<CouponUsedResponse> getAllCouponUsages(Integer businessId);
+
+
+    byte[] generateCouponUsageReportweekly(Integer businessId, String reportType) throws JRException;
+
+    byte[] generateCouponUsageReportmonthly(Integer businessId, String reportType) throws JRException;
 }

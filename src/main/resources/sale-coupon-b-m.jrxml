@@ -3,7 +3,7 @@
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="sale-coupon-b" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="64e429a4-1a2c-41b0-9026-7f494bab1207">
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
 	<parameter name="businessName" class="java.lang.String"/>
-	<parameter name="totalPriceForSevenDays" class="java.lang.String"/>
+	<parameter name="totalPriceForMonthly" class="java.lang.String"/>
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
@@ -109,18 +109,23 @@
 	<columnFooter>
 		<band height="39" splitType="Stretch">
 			<staticText>
-				<reportElement x="210" y="2" width="190" height="30" uuid="e5b01cce-f58b-4ea6-bdc7-33aa86a4e779"/>
+
+				<reportElement x="210" y="2" width="190" height="30" uuid="e5b01cce-f58b-4ea6-bdc7-33aa86a4e779">
+					<printWhenExpression><![CDATA[$V{PAGE_NUMBER}.intValue() == $V{PAGE_COUNT}.intValue()]]></printWhenExpression>
+				</reportElement>
 				<textElement>
 					<font size="20"/>
 				</textElement>
-				<text><![CDATA[Total Price Weekly]]></text>
+				<text><![CDATA[Total Price Monthly]]></text>
 			</staticText>
 			<textField>
-				<reportElement x="415" y="8" width="101" height="27" uuid="be1fc78b-2b66-40f5-a865-cfdb4fd15017"/>
+				<reportElement x="415" y="8" width="101" height="27" uuid="be1fc78b-2b66-40f5-a865-cfdb4fd15017">
+					<printWhenExpression><![CDATA[$V{PAGE_NUMBER}.intValue() == $V{PAGE_COUNT}.intValue()]]></printWhenExpression>
+				</reportElement>
 				<textElement>
 					<font size="14"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$P{totalPriceForSevenDays}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{totalPriceForMonthly}]]></textFieldExpression>
 			</textField>
 		</band>
 	</columnFooter>

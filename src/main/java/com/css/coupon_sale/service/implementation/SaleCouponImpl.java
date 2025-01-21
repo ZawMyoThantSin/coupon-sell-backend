@@ -121,7 +121,7 @@ public class SaleCouponImpl implements SaleCouponService {
     public List<BusinessEarningsDTO> getBusinessEarnings() {
         List<Object[]> results = saleCouponRepository.groupTotalEarningsByBusinessId();
         return results.stream()
-                .map(row -> new BusinessEarningsDTO((Integer) row[0], (Double) row[1]))
+                .map(row -> new BusinessEarningsDTO((Integer) row[0], (Double) row[2],(String) row[1]))
                 .collect(Collectors.toList());
     }
 
@@ -135,9 +135,9 @@ public class SaleCouponImpl implements SaleCouponService {
 //                System.out.println("Row: " + Arrays.toString(row));
 
                 Integer businessIdResult = ((Number) row[0]).intValue();
-                Double totalEarnings = ((Number) row[1]).doubleValue();
-
-                return new BusinessEarningsDTO(businessIdResult, totalEarnings);
+                Double totalEarnings = ((Number) row[2]).doubleValue();
+                String businessName = (String) row[1];
+                return new BusinessEarningsDTO(businessIdResult, totalEarnings,businessName);
             } else {
                 throw new EntityNotFoundException("No earnings found for business ID " + businessId);
             }
