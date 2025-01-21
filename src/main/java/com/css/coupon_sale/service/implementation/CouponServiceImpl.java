@@ -212,6 +212,12 @@ public class CouponServiceImpl implements CouponService {
                 .filter(Objects::nonNull) // Remove any null entries (records outside the last 7 days)
                 .collect(Collectors.toList());
 
+        // Calculate the total price for the last 7 days
+        double totalPriceForSevenDays = salesData.stream()
+                .mapToDouble(CouponSalesBusinessResponse::getTotalPrice)
+                .sum();
+
+
         // Debug: Print the transformed data
         salesData.forEach(record -> {
             System.out.println("Record: " + record.getBuyDate() + ", " + record.getSoldQuantity() + ", " + record.getTotalPrice());
@@ -225,6 +231,7 @@ public class CouponServiceImpl implements CouponService {
         String businessName = salesData.isEmpty() ? "" : salesData.get(0).getBusinessName();
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("businessName", businessName); // Ensure the parameter name matches the JRXML
+        parameters.put("totalPriceForSevenDays", String.format("%.2f MMK", totalPriceForSevenDays));
 
         // Fill the report
         JasperReport jasperReport = JasperCompileManager.compileReport(getClass().getResourceAsStream("/sale-coupon-b.jrxml"));
@@ -239,6 +246,7 @@ public class CouponServiceImpl implements CouponService {
             throw new IllegalArgumentException("Unsupported report type: " + reportType);
         }
     }
+
     @Override
     public List<CouponUsedResponse> getAllCouponUsages(Integer businessId) {
         // Fetching the raw data from the repository
@@ -306,6 +314,11 @@ public class CouponServiceImpl implements CouponService {
                 .filter(Objects::nonNull) // Remove any null entries (records outside the last 7 days)
                 .collect(Collectors.toList());
 
+        // Calculate the total price for the last 7 days
+        double totalPriceForMonthly = salesData.stream()
+                .mapToDouble(CouponSalesBusinessResponse::getTotalPrice)
+                .sum();
+
         // Debug: Print the transformed data
         salesData.forEach(record -> {
             System.out.println("Record: " + record.getBuyDate() + ", " + record.getSoldQuantity() + ", " + record.getTotalPrice());
@@ -319,7 +332,7 @@ public class CouponServiceImpl implements CouponService {
         String businessName = salesData.isEmpty() ? "" : salesData.get(0).getBusinessName();
         Map<String, Object> parameters = new HashMap<>();
         parameters.put("businessName", businessName); // Ensure the parameter name matches the JRXML
-
+        parameters.put("totalPriceForMonthly", String.format("%.2f MMK", totalPriceForMonthly));
         // Fill the report
         JasperReport jasperReport = JasperCompileManager.compileReport(getClass().getResourceAsStream("/sale-coupon-b-m.jrxml"));
         JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);

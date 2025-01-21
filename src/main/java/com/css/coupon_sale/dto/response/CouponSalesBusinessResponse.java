@@ -8,7 +8,6 @@ public class CouponSalesBusinessResponse {
     private Date buyDate;
     private Long soldQuantity;
     private Double totalPrice;
-
     // Constructor to initialize the fields
     public CouponSalesBusinessResponse(Integer businessId, String businessName, Date buyDate, Long soldQuantity, Double totalPrice) {
         this.businessId = businessId;
@@ -16,8 +15,6 @@ public class CouponSalesBusinessResponse {
         this.buyDate = buyDate;
         this.soldQuantity = soldQuantity;
         this.totalPrice = totalPrice;
-
-
     }
 
     public Integer getBusinessId() {
