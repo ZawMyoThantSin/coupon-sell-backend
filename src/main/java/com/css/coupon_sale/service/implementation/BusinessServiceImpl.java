@@ -80,6 +80,7 @@ public class BusinessServiceImpl implements BusinessService {
         BeanUtils.copyProperties(request, userEntity);
         userEntity.setPassword(passwordEncoder.encode(CharBuffer.wrap(request.getPassword())));
         userEntity.setStatus(1);
+        userEntity.setAuthProvider("LOCAL");
         if(userEntity.getRole() == null){
             userEntity.setRole("OWNER");
         }
