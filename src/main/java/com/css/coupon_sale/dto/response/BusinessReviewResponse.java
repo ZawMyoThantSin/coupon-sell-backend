@@ -1,6 +1,8 @@
 package com.css.coupon_sale.dto.response;
 
 
+import java.time.LocalDateTime;
+
 public class BusinessReviewResponse {
     private int id;
     private Long user_id;
@@ -9,6 +11,7 @@ public class BusinessReviewResponse {
     private String message;
     private String userName;
     private String profile;
+    private LocalDateTime createdAt;
 
     public int getId() {
         return id;
@@ -65,4 +68,12 @@ public class BusinessReviewResponse {
     public void setProfile(String profile) {
         this.profile = profile;
     }
+
+  public LocalDateTime getCreatedAt() {
+    return createdAt;
+  }
+
+  public void setCreatedAt(LocalDateTime createdAt) {
+    this.createdAt = createdAt;
+  }
 }

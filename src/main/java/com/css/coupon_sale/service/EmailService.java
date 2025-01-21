@@ -9,4 +9,6 @@ public interface EmailService {
     void saveOtp(String email, String otp);
 
     String  validateOtp(String email, String otp);
+
+    String validateEmail(String email, String ipAddress);
 }

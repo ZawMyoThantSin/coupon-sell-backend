@@ -5,6 +5,7 @@ import com.css.coupon_sale.dto.request.ProductRequest1;
 import com.css.coupon_sale.dto.request.ProductUpdateRequest;
 import com.css.coupon_sale.dto.response.ProductResponse;
 import com.css.coupon_sale.entity.ProductEntity;
+import net.sf.jasperreports.engine.JRException;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -32,4 +33,6 @@ public interface ProductService {
     ProductResponse findProductCategroy(String category);
 
     void importProductsFromExcel(MultipartFile file) throws IOException;
+
+    byte[] generateProductListReportForBusiness(Integer businessId, String reportType) throws JRException;
 }

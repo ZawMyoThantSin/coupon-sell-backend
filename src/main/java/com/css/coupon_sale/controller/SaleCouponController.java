@@ -2,6 +2,7 @@ package com.css.coupon_sale.controller;
 
 import com.css.coupon_sale.config.CustomWebSocketHandler;
 import com.css.coupon_sale.dto.response.BusinessCouponSalesResponse;
+import com.css.coupon_sale.dto.response.BusinessEarningsDTO;
 import com.css.coupon_sale.dto.response.PurchaseCouponResponse;
 import com.css.coupon_sale.dto.response.QrDataResponse;
 import com.css.coupon_sale.entity.OrderEntity;
@@ -90,5 +91,24 @@ public class SaleCouponController {
             System.out.println("ERR Conn:" + e.getMessage());
         }
         return ResponseEntity.ok("Hello");
+    }
+
+    @GetMapping("/business-earnings")
+    public List<BusinessEarningsDTO> getBusinessEarnings() {
+        return saleCouponService.getBusinessEarnings();
+    }
+
+    @GetMapping("/business-earnings/{businessId}")
+    public BusinessEarningsDTO getEarningsByBusinessId(@PathVariable int businessId) {
+        return saleCouponService.getEarningsByBusinessId(businessId);
+    }
+
+    @GetMapping("/business-earnings/monthly/{businessId}")
+    public Double getCurrentMonthEarnings(@PathVariable int businessId) {
+        return saleCouponService.getCurrentMonthEarnings(businessId);
+    }
+    @GetMapping("/business-earnings/yearly/{businessId}")
+    public Double getCurrentYearEarnings(@PathVariable int businessId) {
+        return saleCouponService.getCurrentYearEarnings(businessId);
     }
 }

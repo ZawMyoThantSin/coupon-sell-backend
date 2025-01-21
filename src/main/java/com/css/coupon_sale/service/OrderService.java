@@ -1,9 +1,9 @@
 package com.css.coupon_sale.service;
 
-import com.css.coupon_sale.dto.request.OrderItemRequest;
-import com.css.coupon_sale.dto.request.OrderRequest;
 import com.css.coupon_sale.dto.response.OrderDetailResponse;
 import com.css.coupon_sale.dto.response.OrderResponse;
+import com.css.coupon_sale.dto.response.OwnerOrderResponse;
+import com.css.coupon_sale.entity.OrderEntity;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
@@ -27,4 +27,6 @@ public interface OrderService {
   List<OrderDetailResponse> getByOrderId(int id);
   boolean updateOrderStatus(int orderId,String action);
   int getOrderCountWithStatusZero();
+
+  List<OwnerOrderResponse> getOwnerOrderResponsesByBusinessId(int businessId);
 }

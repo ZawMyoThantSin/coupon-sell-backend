@@ -77,8 +77,7 @@ public class TransferController {
         List<TransferResponse> history = transferService.getTransferHistory(userId);
         return ResponseEntity.ok(history);
     }
-
-    @GetMapping("/couponAcepter/{accepterId}")
+   @GetMapping("/couponAcepter/{accepterId}")
     public ResponseEntity<?> getAcceptTransfersCoupern(@PathVariable("accepterId") Long accepterId) {
         // Check if the accepterId exists
         List<TransferResponse> transfer = transferService.getCouponsForAcceptor(accepterId);
