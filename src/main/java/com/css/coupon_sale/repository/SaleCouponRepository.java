@@ -15,4 +15,7 @@ public interface SaleCouponRepository extends JpaRepository<SaleCouponEntity , I
     List<OrderEntity> findByOrderId(@Param("orderId") int orderId);
 
     List<SaleCouponEntity> findByUser_Id(Long userId);
+
+    @Query("SELECT SUM(sc.totalPrice) FROM SaleCouponEntity sc WHERE sc.business.id = :businessId")
+    Double getTotalIncomeByBusinessId(@Param("businessId") int businessId);
 }

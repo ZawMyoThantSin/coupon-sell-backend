@@ -116,5 +116,4 @@ public class SaleCouponImpl implements SaleCouponService {
         return null;
     }
 
-
 }

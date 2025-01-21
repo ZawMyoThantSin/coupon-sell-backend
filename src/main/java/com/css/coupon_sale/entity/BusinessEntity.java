@@ -48,6 +48,18 @@ public class BusinessEntity {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @Column(name = "total_income")
+    private Double totalIncome;
+
+    @Column(name = "last_paid_amount", nullable = false)
+    private Double lastPaidAmount;
+
+    @Column(name = "payment_status", columnDefinition = "VARCHAR(50) DEFAULT 'PENDING'")
+    private String paymentStatus; // e.g., PENDING, PAID
+
+    @Column(name = "income_increased", columnDefinition = "BOOLEAN DEFAULT FALSE")
+    private boolean incomeIncreased;
+
     public int getId() {
         return id;
     }
@@ -134,6 +146,38 @@ public class BusinessEntity {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public Double getTotalIncome() {
+        return totalIncome;
+    }
+
+    public void setTotalIncome(Double totalIncome) {
+        this.totalIncome = totalIncome;
+    }
+
+    public Double getLastPaidAmount() {
+        return lastPaidAmount;
+    }
+
+    public void setLastPaidAmount(Double lastPaidAmount) {
+        this.lastPaidAmount = lastPaidAmount;
+    }
+
+    public String getPaymentStatus() {
+        return paymentStatus;
+    }
+
+    public void setPaymentStatus(String paymentStatus) {
+        this.paymentStatus = paymentStatus;
+    }
+
+    public boolean isIncomeIncreased() {
+        return incomeIncreased;
+    }
+
+    public void setIncomeIncreased(boolean incomeIncreased) {
+        this.incomeIncreased = incomeIncreased;
     }
 
     @Override

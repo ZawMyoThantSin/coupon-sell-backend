@@ -17,4 +17,5 @@ public interface BusinessService {
     List<BusinessResponse> getAllBusinesses();
     BusinessResponse updateBusiness(Integer id, UpdateBusinessRequest requestDTO) throws IOException;
     BusinessResponse softDeleteBusiness(Integer id);
+    Double getTotalIncomeForBusiness(int businessId);
 }

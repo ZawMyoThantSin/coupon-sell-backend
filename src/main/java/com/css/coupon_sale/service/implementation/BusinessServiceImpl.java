@@ -11,6 +11,7 @@ import com.css.coupon_sale.entity.UserEntity;
 import com.css.coupon_sale.exception.AppException;
 import com.css.coupon_sale.repository.BusinessCategoryRepository;
 import com.css.coupon_sale.repository.BusinessRepository;
+import com.css.coupon_sale.repository.SaleCouponRepository;
 import com.css.coupon_sale.repository.UserRepository;
 import com.css.coupon_sale.service.BusinessReviewService;
 import com.css.coupon_sale.service.BusinessService;
@@ -55,18 +56,22 @@ public class BusinessServiceImpl implements BusinessService {
 
     private final BusinessReviewService businessReviewService;
 
+    private final SaleCouponRepository saleCouponRepository;
+
     @Value("${product.image.upload-dir}") // Specify folder path in application.properties
     private String uploadDir;
 
     @Autowired
     public BusinessServiceImpl(BusinessRepository businessRepository, PasswordEncoder passwordEncoder, UserRepository userRepository, ModelMapper modelMapper,
-                               BusinessCategoryRepository categoryRepository, BusinessReviewService businessReviewService) {
+                               BusinessCategoryRepository categoryRepository, BusinessReviewService businessReviewService,
+                               SaleCouponRepository saleCouponRepository) {
         this.businessRepository = businessRepository;
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
         this.modelMapper = modelMapper;
         this.categoryRepository = categoryRepository;
         this.businessReviewService = businessReviewService;
+        this.saleCouponRepository = saleCouponRepository;
     }
 
     @Override
@@ -82,6 +87,7 @@ public class BusinessServiceImpl implements BusinessService {
         userEntity.setStatus(1);
         if(userEntity.getRole() == null){
             userEntity.setRole("OWNER");
+            userEntity.setAuthProvider("LOCAL");
         }
         userEntity.setCreated_at(now());
         UserEntity user = userRepository.save(userEntity);
@@ -117,26 +123,14 @@ public class BusinessServiceImpl implements BusinessService {
         business.setUser(user);
         business.setStatus(true);
         business.setCreatedAt(LocalDateTime.now());
+        business.setLastPaidAmount(0.0);
+        business.setPaymentStatus("PENDING");
+        business.setIncomeIncreased(false);
         System.out.println("Before Save: "+ business);
         BusinessEntity savedBusiness = businessRepository.save(business);
+        Double totalIncome = getTotalIncomeForBusiness(savedBusiness.getId());
+        savedBusiness.setTotalIncome(totalIncome);
         return mapToResponseDTO(savedBusiness);
-
-//        UserEntity user = userRepository.findById(requestDTO.getUserId())
-//                .orElseThrow(() -> new RuntimeException("User not found"));
-//
-//        System.out.println("REQ: "+ requestDTO.toString());
-//        BusinessEntity business = new BusinessEntity();
-//        business.setUser(user);
-//        business.setName(requestDTO.getName());
-//        business.setLocation(requestDTO.getLocation());
-//        business.setDescription(requestDTO.getDescription());
-//        business.setContactNumber(requestDTO.getContactNumber());
-//        business.setPhoto(requestDTO.getPhoto());
-//        business.setCategory(requestDTO.getCategory());
-//        business.setCreatedAt(LocalDateTime.now());
-//
-//        BusinessEntity savedBusiness = businessRepository.save(business);
-//        return mapToResponseDTO(savedBusiness);
     }
 
     @Override
@@ -176,10 +170,6 @@ public class BusinessServiceImpl implements BusinessService {
         business.setDescription(requestDTO.getDescription());
         business.setContactNumber(requestDTO.getContactNumber());
         business.setCategory(category);
-        //business.setStatus(requestDTO.getStatus());
-        //business.setUserName(requestDTO.getUserName());
-        //business.setUserEmail(requestDTO.getUserEmail());
-
         // Handle image upload
         MultipartFile imageFile = requestDTO.getImageFile();
         if (imageFile != null && !imageFile.isEmpty()) {
@@ -214,6 +204,33 @@ public class BusinessServiceImpl implements BusinessService {
         return mapToResponseDTO(businessRepository.save(business));
     }
 
+    @Override
+    public Double getTotalIncomeForBusiness(int businessId) {
+        Double totalIncome = saleCouponRepository.getTotalIncomeByBusinessId(businessId);
+        totalIncome = totalIncome != null ? totalIncome : 0.0;
+        BusinessEntity business = businessRepository.findById(businessId)
+                .orElseThrow(() -> new RuntimeException("Business not found"));
+        business.setTotalIncome(totalIncome);
+        checkIncomeIncreased(business);
+        if (business.isIncomeIncreased()) {
+            business.setPaymentStatus("PENDING"); // Set to PENDING if income has increased
+        } else {
+            business.setPaymentStatus("PAID"); // Set to PAID if income has not increased
+        }
+        businessRepository.save(business);
+
+        return totalIncome;
+    }
+
+    private void checkIncomeIncreased(BusinessEntity business) {
+        // Check if the total income is greater than the last paid amount
+        if (business.getTotalIncome() > business.getLastPaidAmount()) {
+            business.setIncomeIncreased(true);
+        } else {
+            business.setIncomeIncreased(false);
+        }
+    }
+
     private BusinessResponse mapToResponseDTO(BusinessEntity business) {
         BusinessResponse responseDTO = modelMapper.map(business, BusinessResponse.class);
         responseDTO.setCategoryId(business.getCategory().getId());
@@ -221,6 +238,7 @@ public class BusinessServiceImpl implements BusinessService {
         responseDTO.setUserName(business.getUser().getName());
         responseDTO.setUserEmail(business.getUser().getEmail());
         responseDTO.setCategory(business.getCategory().getName());
+        responseDTO.setPaymentStatus(business.getPaymentStatus());
         double count = businessReviewService.calculateOverviewCount(business.getId());
         responseDTO.setCount(count);
         return responseDTO;
