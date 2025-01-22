@@ -128,6 +128,7 @@ public class FriendshipServiceImpl implements FriendshipService {
                 .collect(Collectors.toList());
     }
 
+
     @Override
     public void unfriend(int userId, int friendId) {
         UserEntity user = uRepo.findById((long) userId)
@@ -163,6 +164,8 @@ public class FriendshipServiceImpl implements FriendshipService {
         response.setAcceptedDate(friendship.getAcceptedDate());
         return response;
     }
+
+
 
 
     private FriendshipResponse mapToResponse(FriendShipEntity friendship, UserEntity loggedInUser) {

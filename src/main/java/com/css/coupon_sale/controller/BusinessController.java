@@ -2,15 +2,21 @@ package com.css.coupon_sale.controller;
 
 
 import com.css.coupon_sale.dto.request.BusinessRequest;
+import com.css.coupon_sale.dto.request.PayOwnerRequest;
 import com.css.coupon_sale.dto.request.SignupRequest;
 import com.css.coupon_sale.dto.request.UpdateBusinessRequest;
 import com.css.coupon_sale.dto.response.BusinessResponse;
 import com.css.coupon_sale.dto.response.HttpResponse;
+import com.css.coupon_sale.dto.response.PayOwnerResponse;
 import com.css.coupon_sale.dto.response.SignupResponse;
-import com.css.coupon_sale.entity.BusinessEntity;
+import com.css.coupon_sale.entity.PaidHistoryEntity;
 import com.css.coupon_sale.entity.UserEntity;
+import com.css.coupon_sale.repository.PaidHistoryRepository;
 import com.css.coupon_sale.service.BusinessService;
+import com.css.coupon_sale.service.PaidHistoryService;
 import org.modelmapper.ModelMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,7 +24,9 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/businesses")
@@ -30,6 +38,13 @@ public class BusinessController {
     @Autowired
     private ModelMapper modelMapper;
 
+    @Autowired
+    private PaidHistoryService paidHistoryService;
+
+    @Autowired
+    private PaidHistoryRepository paidHistoryRepository;
+
+    private static final Logger logger = LoggerFactory.getLogger(BusinessController.class);
 
     @PostMapping("/add/owner")
     public ResponseEntity<?> signupUser(@RequestBody SignupRequest request){
@@ -108,5 +123,42 @@ public class BusinessController {
         return ResponseEntity.ok("Business deleted successfully");
     }
 
+    @GetMapping("/{id}/income")
+    public ResponseEntity<?> getBusinessIncome(@PathVariable Integer id) {
+        Double totalIncome = businessService.getTotalIncomeForBusiness(id);
+        return ResponseEntity.ok(totalIncome);
+    }
+
+    @PostMapping("/pay-owner")
+    public ResponseEntity<PayOwnerResponse> payOwner(@RequestBody PayOwnerRequest requestDto) {
+        logger.info("Received request to pay owner: {}", requestDto);
+        // Validate request
+        if (requestDto.getBusinessId() == 0) {
+            logger.warn("Invalid business ID: {}", requestDto.getBusinessId());
+            return ResponseEntity.badRequest().body(new PayOwnerResponse(0, 0.0, 0.0, 0.0, null));
+        }
+        if (requestDto.getDesiredPercentage() == null) {
+            return ResponseEntity.badRequest().body(new PayOwnerResponse(0, 0.0, 0.0, 0.0, null));
+        }
+        if (requestDto.getDesiredPercentage() <= 0 || requestDto.getDesiredPercentage() > 100) {
+            return ResponseEntity.badRequest().body(new PayOwnerResponse(0, 0.0, 0.0, 0.0, null));
+        }
+
+        // Process payment
+        try {
+            PayOwnerResponse response = paidHistoryService.payOwner(requestDto);
+            logger.info("Payment processed successfully: {}", response);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            logger.error("Error processing payment: {}", e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new PayOwnerResponse(0, 0.0, 0.0, 0.0, null));
+        }
+    }
+
+    @GetMapping("/{businessId}/paid-history")
+    public ResponseEntity<List<PaidHistoryEntity>> getPaidHistory(@PathVariable int businessId) {
+        List<PaidHistoryEntity> history = paidHistoryService.getPaidHistory(businessId);
+        return ResponseEntity.ok(history);
+    }
 
 }

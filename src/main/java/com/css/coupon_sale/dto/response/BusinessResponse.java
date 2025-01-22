@@ -17,6 +17,7 @@ public class BusinessResponse {
     private String userName;
     private String userEmail;
     private double count;
+    private String paymentStatus;
 
 
     public double getCount() {
@@ -121,5 +122,13 @@ public class BusinessResponse {
 
     public void setStatus(boolean status) {
         this.status = status;
+    }
+
+    public String getPaymentStatus() {
+        return paymentStatus;
+    }
+
+    public void setPaymentStatus(String paymentStatus) {
+        this.paymentStatus = paymentStatus;
     }
 }

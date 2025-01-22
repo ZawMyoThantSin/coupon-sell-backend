@@ -5,7 +5,6 @@ import com.css.coupon_sale.dto.request.SignupRequest;
 import com.css.coupon_sale.dto.request.UpdateBusinessRequest;
 import com.css.coupon_sale.dto.response.BusinessResponse;
 import com.css.coupon_sale.dto.response.SignupResponse;
-import com.css.coupon_sale.entity.BusinessEntity;
 
 import java.io.IOException;
 import java.util.List;
@@ -18,6 +17,5 @@ public interface BusinessService {
     List<BusinessResponse> getAllBusinesses();
     BusinessResponse updateBusiness(Integer id, UpdateBusinessRequest requestDTO) throws IOException;
     BusinessResponse softDeleteBusiness(Integer id);
-
-
+    Double getTotalIncomeForBusiness(int businessId);
 }

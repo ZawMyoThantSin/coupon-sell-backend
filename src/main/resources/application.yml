@@ -2,7 +2,7 @@ spring:
   application:
     name: coupon-sale
   datasource:
-    url: jdbc:mysql://localhost:3306/coupon-thaeilwin?createDatabaseIfNotExist=true
+    url: jdbc:mysql://localhost:3306/coupon_sell_system_09?createDatabaseIfNotExist=true
     username: root
     password: root
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -66,5 +66,5 @@ product:
 jwt:
   secret: GDGfx/xcaSqCWZtVqxCzZ5f5j8BPYRnR0lG7vatfAOAt6tgpiGgc7X1Jxw8I96abS8+5ChS4W/hOhtHasM+bHQ==
 #server:
-#  address: 192.168.1.1
+#  address: 192.168.58.81
 #  port: 8080
