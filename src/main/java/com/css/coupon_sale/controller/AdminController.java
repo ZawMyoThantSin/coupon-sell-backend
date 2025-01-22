@@ -31,7 +31,7 @@ public class AdminController {
 
     @GetMapping()
     public ResponseEntity<?> getAllCustomers(){
-        List<UserEntity> userEntities = userRepository.findByRole("USER");
+        List<UserEntity> userEntities = userRepository.findAll();
         List<CustomerResponse> responses = userEntities.stream()
                 .map(this::mapToResponseDTO)
                 .collect(Collectors.toList());
