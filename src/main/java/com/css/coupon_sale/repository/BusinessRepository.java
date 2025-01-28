@@ -15,4 +15,13 @@ public interface BusinessRepository extends JpaRepository<BusinessEntity,Integer
     List<BusinessEntity> findAllActiveBusinesses();
 //  find by user_id
     BusinessEntity findByUser_Id(Long userId);
+
+    @Query("SELECT b.name AS businessName, " +
+            "b.contactNumber AS contactNumber, " +
+            "b.createdAt AS createdAt, " +
+            "u.name AS userName, " +
+            "u.email AS email " +
+            "FROM BusinessEntity b " +
+            "JOIN b.user u")
+    List<Object[]> getBusinessReport();
 }

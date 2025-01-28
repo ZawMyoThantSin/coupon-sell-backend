@@ -2,7 +2,7 @@ package com.css.coupon_sale.dto.response;
 
 import java.util.Date;
 
-public class CouponSalesBusinessResponse {
+public class CouponSalesBusinessResponse2 {
     private Integer businessId;
     private String businessName;
     private Date buyDate;
@@ -10,14 +10,13 @@ public class CouponSalesBusinessResponse {
     private Double totalPrice;
     private String productName;
     // Constructor to initialize the fields
-    public CouponSalesBusinessResponse(Integer businessId, String businessName,String productName, Date buyDate, Long soldQuantity, Double totalPrice) {
+    public CouponSalesBusinessResponse2(Integer businessId, String businessName, Date buyDate, Long soldQuantity, Double totalPrice,String productName) {
         this.businessId = businessId;
         this.businessName = businessName;
-        this.productName=productName;
         this.buyDate = buyDate;
         this.soldQuantity = soldQuantity;
         this.totalPrice = totalPrice;
-
+        this.productName=productName;
     }
 
     public Integer getBusinessId() {

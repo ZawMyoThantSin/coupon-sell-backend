@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.20.5.final using JasperReports Library version 6.20.5-3efcf2e67f959db3888d79f73dde2dbd7acb4f8e  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="RemainingCoupon" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="eced1036-779c-40da-9eab-102f5b784fc1">
+	<parameter name="totalCount" class="java.lang.Integer"/>
+	<field name="email" class="java.lang.String"/>
+	<field name="buyDate" class="java.util.Date"/>
+	<field name="expiredDate" class="java.util.Date"/>
+	<field name="totalPrice" class="java.lang.Double"/>
+	<field name="productName" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="62" splitType="Stretch"/>
+	</title>
+	<pageHeader>
+		<band height="34" splitType="Stretch">
+			<staticText>
+				<reportElement x="198" y="-43" width="200" height="30" uuid="bcbd4ca9-0402-4451-afef-4b078ae87fa5"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font fontName="Arial" size="15" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Remaining Coupon Report]]></text>
+			</staticText>
+			<textField pattern="MMMMM dd, yyyy">
+				<reportElement x="477" y="10" width="93" height="20" uuid="bbe17a05-9f2c-48e6-8743-ea270be2bd50"/>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="47" splitType="Stretch">
+			<staticText>
+				<reportElement x="33" y="10" width="61" height="21" uuid="d8d1845f-05ab-477d-9b50-741ac36d8883"/>
+				<text><![CDATA[User Email]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="144" y="10" width="61" height="21" uuid="616b1d66-2436-476b-b12a-4a177a83bc71"/>
+				<text><![CDATA[Buy Date]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="254" y="11" width="61" height="21" uuid="59e986b8-487d-4c21-92fe-645dfe985c82"/>
+				<text><![CDATA[Expiry Date]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="368" y="11" width="61" height="21" uuid="54d366a3-5845-48f2-a35f-89092729aee6"/>
+				<text><![CDATA[Product]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="477" y="11" width="40" height="21" uuid="06c3eecf-143b-4f3e-8547-2011e888fc43"/>
+				<text><![CDATA[Price]]></text>
+			</staticText>
+			<frame>
+				<reportElement x="-21" y="0" width="596" height="46" uuid="27ab650a-fee9-40af-aa36-a5b90e00826f"/>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+			</frame>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="47" splitType="Stretch">
+			<textField>
+				<reportElement x="38" y="10" width="92" height="31" uuid="764ac49f-ce58-4ee5-b478-3d4d030f0c91"/>
+				<textFieldExpression><![CDATA[$F{email}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="144" y="10" width="69" height="31" uuid="d9a5f66a-c7c2-4d35-bf3e-b639c41d23c2"/>
+				<textFieldExpression><![CDATA[$F{buyDate}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="254" y="10" width="80" height="31" uuid="8426eb3a-013a-4806-a434-fcc6b166ab49"/>
+				<textFieldExpression><![CDATA[$F{expiredDate}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="480" y="10" width="91" height="31" uuid="ced8a655-0db8-4c3d-9856-73471ffed1dc"/>
+				<textFieldExpression><![CDATA[$F{totalPrice}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="371" y="10" width="90" height="31" uuid="5381fb31-beb3-4a15-9135-aa3e36ab1190"/>
+				<textFieldExpression><![CDATA[$F{productName}]]></textFieldExpression>
+			</textField>
+			<frame>
+				<reportElement x="-20" y="-1" width="594" height="48" uuid="d17b867c-f85b-4d94-aec3-6b1b1b3a7228"/>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+			</frame>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="54" splitType="Stretch">
+			<textField>
+				<reportElement x="500" y="12" width="50" height="40" uuid="c7030b31-0310-4ff8-8724-9fa784dbe65b"/>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+	<summary>
+		<band height="50" splitType="Stretch">
+			<textField>
+				<reportElement x="317" y="10" width="200" height="30" uuid="4f741ad9-75af-4914-a264-21d2a6be220d"/>
+				<textFieldExpression><![CDATA["Total Coupons: " + $P{totalCount}]]></textFieldExpression>
+			</textField>
+		</band>
+	</summary>
+</jasperReport>

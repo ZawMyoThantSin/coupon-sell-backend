@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Created with Jaspersoft Studio version 6.20.5.final using JasperReports Library version 6.20.5-3efcf2e67f959db3888d79f73dde2dbd7acb4f8e  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="coupon" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="8923afcd-1b71-49e1-b585-ea0c3122f559">
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+	<queryString>
+		<![CDATA[]]>
+	</queryString>
+	<field name="productName" class="java.lang.String"/>
+	<field name="productDiscount" class="java.lang.Double"/>
+	<field name="quantity" class="java.lang.Integer"/>
+	<field name="expiredDate" class="java.util.Date"/>
+	<field name="price" class="java.lang.Double"/>
+	<field name="businessName" class="java.lang.String"/>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="79" splitType="Stretch">
+			<staticText>
+				<reportElement x="215" y="17" width="154" height="30" uuid="1645b734-b4bd-4ff9-aee6-6f50e9dfeb91"/>
+				<textElement>
+					<font size="22"/>
+				</textElement>
+				<text><![CDATA[Coupon List]]></text>
+			</staticText>
+			<textField pattern="MMMM dd, yyyy">
+				<reportElement x="460" y="50" width="90" height="20" uuid="78f6c09f-b01a-40ed-b708-0b46de9ad49c"/>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="43" splitType="Stretch">
+			<textField>
+				<reportElement x="440" y="8" width="101" height="31" uuid="5ff67d5b-15a6-428a-b4f4-2e05d765c123"/>
+				<textFieldExpression><![CDATA[$F{businessName}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="53" splitType="Stretch">
+			<staticText>
+				<reportElement x="2" y="9" width="134" height="31" uuid="f7193df2-1e07-4210-bf00-b067288da65a"/>
+				<textElement>
+					<font size="20"/>
+				</textElement>
+				<text><![CDATA[Name]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="144" y="10" width="88" height="30" uuid="fb1f05c1-dda0-451c-92f2-68946a86a93f"/>
+				<textElement>
+					<font size="20"/>
+				</textElement>
+				<text><![CDATA[Discount]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="337" y="10" width="80" height="30" uuid="313c0c10-8678-4f2e-b9bb-39089d23ef2c"/>
+				<textElement>
+					<font size="20"/>
+				</textElement>
+				<text><![CDATA[Price]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="441" y="10" width="130" height="30" uuid="84270ef6-592b-46da-a41a-170f9dcfe7f0"/>
+				<textElement>
+					<font size="20"/>
+				</textElement>
+				<text><![CDATA[Expired Date]]></text>
+			</staticText>
+			<frame>
+				<reportElement x="-19" y="0" width="595" height="53" uuid="0f63292c-0b2c-41a2-b3eb-a30f2a94bc2d"/>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+			</frame>
+			<staticText>
+				<reportElement x="241" y="10" width="85" height="30" uuid="754935fd-d273-485e-887f-aacc78436457"/>
+				<textElement>
+					<font size="20"/>
+				</textElement>
+				<text><![CDATA[Quantity]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="45" splitType="Stretch">
+			<textField pattern="dd/MM/yyyy">
+				<reportElement x="458" y="11" width="113" height="30" uuid="6f3d7fd9-93c6-4c9a-afc7-f8a41db5bf08"/>
+				<textElement>
+					<font size="16"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{expiredDate}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="323" y="11" width="131" height="30" uuid="b701513b-e7dc-41a3-901c-073907d5bc6d"/>
+				<textElement>
+					<font size="16"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{price} + " MMK"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="2" y="13" width="149" height="28" uuid="c8ffcb04-8a5b-4631-8595-f77c79ac2fcb"/>
+				<textElement>
+					<font size="16"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{productName}]]></textFieldExpression>
+			</textField>
+			<frame>
+				<reportElement x="-21" y="0" width="595" height="45" uuid="edc168f1-0e2a-4ce6-bb34-52c1f73180e3"/>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textField>
+					<reportElement x="269" y="11" width="70" height="29" uuid="5614385a-8499-4360-bb1c-0ecc93b21b8d"/>
+					<textElement>
+						<font size="16"/>
+					</textElement>
+					<textFieldExpression><![CDATA[$F{quantity}]]></textFieldExpression>
+				</textField>
+			</frame>
+			<textField evaluationTime="Auto" pattern="#,##0.00%">
+				<reportElement x="157" y="13" width="80" height="27" uuid="30b19ae2-aad6-4d83-bc4a-0c195ec09ea5"/>
+				<textElement>
+					<font size="16"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{productDiscount} + " %"]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<pageFooter>
+		<band height="54" splitType="Stretch">
+			<textField>
+				<reportElement x="480" y="10" width="80" height="40" uuid="b00c49eb-12ae-4f96-b1eb-d97a754b3288"/>
+				<textFieldExpression><![CDATA[$V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+</jasperReport>

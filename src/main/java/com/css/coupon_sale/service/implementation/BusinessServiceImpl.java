@@ -3,18 +3,22 @@ package com.css.coupon_sale.service.implementation;
 import com.css.coupon_sale.dto.request.BusinessRequest;
 import com.css.coupon_sale.dto.request.SignupRequest;
 import com.css.coupon_sale.dto.request.UpdateBusinessRequest;
-import com.css.coupon_sale.dto.response.BusinessResponse;
-import com.css.coupon_sale.dto.response.SignupResponse;
+import com.css.coupon_sale.dto.response.*;
 import com.css.coupon_sale.entity.BusinessCategoryEntity;
 import com.css.coupon_sale.entity.BusinessEntity;
+import com.css.coupon_sale.entity.PaidHistoryEntity;
 import com.css.coupon_sale.entity.UserEntity;
 import com.css.coupon_sale.exception.AppException;
-import com.css.coupon_sale.repository.BusinessCategoryRepository;
-import com.css.coupon_sale.repository.BusinessRepository;
-import com.css.coupon_sale.repository.SaleCouponRepository;
-import com.css.coupon_sale.repository.UserRepository;
+import com.css.coupon_sale.repository.*;
 import com.css.coupon_sale.service.BusinessReviewService;
 import com.css.coupon_sale.service.BusinessService;
+import com.css.coupon_sale.service.PaidHistoryService;
+import net.sf.jasperreports.engine.*;
+import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
+import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
+import net.sf.jasperreports.export.SimpleExporterInput;
+import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
+import net.sf.jasperreports.export.SimpleXlsxReportConfiguration;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +29,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.nio.CharBuffer;
@@ -33,16 +38,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Optional;
+import java.time.ZoneId;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static java.time.LocalDateTime.now;
 
 @Service
-public class BusinessServiceImpl implements BusinessService {
+public class BusinessServiceImpl implements BusinessService  {
 
     private final BusinessRepository businessRepository;
 
@@ -58,13 +61,15 @@ public class BusinessServiceImpl implements BusinessService {
 
     private final SaleCouponRepository saleCouponRepository;
 
+    private final PaidHistoryService paidHistoryService;
+
     @Value("${product.image.upload-dir}") // Specify folder path in application.properties
     private String uploadDir;
 
     @Autowired
     public BusinessServiceImpl(BusinessRepository businessRepository, PasswordEncoder passwordEncoder, UserRepository userRepository, ModelMapper modelMapper,
                                BusinessCategoryRepository categoryRepository, BusinessReviewService businessReviewService,
-                               SaleCouponRepository saleCouponRepository) {
+                               SaleCouponRepository saleCouponRepository, PaidHistoryService paidHistoryService) {
         this.businessRepository = businessRepository;
         this.passwordEncoder = passwordEncoder;
         this.userRepository = userRepository;
@@ -72,6 +77,7 @@ public class BusinessServiceImpl implements BusinessService {
         this.categoryRepository = categoryRepository;
         this.businessReviewService = businessReviewService;
         this.saleCouponRepository = saleCouponRepository;
+        this.paidHistoryService = paidHistoryService;
     }
 
     @Override
@@ -221,6 +227,146 @@ public class BusinessServiceImpl implements BusinessService {
         businessRepository.save(business);
 
         return totalIncome;
+    }
+
+    @Override
+    public byte[] generateBusinessReport(String reportType) throws JRException {
+        if (reportType == null) {
+            throw new IllegalArgumentException("Report type cannot be null");
+        }
+
+        // Fetch data from the repository
+        List<Object[]> businessData = businessRepository.getBusinessReport();
+
+        if (businessData == null || businessData.isEmpty()) {
+            throw new RuntimeException("No business data available.");
+        }
+
+        // Transform data into DTO
+        List<BusinessReportResponse> reportData = businessData.stream()
+                .map(row -> {
+                    String businessName = (String) row[0];
+                    String contactNumber = (String) row[1];
+                    Object createdAtObj = row[2];
+                    String userName = (String) row[3];
+                    String email = (String) row[4];
+
+                    Date createdAt = null;
+                    if (createdAtObj instanceof LocalDateTime) {
+                        LocalDateTime localDateTime = (LocalDateTime) createdAtObj;
+                        createdAt = Date.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
+                    } else if (createdAtObj instanceof Date) {
+                        createdAt = (Date) createdAtObj;
+                    }
+
+                    return new BusinessReportResponse(
+                            businessName, userName, email,
+                            contactNumber, // Keep contactNumber as String
+                            createdAt
+                    );
+                })
+                .collect(Collectors.toList());
+
+        // Prepare data source
+        JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(reportData);
+
+        // Compile and fill the report
+        JasperReport jasperReport = JasperCompileManager.compileReport(getClass().getResourceAsStream("/businesses.jrxml"));
+        JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, null, dataSource);
+
+        // Export report based on the type
+        if ("pdf".equalsIgnoreCase(reportType)) {
+            return JasperExportManager.exportReportToPdf(jasperPrint);
+        } else if ("excel".equalsIgnoreCase(reportType)) {
+            return exportToExcel(jasperPrint);
+        } else {
+            throw new IllegalArgumentException("Unsupported report type: " + reportType);
+        }
+    }
+
+    @Override
+    public byte[] generateCustomerReport(int businessId,String reportFormat) throws JRException {
+        if (reportFormat == null) {
+            throw new IllegalArgumentException("Report format cannot be null");
+        }
+
+        // Fetch PaidHistoryEntities
+        List<PaidHistoryEntity> paidHistoryEntities = paidHistoryService.getPaidHistory(businessId);
+
+
+        // Map PaidHistoryEntity to PaidHistoryDTO
+        PaidHistoryMapper mapper = new PaidHistoryMapper();
+        List<PaidHistoryMapper.PaidHistoryDTO> paidHistoryDTOs = mapper.mapToDTO(paidHistoryEntities);
+
+        List<Object[]> customerData = paidHistoryDTOs.stream()
+                .map(dto -> new Object[]{
+                        dto.getBusinessName(),
+                        dto.getAdminProfit(),
+                        dto.getPercentage(),
+                        dto.getPaidAmount(),
+                        dto.getPaidAt()
+                })
+                .collect(Collectors.toList());
+
+        System.out.println("Converted customerData: ");
+
+        if (customerData == null || customerData.isEmpty()) {
+            throw new RuntimeException("No customer data available.");
+        }
+
+        // Transform Object[] into BusinessPaidHistoryResponse DTOs
+        List<BusinessPaidHistoryResponse> reportData = customerData.stream()
+                .map(row -> {
+                    String businessName = (String) row[0];
+                    Double adminProfit = (Double) row[1];
+                    Double percentage = (Double) row[2];
+                    Double paidAmount = (Double) row[3];
+                    Date paidAt = (Date) row[4];
+
+                    return new BusinessPaidHistoryResponse(
+                            businessName, adminProfit, percentage, paidAmount, paidAt
+                    );
+                })
+                .collect(Collectors.toList());
+
+        // Prepare data source for JasperReports
+        JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(reportData);
+
+        // Compile and fill the report template
+        JasperReport jasperReport = JasperCompileManager.compileReport(getClass().getResourceAsStream("/owner-paid.jrxml"));
+        JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, null, dataSource);
+
+        // Export the report based on the requested format
+        if ("pdf".equalsIgnoreCase(reportFormat)) {
+            return JasperExportManager.exportReportToPdf(jasperPrint);
+        } else if ("excel".equalsIgnoreCase(reportFormat)) {
+            return exportToExcel(jasperPrint);
+        } else {
+            throw new IllegalArgumentException("Unsupported report format: " + reportFormat);
+        }
+    }
+
+
+
+
+
+    private byte[] exportToExcel(JasperPrint jasperPrint) throws JRException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        JRXlsxExporter exporter = new JRXlsxExporter();
+        exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
+        exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(baos));
+
+        SimpleXlsxReportConfiguration configuration = new SimpleXlsxReportConfiguration();
+        configuration.setOnePagePerSheet(true);
+        configuration.setRemoveEmptySpaceBetweenRows(true);
+        configuration.setDetectCellType(true);
+        configuration.setCollapseRowSpan(false);
+        configuration.setAutoFitPageHeight(true);
+        configuration.setColumnWidthRatio(1.5f);
+        exporter.setConfiguration(configuration);
+
+        exporter.exportReport();
+        return baos.toByteArray();
     }
 
     private void checkIncomeIncreased(BusinessEntity business) {

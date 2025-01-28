@@ -5,6 +5,7 @@ import com.css.coupon_sale.dto.request.SignupRequest;
 import com.css.coupon_sale.dto.request.UpdateBusinessRequest;
 import com.css.coupon_sale.dto.response.BusinessResponse;
 import com.css.coupon_sale.dto.response.SignupResponse;
+import net.sf.jasperreports.engine.JRException;
 
 import java.io.IOException;
 import java.util.List;
@@ -18,4 +19,6 @@ public interface BusinessService {
     BusinessResponse updateBusiness(Integer id, UpdateBusinessRequest requestDTO) throws IOException;
     BusinessResponse softDeleteBusiness(Integer id);
     Double getTotalIncomeForBusiness(int businessId);
+    byte[] generateBusinessReport(String reportType) throws JRException;
+    byte[] generateCustomerReport(int businessId, String reportFormat) throws JRException;
 }

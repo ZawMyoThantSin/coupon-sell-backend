@@ -41,6 +41,32 @@ public class QrCodeController {
         return ResponseEntity.ok(responseData);
     }
 
+    @GetMapping("/{id}/{code}")
+    public ResponseEntity<?> saveEncodedCode(@PathVariable("id")int id, @PathVariable("code") String code){
+        try {
+            QrCodeEntity qrCode =  qrCodeRepository.findById(id)
+                    .orElseThrow(()->new RuntimeException("Qr Not found!"));
+            qrCode.setEncoded(code);
+            qrCodeRepository.save(qrCode);
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{code}")
+    public ResponseEntity<?> findByEncodeCode(@PathVariable("code") String code){
+        try {
+            QrCodeEntity qrCode =  qrCodeRepository.findByEncoded(code);
+
+            return ResponseEntity.ok(new QrResponse(qrCode.getQrCode()) );
+        }catch (Exception e){
+            System.out.println(e.getMessage());
+            return ResponseEntity.notFound().build();
+        }
+    }
+
     @GetMapping("/validate/{id}")
     public ResponseEntity<Boolean> validateUserCoupon(@PathVariable("id") Integer id){
         SaleCouponEntity saleCoupon = saleCouponRepository.findById(id)
@@ -65,5 +91,6 @@ public class QrCodeController {
         return ResponseEntity.notFound().build();
     }
 
+    public record QrResponse(String qrCode){};
     public record ResponseData(LocalDateTime expireDate, int status, int saleCouponId, int businessId){}
 }

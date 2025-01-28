@@ -25,6 +25,8 @@ public class QrCodeEntity {
     @Column(columnDefinition = "TEXT")
     private String qrCode;
 
+    private String encoded;
+
     private int status;
 
     @Column(name = "expired_date", nullable = false)
@@ -59,6 +61,14 @@ public class QrCodeEntity {
 
     public void setQrCode(String qrCode) {
         this.qrCode = qrCode;
+    }
+
+    public String getEncoded() {
+        return encoded;
+    }
+
+    public void setEncoded(String encoded) {
+        this.encoded = encoded;
     }
 
     public int getStatus() {

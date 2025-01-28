@@ -89,6 +89,7 @@ public class OrderController {
             List<OrderResponse> responses = service.saveOrders(userId, paymentId, phoneNumber, totalPrice, quantities, screenshot, couponIds);
             if(!responses.isEmpty()){
                 webSocketHandler.sendToRole("ROLE_ADMIN","ORDER_CREATED");
+                webSocketHandler.sendToUser(userId, "ORDER_CREATED");
                 return ResponseEntity.ok(responses);
             }
             return ResponseEntity.status(400).body("Failed to save orders.");
@@ -181,4 +182,17 @@ public class OrderController {
     List<OwnerOrderResponse> responses = service.getOwnerOrderResponsesByBusinessId(businessId);
     return ResponseEntity.ok(responses);
   }
+
+  @GetMapping("/status")
+  public Map<String, Long> getOrderStats() {
+        long totalOrdersWithStatusZero = orderRepository.countTotalOrdersWithStatusZero();
+        long completedOrders = orderRepository.countCompletedOrders();
+        long todayOrders = orderRepository.countOrdersForToday();
+
+        return Map.of(
+                "pendingOrders", totalOrdersWithStatusZero,
+                "completeOrders", completedOrders,
+                "todayOrders",todayOrders
+        );
+    }
 }
