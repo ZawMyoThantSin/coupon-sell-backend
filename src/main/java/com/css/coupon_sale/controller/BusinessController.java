@@ -17,6 +17,7 @@ import com.css.coupon_sale.repository.BusinessRepository;
 import com.css.coupon_sale.repository.PaidHistoryRepository;
 import com.css.coupon_sale.service.BusinessService;
 import com.css.coupon_sale.service.PaidHistoryService;
+import jakarta.servlet.http.HttpServletResponse;
 import net.sf.jasperreports.engine.JRException;
 import org.modelmapper.ModelMapper;
 import org.slf4j.Logger;
@@ -210,6 +211,53 @@ public class BusinessController {
             e.printStackTrace(); // Log the exception
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(("Error generating report: " + e.getMessage()).getBytes());
+          
+    @GetMapping("/business-report")
+    public ResponseEntity<byte[]> generateBusinessReport(
+
+            @RequestParam String reportType,
+
+            HttpServletResponse response
+    ) throws JRException {
+        // Generate the report
+        byte[] reportBytes = businessService.generateBusinessReport( reportType);
+
+        // Set the response headers for file download
+        String fileName = "coupon-usage-report." + (reportType.equalsIgnoreCase("pdf") ? "pdf" : "xlsx");
+        response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
+        response.setContentType(reportType.equalsIgnoreCase("pdf") ? "application/pdf" : "application/vnd.ms-excel");
+
+        return ResponseEntity.ok().body(reportBytes);
+    }
+
+    @GetMapping("/business/paid-history/{id}")
+    public ResponseEntity<byte[]> generateCustomerReport(
+            @PathVariable("id") int businessId,
+            @RequestParam String reportFormat) {
+        try {
+            // Generate the report based on the provided format (PDF or Excel)
+            byte[] reportBytes = businessService.generateCustomerReport(businessId,reportFormat);
+
+            // Set the response headers
+            HttpHeaders headers = new HttpHeaders();
+            if ("pdf".equalsIgnoreCase(reportFormat)) {
+                headers.set("Content-Disposition", "inline; filename=customer_report.pdf");
+                headers.set("Content-Type", "application/pdf");
+            } else if ("excel".equalsIgnoreCase(reportFormat)) {
+                headers.set("Content-Disposition", "inline; filename=customer_report.xlsx");
+                headers.set("Content-Type", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            } else {
+                return ResponseEntity.badRequest().body("Unsupported report format".getBytes());
+            }
+
+            // Return the file as a response
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(reportBytes);
+        } catch (Exception e) {
+            // Handle any errors (like JRException or runtime errors)
+            return ResponseEntity.status(500).body(("Error generating report: " + e.getMessage()).getBytes());
+
         }
     }
 

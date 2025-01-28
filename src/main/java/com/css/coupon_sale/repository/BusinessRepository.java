@@ -16,6 +16,17 @@ public interface BusinessRepository extends JpaRepository<BusinessEntity,Integer
 //  find by user_id
     BusinessEntity findByUser_Id(Long userId);
 
+
     @Query("SELECT b.totalIncome - b.lastPaidAmount FROM BusinessEntity b WHERE b.id = :businessId")
     Double calculateAmountToPay(@Param("businessId") Integer businessId);
+
+    @Query("SELECT b.name AS businessName, " +
+            "b.contactNumber AS contactNumber, " +
+            "b.createdAt AS createdAt, " +
+            "u.name AS userName, " +
+            "u.email AS email " +
+            "FROM BusinessEntity b " +
+            "JOIN b.user u")
+    List<Object[]> getBusinessReport();
+
 }

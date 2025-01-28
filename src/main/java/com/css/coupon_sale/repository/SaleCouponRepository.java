@@ -52,5 +52,20 @@ public interface SaleCouponRepository extends JpaRepository<SaleCouponEntity , I
             @Param("startOfYear") LocalDateTime startOfYear,
             @Param("startOfNextYear") LocalDateTime startOfNextYear);
 
+    @Query("SELECT s.business.id, s.business.name, s.buyDate, SUM(s.quantity), SUM(s.totalPrice), s.coupon.product.name " +
+            "FROM SaleCouponEntity s " +
+            "WHERE s.business.id = :businessId " +
+            "GROUP BY s.business.id, s.business.name, s.buyDate, s.coupon.id, s.coupon.product.name")
+    List<Object[]> findAllSaleCoupon(@Param("businessId") Integer businessId);
+
+
+    @Query("SELECT sc.user.email AS email, sc.buyDate AS buyDate, sc.expiredDate AS expiredDate, sc.totalPrice AS totalPrice, p.name AS productName " +
+            "FROM SaleCouponEntity sc " +
+            "JOIN sc.coupon c " +
+            "JOIN c.product p " +
+            "JOIN sc.user u " +
+            "WHERE sc.business.id = :businessId " +
+            "AND sc.status != 1")
+    List<Object[]> findRemainingCoupons(@Param("businessId") int businessId);
 
 }

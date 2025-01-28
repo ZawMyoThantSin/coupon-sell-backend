@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports"
+			  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+			  xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
+			  name="userss" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="031997c5-0625-41c9-a66d-94aa1dc5330e">
+
+	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+
+	<field name="adminProfit" class="java.lang.Double"/>
+	<field name="paidAmount" class="java.lang.Double"/>
+	<field name="percentage" class="java.lang.Double"/>
+	<field name="paidAt" class="java.util.Date"/>
+
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+
+	<!-- Title Section -->
+	<title>
+		<band height="60" splitType="Stretch">
+			<staticText>
+				<reportElement x="0" y="10" width="555" height="40" uuid="d41d8cd9-8f00-b204-e980-0998ecf8427e"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="22" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Payment History Report]]></text>
+			</staticText>
+		</band>
+	</title>
+
+	<!-- Page Header -->
+	<pageHeader>
+		<band height="40" splitType="Stretch">
+			<textField pattern="MMMM dd, yyyy">
+				<reportElement x="450" y="10" width="100" height="20" uuid="e99a18c4-1f28-5b50-95b1-79d14b76ad21"/>
+				<textElement textAlignment="Right" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageHeader>
+
+	<!-- Column Header -->
+	<columnHeader>
+		<band height="40" splitType="Stretch">
+			<staticText>
+				<reportElement x="10" y="10" width="120" height="30" uuid="ecf843b4-3e61-4f6e-9965-781c3fdc786d"/>
+				<textElement textAlignment="Center">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Admin Profit]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="140" y="10" width="120" height="30" uuid="c9f0f895-f90b-47a5-a00c-4ebfa4cb92f1"/>
+				<textElement textAlignment="Center">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Owner Profit]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="270" y="10" width="120" height="30" uuid="b6d767d2-27c2-4853-8cd9-7f21362a4e1e"/>
+				<textElement textAlignment="Center">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Percentage (%)]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="400" y="10" width="120" height="30" uuid="5e732b68-2c24-496e-8e60-9e4454b3e037"/>
+				<textElement textAlignment="Center">
+					<font size="12" isBold="true"/>
+				</textElement>
+				<text><![CDATA[Payment Date]]></text>
+
+			</staticText>
+			<line>
+				<reportElement x="0" y="39" width="555" height="1" uuid="3aebf786-3c4b-4f36-8b84-2e80327f65c3"/>
+				<graphicElement>
+					<pen lineWidth="1.0" lineColor="#000000"/>
+				</graphicElement>
+			</line>
+		</band>
+
+	</columnHeader>
+
+	<!-- Detail Section -->
+	<detail>
+		<band height="30" splitType="Stretch">
+			<textField>
+				<reportElement x="10" y="5" width="120" height="20" uuid="da4b9237-486c-4ef2-8c8c-86e55461b3b4"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{adminProfit} + " MMK"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="140" y="5" width="120" height="20" uuid="77de68da-ecd8-4e01-95a9-daa2d74f45a4"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{paidAmount} + " MMK"]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="270" y="5" width="120" height="20" uuid="6f4922f4-79e5-4dcd-a0c3-0c2a2bd998b2"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{percentage} + " %"]]></textFieldExpression>
+			</textField>
+			<textField pattern="MMMM dd, yyyy">
+				<reportElement x="400" y="5" width="120" height="20" uuid="4e732ced-7299-4e0c-8d8c-f3ad59bdf21c"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
+				<textFieldExpression><![CDATA[$F{paidAt}]]></textFieldExpression>
+			</textField>
+			<line>
+				<reportElement x="0" y="29" width="555" height="1" uuid="3c59dc04-2543-4ae3-a8d6-42e880181d60"/>
+				<graphicElement>
+					<pen lineWidth="0.5" lineColor="#D3D3D3"/>
+				</graphicElement>
+			</line>
+		</band>
+	</detail>
+
+	<!-- Page Footer -->
+	<pageFooter>
+		<band height="20" splitType="Stretch">
+			<textField>
+				<reportElement x="450" y="0" width="100" height="20" uuid="67c6a1e7-6f35-47c3-a5dd-f9fc82ff3f61"/>
+				<textElement textAlignment="Right"/>
+				<textFieldExpression><![CDATA["Page " + $V{PAGE_NUMBER}]]></textFieldExpression>
+			</textField>
+		</band>
+	</pageFooter>
+
+</jasperReport>

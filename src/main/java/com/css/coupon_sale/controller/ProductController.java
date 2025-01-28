@@ -104,7 +104,7 @@ public class ProductController {
 
 
     @GetMapping("/preport/{id}")
-    public ResponseEntity<byte[]> saleCouponReport(@PathVariable("id") Integer businessId, @RequestParam String reportType) {
+    public ResponseEntity<byte[]> productReport(@PathVariable("id") Integer businessId, @RequestParam String reportType) {
         try {
 
             // Validate inputs

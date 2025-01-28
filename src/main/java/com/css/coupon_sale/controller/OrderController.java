@@ -94,6 +94,7 @@ public class OrderController {
             List<OrderResponse> responses = service.saveOrders(userId, paymentId, phoneNumber, totalPrice, quantities, screenshot, couponIds);
             if(!responses.isEmpty()){
                 webSocketHandler.sendToRole("ROLE_ADMIN","ORDER_CREATED");
+
                 NotificationRequest notificationRequest = new NotificationRequest();
                 notificationRequest.setReceiverId(null); // null for global notifications (e.g., admins)
                 notificationRequest.setMessage("A new order has been placed.");
@@ -101,6 +102,8 @@ public class OrderController {
                 notificationRequest.setRoute("/d/order");
 
                 notificationService.createNotification(notificationRequest);
+
+                webSocketHandler.sendToUser(userId, "ORDER_CREATED");
 
                 return ResponseEntity.ok(responses);
             }
@@ -194,4 +197,17 @@ public class OrderController {
     List<OwnerOrderResponse> responses = service.getOwnerOrderResponsesByBusinessId(businessId);
     return ResponseEntity.ok(responses);
   }
+
+  @GetMapping("/status")
+  public Map<String, Long> getOrderStats() {
+        long totalOrdersWithStatusZero = orderRepository.countTotalOrdersWithStatusZero();
+        long completedOrders = orderRepository.countCompletedOrders();
+        long todayOrders = orderRepository.countOrdersForToday();
+
+        return Map.of(
+                "pendingOrders", totalOrdersWithStatusZero,
+                "completeOrders", completedOrders,
+                "todayOrders",todayOrders
+        );
+    }
 }

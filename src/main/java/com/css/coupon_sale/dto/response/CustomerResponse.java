@@ -7,11 +7,12 @@ public class CustomerResponse {
     private String name;
     private String email;
     private String role;
+    private String authProvider;
     private String phone;
     private Integer funds;
     private String profile;
     private Integer status;
-    private LocalDateTime createdAt;
+    private LocalDateTime created_at;
 
     public Long getId() {
         return id;
@@ -77,11 +78,19 @@ public class CustomerResponse {
         this.status = status;
     }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
+    public LocalDateTime getCreated_at() {
+        return created_at;
     }
 
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
+    public void setCreated_at(LocalDateTime created_at) {
+        this.created_at = created_at;
+    }
+
+    public String getAuthProvider() {
+        return authProvider;
+    }
+
+    public void setAuthProvider(String authProvider) {
+        this.authProvider = authProvider;
     }
 }

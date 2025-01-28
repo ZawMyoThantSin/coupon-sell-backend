@@ -26,4 +26,25 @@ public interface OrderRepository extends JpaRepository<OrderEntity,Integer> {
 
   @Query("SELECT o FROM OrderEntity o WHERE o.coupon.product.business.id = :businessId AND o.status = 1")
   List<OrderEntity> findByBusinessId(@Param("businessId") int businessId);
+
+  @Query("SELECT COUNT(o) FROM OrderEntity o WHERE o.status = 0")
+  long countTotalOrdersWithStatusZero();
+
+  @Query("SELECT COUNT(o) FROM OrderEntity o WHERE o.status IN (1, 2)")
+  long countCompletedOrders();
+
+  @Query("SELECT COUNT(o) FROM OrderEntity o WHERE DATE(o.createdAt) = CURRENT_DATE AND o.status = 0")
+  long countOrdersForToday();
+
+  @Query("SELECT p.name AS productName, p.price AS price, p.discount AS discount, " +
+          "c.price AS totalPrice, SUM(o.quantity) AS quantity " +
+          "FROM OrderEntity o " +
+          "JOIN o.coupon c " +
+          "JOIN c.product p " +
+          "WHERE p.business.id = :businessId " +
+          "AND o.status = 1 " +
+          "GROUP BY p.id, p.name, p.price, c.price, p.discount " +
+          "ORDER BY quantity DESC")
+  List<Object[]> findBestSellingProducts(@Param("businessId") int businessId);
+
 }
