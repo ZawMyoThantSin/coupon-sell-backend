@@ -1,6 +1,7 @@
 package com.css.coupon_sale.controller;
 
 
+import com.css.coupon_sale.config.CustomWebSocketHandler;
 import com.css.coupon_sale.dto.request.BusinessRequest;
 import com.css.coupon_sale.dto.request.PayOwnerRequest;
 import com.css.coupon_sale.dto.request.SignupRequest;
@@ -9,8 +10,10 @@ import com.css.coupon_sale.dto.response.BusinessResponse;
 import com.css.coupon_sale.dto.response.HttpResponse;
 import com.css.coupon_sale.dto.response.PayOwnerResponse;
 import com.css.coupon_sale.dto.response.SignupResponse;
+import com.css.coupon_sale.entity.BusinessEntity;
 import com.css.coupon_sale.entity.PaidHistoryEntity;
 import com.css.coupon_sale.entity.UserEntity;
+import com.css.coupon_sale.repository.BusinessRepository;
 import com.css.coupon_sale.repository.PaidHistoryRepository;
 import com.css.coupon_sale.service.BusinessService;
 import com.css.coupon_sale.service.PaidHistoryService;
@@ -22,14 +25,17 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.socket.WebSocketHandler;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/businesses")
@@ -46,6 +52,12 @@ public class BusinessController {
 
     @Autowired
     private PaidHistoryRepository paidHistoryRepository;
+
+    @Autowired
+    private BusinessRepository businessRepository;
+
+    @Autowired
+    private CustomWebSocketHandler webSocketHandler;
 
     private static final Logger logger = LoggerFactory.getLogger(BusinessController.class);
 
@@ -132,19 +144,29 @@ public class BusinessController {
         return ResponseEntity.ok(totalIncome);
     }
 
+    @GetMapping("/{id}/amount-to-pay")
+    public ResponseEntity<?> calculateAmountToPay(@PathVariable Integer id) {
+        try {
+            Double amountToPay = businessService.calculateAmountToPay(id);
+            return ResponseEntity.ok(amountToPay);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Error: " + e.getMessage());
+        }
+    }
+
     @PostMapping("/pay-owner")
     public ResponseEntity<PayOwnerResponse> payOwner(@RequestBody PayOwnerRequest requestDto) {
         logger.info("Received request to pay owner: {}", requestDto);
         // Validate request
         if (requestDto.getBusinessId() == 0) {
             logger.warn("Invalid business ID: {}", requestDto.getBusinessId());
-            return ResponseEntity.badRequest().body(new PayOwnerResponse(0, 0.0, 0.0, 0.0, null));
+            return ResponseEntity.badRequest().body(new PayOwnerResponse(0, 0.0, 0.0, 0.0, null, 0.0));
         }
         if (requestDto.getDesiredPercentage() == null) {
-            return ResponseEntity.badRequest().body(new PayOwnerResponse(0, 0.0, 0.0, 0.0, null));
+            return ResponseEntity.badRequest().body(new PayOwnerResponse(0, 0.0, 0.0, 0.0, null, 0.0));
         }
         if (requestDto.getDesiredPercentage() <= 0 || requestDto.getDesiredPercentage() > 100) {
-            return ResponseEntity.badRequest().body(new PayOwnerResponse(0, 0.0, 0.0, 0.0, null));
+            return ResponseEntity.badRequest().body(new PayOwnerResponse(0, 0.0, 0.0, 0.0, null, 0.0));
         }
 
         // Process payment
@@ -154,8 +176,20 @@ public class BusinessController {
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             logger.error("Error processing payment: {}", e.getMessage());
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new PayOwnerResponse(0, 0.0, 0.0, 0.0, null));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(new PayOwnerResponse(0, 0.0, 0.0, 0.0, null,0.0));
         }
+    }
+
+    @GetMapping("/update-percent/{id}/{percentage}")
+    public ResponseEntity<?> updatePercentage(@PathVariable int id, @PathVariable String percentage){
+
+        Optional<BusinessEntity> business = businessRepository.findById(id);
+
+        if(business != null){
+            Long userId = business.get().getUser().getId();
+            webSocketHandler.sendToUser(userId, percentage);
+        }
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/{businessId}/paid-history")
@@ -164,6 +198,20 @@ public class BusinessController {
         return ResponseEntity.ok(history);
     }
 
+    @GetMapping("/paid-history-report")
+    public ResponseEntity<byte[]> generatePaidHistoryReport(
+            @RequestParam String reportType,
+            @RequestParam(required = false) Integer businessId) throws JRException {
+        try {
+            byte[] reportBytes = paidHistoryService.generatePaidHistoryReport(businessId, reportType);
+
+            System.out.println("Here is paid history report " + getAllBusinesses().getBody());
+            return ResponseEntity.ok().body(reportBytes); // Return only the body
+        } catch (Exception e) {
+            e.printStackTrace(); // Log the exception
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(("Error generating report: " + e.getMessage()).getBytes());
+          
     @GetMapping("/business-report")
     public ResponseEntity<byte[]> generateBusinessReport(
 
@@ -209,6 +257,7 @@ public class BusinessController {
         } catch (Exception e) {
             // Handle any errors (like JRException or runtime errors)
             return ResponseEntity.status(500).body(("Error generating report: " + e.getMessage()).getBytes());
+
         }
     }
 

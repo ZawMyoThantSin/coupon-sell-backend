@@ -12,6 +12,7 @@ public class PayOwnerResponse {
     private Double adminShare;
     private Double ownerShare;
     private LocalDateTime paymentDate;
+    private Double adminProfit;
 
     public int getBusinessId() {
         return businessId;
@@ -53,11 +54,20 @@ public class PayOwnerResponse {
         this.paymentDate = paymentDate;
     }
 
-    public PayOwnerResponse(int businessId, Double paidAmount, Double adminShare, Double ownerShare, LocalDateTime paymentDate) {
+    public Double getAdminProfit() {
+        return adminProfit;
+    }
+
+    public void setAdminProfit(Double adminProfit) {
+        this.adminProfit = adminProfit;
+    }
+
+    public PayOwnerResponse(int businessId, Double paidAmount, Double adminShare, Double ownerShare, LocalDateTime paymentDate, Double adminProfit) {
         this.businessId = businessId;
         this.paidAmount = paidAmount;
         this.adminShare = adminShare;
         this.ownerShare = ownerShare;
         this.paymentDate = paymentDate;
+        this.adminProfit = adminProfit;
     }
 }

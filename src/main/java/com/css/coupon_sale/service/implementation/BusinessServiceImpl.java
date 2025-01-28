@@ -230,6 +230,9 @@ public class BusinessServiceImpl implements BusinessService  {
     }
 
     @Override
+    public Double calculateAmountToPay(Integer businessId) {
+        return businessRepository.calculateAmountToPay(businessId);
+
     public byte[] generateBusinessReport(String reportType) throws JRException {
         if (reportType == null) {
             throw new IllegalArgumentException("Report type cannot be null");

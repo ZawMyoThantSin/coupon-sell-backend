@@ -1,8 +1,13 @@
 package com.css.coupon_sale.config;
 
+import com.css.coupon_sale.dto.ChatMessage;
+import com.css.coupon_sale.dto.request.MessageRequest;
+import com.css.coupon_sale.service.MessageService;
 import com.css.coupon_sale.util.JwtUtil;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
+import jakarta.websocket.OnMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.CloseStatus;
@@ -22,6 +27,9 @@ public class CustomWebSocketHandler extends TextWebSocketHandler {
 
         @Autowired
         private JwtUtil jwtUtil;
+
+        @Autowired
+        private MessageService messageService;
 
         @Override
         public void afterConnectionEstablished(WebSocketSession session) {
@@ -53,14 +61,27 @@ public class CustomWebSocketHandler extends TextWebSocketHandler {
             }
         }
 
-        @Override
-        protected void handleTextMessage(WebSocketSession session, TextMessage message) {
+        @OnMessage
+        protected void handleTextMessage(WebSocketSession session, String message) {
             try {
-                System.out.println("Received message from client: " + message.getPayload());
-                // Handle received message
-                session.sendMessage(new TextMessage("Message received: " + message.getPayload()));
-            } catch (IOException e) {
-                System.err.println("Error handling client message: " + e.getMessage());
+                ObjectMapper objectMapper = new ObjectMapper();
+                JsonNode jsonNode = objectMapper.readTree(message);
+
+                if ("PING".equals(jsonNode.get("type").asText())) {
+                    // Handle PING messages
+                    return;
+                }
+
+                // Handle other messages that require a user ID
+                String userId = jsonNode.get("userId").asText();
+                if (userId == null) {
+                    throw new IllegalArgumentException("User ID must not be null");
+                }
+
+                // Proceed with the business logic using the userId
+            } catch (Exception e) {
+                e.printStackTrace();
+                throw new RuntimeException("Error processing WebSocket message", e);
             }
         }
 

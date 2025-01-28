@@ -31,6 +31,9 @@ public class PaidHistoryEntity {
     @Column(name = "desired_percentage", nullable = false)
     private Double desiredPercentage;
 
+    @Column(name = "admin_profit", nullable = false)
+    private Double adminProfit;
+
     public int getId() {
         return id;
     }
@@ -69,6 +72,14 @@ public class PaidHistoryEntity {
 
     public void setDesiredPercentage(Double desiredPercentage) {
         this.desiredPercentage = desiredPercentage;
+    }
+
+    public Double getAdminProfit() {
+        return adminProfit;
+    }
+
+    public void setAdminProfit(Double adminProfit) {
+        this.adminProfit = adminProfit;
     }
 }
 
