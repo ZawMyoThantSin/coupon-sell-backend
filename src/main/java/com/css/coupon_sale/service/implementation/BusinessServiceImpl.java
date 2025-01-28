@@ -223,6 +223,11 @@ public class BusinessServiceImpl implements BusinessService {
         return totalIncome;
     }
 
+    @Override
+    public Double calculateAmountToPay(Integer businessId) {
+        return businessRepository.calculateAmountToPay(businessId);
+    }
+
     private void checkIncomeIncreased(BusinessEntity business) {
         // Check if the total income is greater than the last paid amount
         if (business.getTotalIncome() > business.getLastPaidAmount()) {

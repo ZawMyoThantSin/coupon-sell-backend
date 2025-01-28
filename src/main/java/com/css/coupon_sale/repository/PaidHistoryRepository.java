@@ -16,4 +16,5 @@ public interface PaidHistoryRepository extends JpaRepository<PaidHistoryEntity, 
     @Query("SELECT p FROM PaidHistoryEntity p WHERE p.business.id = :businessId ORDER BY p.paymentDate DESC")
     List<PaidHistoryEntity> findByBusinessIdOrderByPaymentDateDesc(@Param("businessId") int businessId);
 
+    List<PaidHistoryEntity> findAll();
 }

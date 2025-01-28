@@ -18,4 +18,5 @@ public interface BusinessService {
     BusinessResponse updateBusiness(Integer id, UpdateBusinessRequest requestDTO) throws IOException;
     BusinessResponse softDeleteBusiness(Integer id);
     Double getTotalIncomeForBusiness(int businessId);
+    Double calculateAmountToPay(Integer businessId);
 }

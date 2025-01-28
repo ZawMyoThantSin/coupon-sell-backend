@@ -18,6 +18,7 @@ public class BusinessResponse {
     private String userEmail;
     private double count;
     private String paymentStatus;
+    private Double lastPaidAmount;
 
 
     public double getCount() {
@@ -130,5 +131,13 @@ public class BusinessResponse {
 
     public void setPaymentStatus(String paymentStatus) {
         this.paymentStatus = paymentStatus;
+    }
+
+    public Double getLastPaidAmount() {
+        return lastPaidAmount;
+    }
+
+    public void setLastPaidAmount(Double lastPaidAmount) {
+        this.lastPaidAmount = lastPaidAmount;
     }
 }

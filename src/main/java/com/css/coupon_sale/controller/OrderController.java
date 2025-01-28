@@ -1,6 +1,7 @@
 package com.css.coupon_sale.controller;
 
 import com.css.coupon_sale.config.CustomWebSocketHandler;
+import com.css.coupon_sale.dto.request.NotificationRequest;
 import com.css.coupon_sale.dto.request.OrderItemRequest;
 import com.css.coupon_sale.dto.request.OrderRequest;
 import com.css.coupon_sale.dto.request.ProductRequest;
@@ -9,6 +10,7 @@ import com.css.coupon_sale.entity.CouponEntity;
 import com.css.coupon_sale.entity.OrderEntity;
 import com.css.coupon_sale.repository.CouponRepository;
 import com.css.coupon_sale.repository.OrderRepository;
+import com.css.coupon_sale.service.NotificationService;
 import com.css.coupon_sale.service.OrderService;
 import com.css.coupon_sale.service.ProductService;
 import com.css.coupon_sale.service.QrCodeService;
@@ -45,6 +47,9 @@ public class OrderController {
 
   @Autowired
   private CustomWebSocketHandler webSocketHandler;
+
+  @Autowired
+  private NotificationService notificationService;
 
     @Autowired
     private CouponRepository CRepository;
@@ -89,6 +94,14 @@ public class OrderController {
             List<OrderResponse> responses = service.saveOrders(userId, paymentId, phoneNumber, totalPrice, quantities, screenshot, couponIds);
             if(!responses.isEmpty()){
                 webSocketHandler.sendToRole("ROLE_ADMIN","ORDER_CREATED");
+                NotificationRequest notificationRequest = new NotificationRequest();
+                notificationRequest.setReceiverId(null); // null for global notifications (e.g., admins)
+                notificationRequest.setMessage("A new order has been placed.");
+                notificationRequest.setType("NEW_ORDER");
+                notificationRequest.setRoute("/d/order");
+
+                notificationService.createNotification(notificationRequest);
+
                 return ResponseEntity.ok(responses);
             }
             return ResponseEntity.status(400).body("Failed to save orders.");
