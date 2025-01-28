@@ -94,20 +94,16 @@ public class OrderController {
             List<OrderResponse> responses = service.saveOrders(userId, paymentId, phoneNumber, totalPrice, quantities, screenshot, couponIds);
             if(!responses.isEmpty()){
                 webSocketHandler.sendToRole("ROLE_ADMIN","ORDER_CREATED");
-
+                webSocketHandler.sendToUser(userId, "ORDER_CREATED");
                 NotificationRequest notificationRequest = new NotificationRequest();
                 notificationRequest.setReceiverId(null); // null for global notifications (e.g., admins)
                 notificationRequest.setMessage("A new order has been placed.");
                 notificationRequest.setType("NEW_ORDER");
                 notificationRequest.setRoute("/d/order");
-
                 notificationService.createNotification(notificationRequest);
-
-                webSocketHandler.sendToUser(userId, "ORDER_CREATED");
-
                 return ResponseEntity.ok(responses);
             }
-            return ResponseEntity.status(400).body("Failed to save orders.");
+            return ResponseEntity.ok().build();
         } catch (Exception e) {
             e.printStackTrace();
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

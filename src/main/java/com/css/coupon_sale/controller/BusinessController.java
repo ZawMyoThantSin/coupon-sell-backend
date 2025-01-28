@@ -211,7 +211,9 @@ public class BusinessController {
             e.printStackTrace(); // Log the exception
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(("Error generating report: " + e.getMessage()).getBytes());
-          
+
+        }
+    }
     @GetMapping("/business-report")
     public ResponseEntity<byte[]> generateBusinessReport(
 

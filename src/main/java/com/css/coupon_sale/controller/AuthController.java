@@ -103,7 +103,7 @@ public class AuthController {
             String jwt = jwtUtil.generateToken(userDetails.getUsername(),role,oUser.getId());//error
 
             // Return response with JWT
-            return ResponseEntity.ok(new LoginResponse(jwt,"Success"));
+            return ResponseEntity.ok(new LoginResponse(jwt,""+oUser.getId()));
         }
     }
 
