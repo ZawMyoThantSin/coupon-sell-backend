@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Data
@@ -29,6 +31,15 @@ public class MessageEntity {
 
     @Column(name = "send_at", nullable = false)
     private LocalDateTime sendAt;
+
+    @Column(name = "is_read", nullable = false)
+    private int isRead;
+
+    @Column(name = "edited_at", nullable = true)
+    private LocalDateTime editedAt;
+
+    @OneToMany(mappedBy = "message", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MessageReactionEntity> reactions = new ArrayList<>();
 
     public Long getId() {
         return id;
@@ -68,5 +79,29 @@ public class MessageEntity {
 
     public void setSendAt(LocalDateTime sendAt) {
         this.sendAt = sendAt;
+    }
+
+    public int getIsRead() {
+        return isRead;
+    }
+
+    public void setIsRead(int isRead) {
+        this.isRead = isRead;
+    }
+
+    public LocalDateTime getEditedAt() {
+        return editedAt;
+    }
+
+    public void setEditedAt(LocalDateTime editedAt) {
+        this.editedAt = editedAt;
+    }
+
+    public List<MessageReactionEntity> getReactions() {
+        return reactions;
+    }
+
+    public void setReactions(List<MessageReactionEntity> reactions) {
+        this.reactions = reactions;
     }
 }

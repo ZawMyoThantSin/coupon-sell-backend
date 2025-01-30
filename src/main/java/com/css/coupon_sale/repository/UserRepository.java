@@ -19,4 +19,10 @@ public interface UserRepository extends JpaRepository<UserEntity,Long> {
 
     @Query("SELECT u.id FROM UserEntity u WHERE u.role = 'ADMIN'")
     Optional<Long> findAdminUserId();
+
+    @Query("SELECT COUNT(u) FROM UserEntity u WHERE u.role <> 'admin'")
+    long countByRoleNotAdmin();
+
+    @Query("SELECT COUNT(u) FROM UserEntity u WHERE DATE(u.created_at) = CURRENT_DATE")
+    long countUsersCreatedToday();
 }

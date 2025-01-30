@@ -263,4 +263,15 @@ public class BusinessController {
         }
     }
 
+    @GetMapping("/count")
+    public ResponseEntity<?> getTotalBusinessCount() {
+        long totalBusinessCount = businessRepository.countAllBusinesses();
+        long todayBusinessCount = businessRepository.countBusinessesCreatedToday();
+
+        Map<String, Long> response = new HashMap<>();
+        response.put("totalBusinessCount", totalBusinessCount);
+        response.put("todayBusinessCount", todayBusinessCount);
+
+        return ResponseEntity.ok(response);
+    }
 }

@@ -297,7 +297,6 @@ public class BusinessServiceImpl implements BusinessService  {
         // Fetch PaidHistoryEntities
         List<PaidHistoryEntity> paidHistoryEntities = paidHistoryService.getPaidHistory(businessId);
 
-
         // Map PaidHistoryEntity to PaidHistoryDTO
         PaidHistoryMapper mapper = new PaidHistoryMapper();
         List<PaidHistoryMapper.PaidHistoryDTO> paidHistoryDTOs = mapper.mapToDTO(paidHistoryEntities);
@@ -312,10 +311,9 @@ public class BusinessServiceImpl implements BusinessService  {
                 })
                 .collect(Collectors.toList());
 
-        System.out.println("Converted customerData: ");
 
         if (customerData == null || customerData.isEmpty()) {
-            throw new RuntimeException("No customer data available.");
+            throw new RuntimeException("No  data available.");
         }
 
         // Transform Object[] into BusinessPaidHistoryResponse DTOs

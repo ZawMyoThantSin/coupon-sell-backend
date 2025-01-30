@@ -6,7 +6,6 @@
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
-	<field name="businessName" class="java.lang.String"/>
 	<field name="paymentDate" class="java.util.Date"/>
 	<field name="paidAmount" class="java.lang.Double"/>
 	<field name="desiredPercentage" class="java.lang.Double"/>
@@ -18,11 +17,12 @@
 		<band height="71" splitType="Stretch">
 			<textField pattern="MMMMM dd, yyyy">
 				<reportElement x="460" y="30" width="90" height="20" uuid="9ad82164-cf57-49f6-b4d2-81e9a8fdb7ba"/>
+				<textElement textAlignment="Right"/>
 				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="176" y="6" width="218" height="30" uuid="dccc1ad0-efaf-4b07-999f-d435918d160b"/>
-				<textElement>
+				<textElement textAlignment="Center">
 					<font size="22"/>
 				</textElement>
 				<text><![CDATA[Paid History Report]]></text>
@@ -43,35 +43,28 @@
 	<columnHeader>
 		<band height="55" splitType="Stretch">
 			<staticText>
-				<reportElement x="0" y="10" width="110" height="30" uuid="e3035a40-d7f3-46ab-bbba-6c19dc7e328f"/>
-				<textElement>
-					<font size="22"/>
-				</textElement>
-				<text><![CDATA[Business Name]]></text>
-			</staticText>
-			<staticText>
-				<reportElement x="110" y="10" width="110" height="30" uuid="bde93c81-4c60-4923-9ade-dc6d93e26aa1"/>
+				<reportElement x="10" y="10" width="120" height="30" uuid="bde93c81-4c60-4923-9ade-dc6d93e26aa1"/>
 				<textElement>
 					<font size="22"/>
 				</textElement>
 				<text><![CDATA[Date]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="220" y="10" width="110" height="30" uuid="5770374a-e854-4eb4-9200-fa47e0f99a25"/>
+				<reportElement x="130" y="10" width="140" height="30" uuid="5770374a-e854-4eb4-9200-fa47e0f99a25"/>
 				<textElement>
 					<font size="22"/>
 				</textElement>
 				<text><![CDATA[Amount]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="330" y="10" width="110" height="30" uuid="5770374a-e854-4eb4-9200-fa47e0f99a25"/>
+				<reportElement x="270" y="10" width="124" height="30" uuid="5770374a-e854-4eb4-9200-fa47e0f99a25"/>
 				<textElement>
 					<font size="22"/>
 				</textElement>
 				<text><![CDATA[Percentage]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="440" y="10" width="120" height="30" uuid="5770374a-e854-4eb4-9200-fa47e0f99a25"/>
+				<reportElement x="394" y="10" width="166" height="30" uuid="5770374a-e854-4eb4-9200-fa47e0f99a25"/>
 				<textElement>
 					<font size="22"/>
 				</textElement>
@@ -89,37 +82,30 @@
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="71" splitType="Stretch">
+		<band height="110" splitType="Stretch">
 			<textField>
-				<reportElement x="0" y="20" width="110" height="30" uuid="b66e642a-e724-423a-9f09-88e7fcefe5cc"/>
-				<textElement>
-					<font size="14"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$F{businessName}]]></textFieldExpression>
-			</textField>
-			<textField>
-				<reportElement x="110" y="20" width="110" height="30" uuid="89f435ec-9514-401d-bcb1-32ebea9c7647"/>
+				<reportElement x="10" y="20" width="120" height="30" uuid="89f435ec-9514-401d-bcb1-32ebea9c7647"/>
 				<textElement>
 					<font size="14"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{paymentDate}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="220" y="20" width="110" height="30" uuid="7046bc24-9e87-423f-999d-90446a7e35b9"/>
+				<reportElement x="130" y="20" width="140" height="30" uuid="7046bc24-9e87-423f-999d-90446a7e35b9"/>
 				<textElement>
 					<font size="14"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{paidAmount}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="330" y="20" width="110" height="30" uuid="89f435ec-9514-401d-bcb1-32ebea9c7647"/>
+				<reportElement x="270" y="20" width="124" height="30" uuid="89f435ec-9514-401d-bcb1-32ebea9c7647"/>
 				<textElement>
 					<font size="14"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{desiredPercentage}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="440" y="20" width="120" height="30" uuid="89f435ec-9514-401d-bcb1-32ebea9c7647"/>
+				<reportElement x="394" y="20" width="166" height="30" uuid="89f435ec-9514-401d-bcb1-32ebea9c7647"/>
 				<textElement>
 					<font size="14"/>
 				</textElement>

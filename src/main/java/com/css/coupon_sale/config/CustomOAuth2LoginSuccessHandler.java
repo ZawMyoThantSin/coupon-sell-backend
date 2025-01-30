@@ -6,6 +6,7 @@ import com.css.coupon_sale.util.JwtUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
@@ -21,6 +22,8 @@ public class CustomOAuth2LoginSuccessHandler implements AuthenticationSuccessHan
     @Autowired
     private UserRepository userRepository;
 
+    @Value("${cors.allowed-origin}")
+    private String allowedOrigin;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -29,14 +32,16 @@ public class CustomOAuth2LoginSuccessHandler implements AuthenticationSuccessHan
         String email = oAuth2User.getAttribute("email");
 
         UserEntity user = userRepository.findByEmail(email).orElseThrow(() -> new RuntimeException("User not found"));
-//        System.out.println("User Id"+user.getId());
+        String token = null;
         if("OWNER".equals(user.getRole())){
-            String token = jwtUtil.generateToken(email, user.getRole(),user.getId());
+             token = jwtUtil.generateToken(email, user.getRole(),user.getId());
+        }else {
+             token = jwtUtil.generateToken(email, "ROLE_"+user.getRole(),user.getId());
         }
-        String token = jwtUtil.generateToken(email, "ROLE_"+user.getRole(),user.getId());
+
 
         response.setContentType("application/json");
         response.getWriter().write("{\"token\":\"" + token + "\"}");
-        response.sendRedirect("http://localhost:4200/login?token="+ token);
+        response.sendRedirect(allowedOrigin+"/login?token="+ token);
     }
 }

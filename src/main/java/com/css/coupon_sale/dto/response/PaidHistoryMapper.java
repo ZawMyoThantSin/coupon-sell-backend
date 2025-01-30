@@ -72,7 +72,7 @@ public class PaidHistoryMapper {
         return paidHistoryEntities.stream()
                 .map(entity -> new PaidHistoryDTO(
                         entity.getBusiness().getName(), // Assuming the entity has a businessName field
-                        entity.getPaidAmount(), // Assuming the entity has an adminProfit field
+                        entity.getAdminProfit(), // Assuming the entity has an adminProfit field
                         entity.getDesiredPercentage(),  // Assuming the entity has a percentage field
                         entity.getPaidAmount(),  // Assuming the entity has a paidAmount field
                         entity.getPaymentDate() != null

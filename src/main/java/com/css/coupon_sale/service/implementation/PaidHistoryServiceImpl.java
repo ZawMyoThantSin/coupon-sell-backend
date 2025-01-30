@@ -15,6 +15,7 @@ import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import net.sf.jasperreports.engine.export.ooxml.JRXlsxExporter;
 import net.sf.jasperreports.export.SimpleExporterInput;
 import net.sf.jasperreports.export.SimpleOutputStreamExporterOutput;
+import net.sf.jasperreports.export.SimpleXlsxReportConfiguration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -101,61 +102,67 @@ public class PaidHistoryServiceImpl implements PaidHistoryService {
 
     @Override
     public byte[] generatePaidHistoryReport(Integer businessId, String reportType) throws JRException {
-        try {
-            // Fetch data from repository
-            System.out.println("Business ID" + businessId);
-            List<PaidHistoryEntity> paidHistoryData;
-            if (businessId == null) {
-                paidHistoryData = paidHistoryRepository.findAll(); // Fetch all records
-            } else {
-                paidHistoryData = paidHistoryRepository.findByBusinessIdOrderByPaymentDateDesc(businessId); // Fetch records for a specific business
-            }
+        if (reportType == null) {
+            throw new IllegalArgumentException("Report type cannot be null");
+        }
 
-            if (paidHistoryData == null || paidHistoryData.isEmpty()) {
-                throw new RuntimeException("No paid history data available for the given business ID");
-            }
+        // Fetch PaidHistoryEntities
+        List<PaidHistoryEntity> paidHistoryEntities;
+        if (businessId == null) {
+            paidHistoryEntities = paidHistoryRepository.findAll(); // Fetch all records
+        } else {
+            paidHistoryEntities = paidHistoryRepository.findByBusinessIdOrderByPaymentDateDesc(businessId); // Fetch records for a specific business
+        }
 
-            // Convert data into a list of DTOs
-            List<PaidHistoryReportResponse> reportData = paidHistoryData.stream()
-                    .map(history -> {
-                        // Convert LocalDateTime to Date
-                        Date paymentDate = convertToDate(history.getPaymentDate());
-                        return new PaidHistoryReportResponse(
-                                history.getBusiness().getName(),
-                                paymentDate, // Use the converted Date
-                                history.getPaidAmount(),
-                                history.getDesiredPercentage(),
-                                history.getAdminProfit()
-                        );
-                    })
-                    .collect(Collectors.toList());
+        if (paidHistoryEntities == null || paidHistoryEntities.isEmpty()) {
+            throw new RuntimeException("No paid history data available for the given business ID");
+        }
 
-            // Prepare the data source
-            JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(reportData);
+        // Map PaidHistoryEntity to PaidHistoryReportResponse DTO
+        List<PaidHistoryReportResponse> reportData = paidHistoryEntities.stream()
+                .map(history -> {
+                    // Convert LocalDateTime to Date
+                    Date paymentDate = convertToDate(history.getPaymentDate());
+                    return new PaidHistoryReportResponse(
+                            history.getBusiness().getName(),
+                            paymentDate, // Use the converted Date
+                            history.getPaidAmount(),
+                            history.getDesiredPercentage(),
+                            history.getAdminProfit()
+                    );
+                })
+                .collect(Collectors.toList());
 
-            // Prepare the parameters for the report
-            Map<String, Object> parameters = new HashMap<>();
-            if (businessId == null) {
-                parameters.put("businessName", "All Businesses"); // Set business name to "All Businesses" when no specific business is selected
-            } else {
-                parameters.put("businessName", reportData.isEmpty() ? "" : reportData.get(0).getBusinessName());
-            }
+        // Prepare data source for JasperReports
+        JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(reportData);
 
-            // Fill the report
-            JasperReport jasperReport = JasperCompileManager.compileReport(getClass().getResourceAsStream("/paid-history-report.jrxml"));
-            JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
+        // Prepare the parameters for the report
+        Map<String, Object> parameters = new HashMap<>();
+        if (businessId == null) {
+            parameters.put("businessName", "All Businesses"); // Set business name to "All Businesses" when no specific business is selected
+        } else {
+            parameters.put("businessName", reportData.isEmpty() ? "" : reportData.get(0).getBusinessName());
+        }
 
-            // Return the report in the requested format
-            if ("pdf".equalsIgnoreCase(reportType)) {
-                return JasperExportManager.exportReportToPdf(jasperPrint);
-            } else if ("excel".equalsIgnoreCase(reportType)) {
-                return exportToExcel(jasperPrint);
-            } else {
-                throw new IllegalArgumentException("Unsupported report type: " + reportType);
-            }
-        } catch (Exception e) {
-            e.printStackTrace(); // Log the exception
-            throw new JRException("Failed to generate report: " + e.getMessage(), e);
+        // Determine which JRXML file to use
+        String jrxmlFile;
+        if (businessId == null) {
+            jrxmlFile = "/paid-history-report.jrxml"; // Include business name
+        } else {
+            jrxmlFile = "/paid-history-report-b.jrxml"; // Exclude business name
+        }
+
+        // Compile and fill the report template
+        JasperReport jasperReport = JasperCompileManager.compileReport(getClass().getResourceAsStream(jrxmlFile));
+        JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
+
+        // Export the report based on the requested format
+        if ("pdf".equalsIgnoreCase(reportType)) {
+            return JasperExportManager.exportReportToPdf(jasperPrint);
+        } else if ("excel".equalsIgnoreCase(reportType)) {
+            return exportToExcel(jasperPrint);
+        } else {
+            throw new IllegalArgumentException("Unsupported report type: " + reportType);
         }
     }
 
@@ -165,11 +172,21 @@ public class PaidHistoryServiceImpl implements PaidHistoryService {
     }
 
     private byte[] exportToExcel(JasperPrint jasperPrint) throws JRException {
-        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
         JRXlsxExporter exporter = new JRXlsxExporter();
         exporter.setExporterInput(new SimpleExporterInput(jasperPrint));
-        exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(outputStream));
+        exporter.setExporterOutput(new SimpleOutputStreamExporterOutput(baos));
+
+        SimpleXlsxReportConfiguration configuration = new SimpleXlsxReportConfiguration();
+        configuration.setOnePagePerSheet(true);
+        configuration.setRemoveEmptySpaceBetweenRows(true);
+        configuration.setDetectCellType(true);
+        configuration.setCollapseRowSpan(false);
+        configuration.setAutoFitPageHeight(true);
+        configuration.setColumnWidthRatio(1.5f);
+        exporter.setConfiguration(configuration);
+
         exporter.exportReport();
-        return outputStream.toByteArray();
+        return baos.toByteArray();
     }
 }

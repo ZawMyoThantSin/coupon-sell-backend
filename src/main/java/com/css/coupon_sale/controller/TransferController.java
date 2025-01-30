@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/transfer")
@@ -36,6 +37,17 @@ public class TransferController {
 
             String message = "COUPON_TRANSFER_TRANSFERRED";
             webSocketHandler.sendToUser(requestDTO.getAccepterId(), message);
+
+
+
+            webSocketHandler.sendToUser1(requestDTO.getAccepterId(), Map.of(
+                    "type", "couponTransferred",
+                    "senderId", response.getSenderId(), // Assuming the response contains the sender's ID
+                    "receiverId", response.getAccepterId(),
+                    "content", "You have received a coupon!",
+                    "couponId", response.getSaleCouponId(),
+                    "timestamp", System.currentTimeMillis()
+            ));
 
             return ResponseEntity.ok(response);
         } catch (Exception e) {

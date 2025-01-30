@@ -29,4 +29,9 @@ public interface BusinessRepository extends JpaRepository<BusinessEntity,Integer
             "JOIN b.user u")
     List<Object[]> getBusinessReport();
 
+    @Query("SELECT COUNT(b) FROM BusinessEntity b")
+    long countAllBusinesses();
+
+    @Query("SELECT COUNT(b) FROM BusinessEntity b WHERE DATE(b.createdAt) = CURRENT_DATE")
+    long countBusinessesCreatedToday();
 }

@@ -3,16 +3,19 @@ package com.css.coupon_sale.dto.response;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
 public class MessageResponse {
     private Long id;
     private Long senderId;
     private Long receiverId;
     private String content;
     private LocalDateTime sendAt;
+    private Integer isRead;
+    private LocalDateTime editedAt;
+    private List<ReactionResponse> reactions;
 
     public Long getId() {
         return id;
@@ -54,11 +57,38 @@ public class MessageResponse {
         this.sendAt = sendAt;
     }
 
-    public MessageResponse(Long id, Long senderId, Long receiverId, String content, LocalDateTime sendAt) {
+    public Integer getIsRead() {
+        return isRead;
+    }
+
+    public void setIsRead(Integer isRead) {
+        this.isRead = isRead;
+    }
+
+    public LocalDateTime getEditedAt() {
+        return editedAt;
+    }
+
+    public void setEditedAt(LocalDateTime editedAt) {
+        this.editedAt = editedAt;
+    }
+
+    public List<ReactionResponse> getReactions() {
+        return reactions;
+    }
+
+    public void setReactions(List<ReactionResponse> reactions) {
+        this.reactions = reactions;
+    }
+
+    public MessageResponse(Long id, Long senderId, Long receiverId, String content, LocalDateTime sendAt, Integer isRead, LocalDateTime editedAt, List<ReactionResponse> reactions) {
         this.id = id;
         this.senderId = senderId;
         this.receiverId = receiverId;
         this.content = content;
         this.sendAt = sendAt;
+        this.isRead = isRead;
+        this.editedAt = editedAt;
+        this.reactions = reactions;
     }
 }

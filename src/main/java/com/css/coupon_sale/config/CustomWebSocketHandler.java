@@ -16,6 +16,7 @@ import org.springframework.web.socket.WebSocketSession;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import java.io.IOException;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
@@ -119,6 +120,24 @@ public class CustomWebSocketHandler extends TextWebSocketHandler {
             try {
 
                 session.sendMessage(new TextMessage(message));
+            } catch (IOException e) {
+                System.err.println("Error sending message: " + e.getMessage());
+            }
+        }
+
+        public void sendToUser1(Long userId, Map<String, Object> messageData) {
+            WebSocketSession session = userSessions.get(userId);
+            if (session != null && session.isOpen()) {
+                sendMessage1(session, messageData);
+            } else {
+                System.out.println("User with ID " + userId + " is not connected.");
+            }
+        }
+
+        private void sendMessage1(WebSocketSession session, Map<String, Object> messageData) {
+            try {
+                String jsonMessage = objectMapper.writeValueAsString(messageData);
+                session.sendMessage(new TextMessage(jsonMessage));
             } catch (IOException e) {
                 System.err.println("Error sending message: " + e.getMessage());
             }

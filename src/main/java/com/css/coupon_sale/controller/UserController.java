@@ -18,6 +18,8 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/user")
@@ -108,5 +110,16 @@ public class UserController {
         }
 
         return ResponseEntity.ok (response);
+    }
+
+    @GetMapping("/count")
+    public ResponseEntity<?> getTotalUsersCount(){
+        long userCount = userRepository.countByRoleNotAdmin();
+        long todayUserCount = userRepository.countUsersCreatedToday();
+
+        Map<String, Long> response = new HashMap<>();
+        response.put("totalUsersCount", userCount);
+        response.put("todayUserCount", todayUserCount);
+        return ResponseEntity.ok(response);
     }
 }
