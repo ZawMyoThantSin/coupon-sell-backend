@@ -288,6 +288,16 @@ public class CouponServiceImpl implements CouponService {
 
         return usages;
     }
+
+    @Override
+    public void softDeleteCoupon(Integer id) {
+        CouponEntity coupon = couponRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Coupon not found"));
+        coupon.setVisible(false);
+        coupon.setUpdatedAt(LocalDateTime.now());
+        couponRepository.save(coupon);
+    }
+
     @Override
     public byte[] saleCouponReportForMonthly(Integer businessId, String reportType) throws JRException {
         if (reportType == null) {

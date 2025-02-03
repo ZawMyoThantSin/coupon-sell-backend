@@ -388,6 +388,8 @@ public class BusinessServiceImpl implements BusinessService  {
         responseDTO.setUserEmail(business.getUser().getEmail());
         responseDTO.setCategory(business.getCategory().getName());
         responseDTO.setPaymentStatus(business.getPaymentStatus());
+        responseDTO.setCreatedAt(business.getCreatedAt());
+
         double count = businessReviewService.calculateOverviewCount(business.getId());
         responseDTO.setCount(count);
         return responseDTO;

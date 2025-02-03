@@ -1,127 +1,108 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports"
-			  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-			  xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd"
-			  name="userss" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="031997c5-0625-41c9-a66d-94aa1dc5330e">
-
+<!-- Created with Jaspersoft Studio version 6.20.5.final using JasperReports Library version 6.20.5-3efcf2e67f959db3888d79f73dde2dbd7acb4f8e  -->
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="userss" pageWidth="555" pageHeight="802" columnWidth="555" leftMargin="0" rightMargin="0" topMargin="0" bottomMargin="0" uuid="031997c5-0625-41c9-a66d-94aa1dc5330e">
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
-
+	<style name="tableHeader" forecolor="#000000" backcolor="#E6E6E6">
+		<box>
+			<pen lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineStyle="Solid"/>
+			<leftPen lineWidth="0.5" lineStyle="Solid"/>
+			<bottomPen lineWidth="0.5" lineStyle="Solid"/>
+			<rightPen lineWidth="0.5" lineStyle="Solid"/>
+		</box>
+	</style>
+	<style name="tableCell" forecolor="#000000" backcolor="#FFFFFF">
+		<box>
+			<pen lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineStyle="Solid"/>
+			<bottomPen lineWidth="0.5" lineStyle="Solid"/>
+			<rightPen lineWidth="0.5" lineStyle="Solid"/>
+		</box>
+	</style>
+	<style name="tableFooter" forecolor="#000000" backcolor="#E6E6E6">
+		<box>
+			<pen lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineStyle="Solid"/>
+			<bottomPen lineWidth="0.5" lineStyle="Solid"/>
+			<rightPen lineWidth="0.5" lineStyle="Solid"/>
+		</box>
+	</style>
 	<field name="adminProfit" class="java.lang.Double"/>
 	<field name="paidAmount" class="java.lang.Double"/>
 	<field name="percentage" class="java.lang.Double"/>
 	<field name="paidAt" class="java.util.Date"/>
-
-	<background>
-		<band splitType="Stretch"/>
-	</background>
-
-	<!-- Title Section -->
 	<title>
-		<band height="60" splitType="Stretch">
+		<band height="81" splitType="Stretch">
+			<textField pattern="dd-MMM-yyyy">
+				<reportElement x="460" y="50" width="90" height="20" uuid="9ad82164-cf57-49f6-b4d2-81e9a8fdb7ba"/>
+				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
+			</textField>
 			<staticText>
-				<reportElement x="0" y="10" width="555" height="40" uuid="d41d8cd9-8f00-b204-e980-0998ecf8427e"/>
-				<textElement textAlignment="Center" verticalAlignment="Middle">
-					<font size="22" isBold="true"/>
+				<reportElement x="175" y="10" width="234" height="30" uuid="dccc1ad0-efaf-4b07-999f-d435918d160b"/>
+				<textElement>
+					<font size="22"/>
 				</textElement>
 				<text><![CDATA[Payment History Report]]></text>
 			</staticText>
 		</band>
 	</title>
-
-	<!-- Page Header -->
-	<pageHeader>
-		<band height="40" splitType="Stretch">
-			<textField pattern="MMMM dd, yyyy">
-				<reportElement x="450" y="10" width="100" height="20" uuid="e99a18c4-1f28-5b50-95b1-79d14b76ad21"/>
-				<textElement textAlignment="Right" verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[new java.util.Date()]]></textFieldExpression>
-			</textField>
-		</band>
-	</pageHeader>
-
-	<!-- Column Header -->
 	<columnHeader>
-		<band height="40" splitType="Stretch">
+		<band height="43" splitType="Stretch">
 			<staticText>
-				<reportElement x="10" y="10" width="120" height="30" uuid="ecf843b4-3e61-4f6e-9965-781c3fdc786d"/>
-				<textElement textAlignment="Center">
-					<font size="12" isBold="true"/>
+				<reportElement style="tableHeader" x="50" y="0" width="100" height="43" uuid="60b2d053-a70c-48c6-bf4f-5f816e3a1295"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="14" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Admin Profit]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="140" y="10" width="120" height="30" uuid="c9f0f895-f90b-47a5-a00c-4ebfa4cb92f1"/>
-				<textElement textAlignment="Center">
-					<font size="12" isBold="true"/>
+				<reportElement style="tableHeader" x="150" y="0" width="100" height="43" uuid="2e669347-b0b8-4ec5-b739-dd1a925ac956"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="14" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Owner Profit]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="270" y="10" width="120" height="30" uuid="b6d767d2-27c2-4853-8cd9-7f21362a4e1e"/>
-				<textElement textAlignment="Center">
-					<font size="12" isBold="true"/>
+				<reportElement style="tableHeader" x="250" y="0" width="100" height="43" uuid="9c2b3004-a90c-4729-b519-abf1f5718af4"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="14" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Percentage (%)]]></text>
+				<text><![CDATA[Percentage]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="400" y="10" width="120" height="30" uuid="5e732b68-2c24-496e-8e60-9e4454b3e037"/>
-				<textElement textAlignment="Center">
-					<font size="12" isBold="true"/>
+				<reportElement style="tableHeader" x="350" y="0" width="155" height="43" uuid="d148edf8-f481-4b27-86ba-ac087b2a0057"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="14" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Payment Date]]></text>
-
 			</staticText>
-			<line>
-				<reportElement x="0" y="39" width="555" height="1" uuid="3aebf786-3c4b-4f36-8b84-2e80327f65c3"/>
-				<graphicElement>
-					<pen lineWidth="1.0" lineColor="#000000"/>
-				</graphicElement>
-			</line>
 		</band>
-
 	</columnHeader>
-
-	<!-- Detail Section -->
 	<detail>
-		<band height="30" splitType="Stretch">
+		<band height="40" splitType="Stretch">
 			<textField>
-				<reportElement x="10" y="5" width="120" height="20" uuid="da4b9237-486c-4ef2-8c8c-86e55461b3b4"/>
+				<reportElement style="tableCell" x="50" y="0" width="100" height="40" uuid="a0f48fb6-70bb-4fe6-afce-c9676cd7c5ac"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{adminProfit} + " MMK"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="140" y="5" width="120" height="20" uuid="77de68da-ecd8-4e01-95a9-daa2d74f45a4"/>
+				<reportElement style="tableCell" x="150" y="0" width="100" height="40" uuid="390c9e83-b6fd-4ad2-84cb-ef0f4d2f7ed1"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{paidAmount} + " MMK"]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="270" y="5" width="120" height="20" uuid="6f4922f4-79e5-4dcd-a0c3-0c2a2bd998b2"/>
+				<reportElement style="tableCell" x="250" y="0" width="100" height="40" uuid="78cb3508-e243-49b4-ae92-6956c37665ca"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{percentage} + " %"]]></textFieldExpression>
 			</textField>
-			<textField pattern="MMMM dd, yyyy">
-				<reportElement x="400" y="5" width="120" height="20" uuid="4e732ced-7299-4e0c-8d8c-f3ad59bdf21c"/>
+			<textField pattern="dd-MMM-yyyy">
+				<reportElement style="tableCell" x="350" y="0" width="155" height="40" uuid="fd393aac-2249-4e96-8792-db82c50eb244"/>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{paidAt}]]></textFieldExpression>
 			</textField>
-			<line>
-				<reportElement x="0" y="29" width="555" height="1" uuid="3c59dc04-2543-4ae3-a8d6-42e880181d60"/>
-				<graphicElement>
-					<pen lineWidth="0.5" lineColor="#D3D3D3"/>
-				</graphicElement>
-			</line>
 		</band>
 	</detail>
-
-	<!-- Page Footer -->
-	<pageFooter>
-		<band height="20" splitType="Stretch">
-			<textField>
-				<reportElement x="450" y="0" width="100" height="20" uuid="67c6a1e7-6f35-47c3-a5dd-f9fc82ff3f61"/>
-				<textElement textAlignment="Right"/>
-				<textFieldExpression><![CDATA["Page " + $V{PAGE_NUMBER}]]></textFieldExpression>
-			</textField>
-		</band>
-	</pageFooter>
-
+	<summary>
+		<band height="60" splitType="Stretch"/>
+	</summary>
 </jasperReport>

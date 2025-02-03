@@ -1,5 +1,6 @@
 package com.css.coupon_sale.controller;
 
+import com.css.coupon_sale.dto.request.SignupRequest;
 import com.css.coupon_sale.dto.response.BusinessResponse;
 import com.css.coupon_sale.dto.response.CustomerResponse;
 import com.css.coupon_sale.dto.response.UserListResponse;
@@ -11,6 +12,7 @@ import com.css.coupon_sale.service.UserProfileService;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 import org.modelmapper.ModelMapper;
+import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpHeaders;
@@ -18,12 +20,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.nio.CharBuffer;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @RestController
@@ -35,11 +40,14 @@ public class AdminController {
 
     private final UserProfileService userProfileService;
 
+    private final PasswordEncoder passwordEncoder;
+
     @Autowired
-    public AdminController(UserRepository userRepository, ModelMapper modelMapper, UserProfileService userProfileService) {
+    public AdminController(UserRepository userRepository, ModelMapper modelMapper, UserProfileService userProfileService, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.modelMapper = modelMapper;
         this.userProfileService = userProfileService;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @GetMapping()
@@ -149,4 +157,35 @@ public class AdminController {
         return response;
     }
 
+    @PostMapping("/add-admin")
+    public ResponseEntity<?> addAdmin(@RequestParam("creatorId") Long creatorId, @RequestBody SignupRequest request) {
+        // Fetch the creator (must be System Admin with ID=1)
+        UserEntity creator = userRepository.findById(creatorId)
+                .orElseThrow(() -> new RuntimeException("Creator not found"));
+
+        // Validate that only System Admin (ID=1) can create new admins
+        if (!creator.getId().equals(1L)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                    .body("Only the System Admin can create new admins.");
+        }
+
+        // Check if the email is already registered
+        Optional<UserEntity> oUser = userRepository.findByEmail(request.getEmail());
+        if (oUser.isPresent()) {
+            return ResponseEntity.status(HttpStatus.CONFLICT).body("Email is already in use.");
+        }
+
+        // Create new admin user
+        UserEntity newAdmin = new UserEntity();
+        BeanUtils.copyProperties(request, newAdmin);
+        newAdmin.setPassword(passwordEncoder.encode(CharBuffer.wrap(request.getPassword())));
+        newAdmin.setRole("ADMIN");
+        newAdmin.setAuthProvider("LOCAL");
+        newAdmin.setCreated_at(LocalDateTime.now());
+
+        // Save the new admin
+        UserEntity savedAdmin = userRepository.save(newAdmin);
+
+        return ResponseEntity.status(HttpStatus.CREATED).body(mapToResponseDTO(savedAdmin));
+    }
 }

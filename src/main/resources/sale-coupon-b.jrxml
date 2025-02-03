@@ -34,6 +34,9 @@
 		<band height="70" splitType="Stretch">
 			<textField>
 				<reportElement x="440" y="13" width="101" height="31" uuid="6f9a44ac-0185-4b41-8cbb-ecfa3ce6a047"/>
+				<textElement>
+					<font size="16"/>
+				</textElement>
 				<textFieldExpression><![CDATA[$F{businessName}]]></textFieldExpression>
 			</textField>
 		</band>
@@ -81,10 +84,10 @@
 	</columnHeader>
 	<detail>
 		<band height="51" splitType="Stretch">
-			<textField pattern="dd/MM/yyyy">
-				<reportElement x="473" y="12" width="82" height="31" uuid="b66e642a-e724-423a-9f09-88e7fcefe5cc"/>
+			<textField pattern="MMMMM dd, yyyy">
+				<reportElement x="460" y="12" width="82" height="31" uuid="b66e642a-e724-423a-9f09-88e7fcefe5cc"/>
 				<textElement>
-					<font size="12"/>
+					<font size="14"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$F{buyDate}]]></textFieldExpression>
 			</textField>
@@ -100,7 +103,7 @@
 				<textFieldExpression><![CDATA[$F{productName}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="126" y="11" width="116" height="31" uuid="89f435ec-9514-401d-bcb1-32ebea9c7647"/>
+				<reportElement x="180" y="11" width="116" height="31" uuid="89f435ec-9514-401d-bcb1-32ebea9c7647"/>
 				<textElement>
 					<font size="14"/>
 				</textElement>

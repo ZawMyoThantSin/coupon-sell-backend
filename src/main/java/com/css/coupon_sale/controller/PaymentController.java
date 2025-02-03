@@ -1,6 +1,7 @@
 package com.css.coupon_sale.controller;
 
 import com.css.coupon_sale.entity.PaymentEntity;
+import com.css.coupon_sale.repository.PaymentRepository;
 import com.css.coupon_sale.service.PaymentService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -10,17 +11,21 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/")
 public class PaymentController {
     private final PaymentService paymentService;
+    private final PaymentRepository paymentRepository;
 
     @Autowired
-    public PaymentController(PaymentService paymentService) {
+    public PaymentController(PaymentService paymentService, PaymentRepository paymentRepository) {
         this.paymentService = paymentService;
+        this.paymentRepository = paymentRepository;
     }
 
     @GetMapping("/payment/all")
@@ -82,4 +87,12 @@ public class PaymentController {
         // Constructor and getters are automatically provided by the record
     }
 
+    @GetMapping("/payment/count")
+    public ResponseEntity<Map<String , Long>> getPaymentCount(){
+        long count = paymentRepository.countAllBusinesses();
+        Map<String, Long> response = new HashMap<>();
+        response.put("count", count);
+        System.out.println("Count"+ count);
+        return ResponseEntity.ok(response);
+    }
 }

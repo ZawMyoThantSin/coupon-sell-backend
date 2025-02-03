@@ -42,6 +42,13 @@ public interface SaleCouponRepository extends JpaRepository<SaleCouponEntity , I
             @Param("startOfMonth") LocalDateTime startOfMonth,
             @Param("startOfNextMonth") LocalDateTime startOfNextMonth);
 
+    @Query("SELECT YEAR(s.buyDate), MONTH(s.buyDate), SUM(s.totalPrice) " +
+            "FROM SaleCouponEntity s " +
+            "WHERE s.business.id = :businessId " +
+            "GROUP BY YEAR(s.buyDate), MONTH(s.buyDate) " +
+            "ORDER BY YEAR(s.buyDate) DESC, MONTH(s.buyDate) DESC")
+    List<Object[]> findMonthlyEarningsByBusinessId(@Param("businessId") int businessId);
+
     @Query("SELECT SUM(s.totalPrice) AS yearlyEarnings " +
             "FROM SaleCouponEntity s " +
             "WHERE s.business.id = :businessId " +

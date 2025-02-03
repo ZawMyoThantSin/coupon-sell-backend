@@ -119,7 +119,9 @@ public class CustomWebSocketHandler extends TextWebSocketHandler {
         private void sendMessage(WebSocketSession session, String message) {
             try {
 
-                session.sendMessage(new TextMessage(message));
+                if (session.isOpen()) {
+                    session.sendMessage(new TextMessage(message));
+                }
             } catch (IOException e) {
                 System.err.println("Error sending message: " + e.getMessage());
             }

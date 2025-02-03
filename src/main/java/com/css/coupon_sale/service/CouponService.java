@@ -21,6 +21,7 @@ public interface CouponService {
 
     List<CouponUsedResponse> getAllCouponUsages(Integer businessId);
 
+    void softDeleteCoupon(Integer id);
 
     byte[] generateCouponUsageReportweekly(Integer businessId, String reportType) throws JRException;
 
@@ -37,7 +38,6 @@ public interface CouponService {
     byte[] generateCouponSalesReport(List<CouponSalesBusinessResponse2> couponSales, String reportType) throws JRException;
 
     byte[] generateRemainingCouponReport(Integer businessId, String reportType) throws JRException;
-
 
     byte[] generateExpiredCouponDataReport(Integer businessId, String reportType) throws JRException;
 

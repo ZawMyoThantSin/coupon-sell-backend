@@ -1,5 +1,14 @@
 package com.css.coupon_sale.controller;
 
+import com.css.coupon_sale.dto.response.BusinessCategoryResponse;
+import com.css.coupon_sale.dto.response.BusinessResponse;
+import com.css.coupon_sale.dto.response.CouponResponse;
+import com.css.coupon_sale.dto.response.ProductResponse;
+import com.css.coupon_sale.service.BusinessCategoryService;
+import com.css.coupon_sale.service.BusinessService;
+import com.css.coupon_sale.service.CouponService;
+import com.css.coupon_sale.service.ProductService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -16,12 +25,26 @@ import java.net.MalformedURLException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
 
 @RestController
 @RequestMapping("/public/")
 public class PublicController {
     @Value("${product.image.upload-dir}") // Specify folder path in application.properties
     private String uploadDir;
+
+    private final BusinessService businessService;
+    private final BusinessCategoryService categoryService;
+    private final ProductService productService;
+    private final CouponService couponService;
+
+    @Autowired
+    public PublicController(BusinessService businessService, BusinessCategoryService categoryService, ProductService productService, CouponService couponService) {
+        this.businessService = businessService;
+        this.categoryService = categoryService;
+        this.productService = productService;
+        this.couponService = couponService;
+    }
 
 
     // Controller Method
@@ -130,5 +153,51 @@ public class PublicController {
         }
     }
 
+    @GetMapping("/businesses")
+    public ResponseEntity<List<BusinessResponse>> getAllBusinesses() {
+        List<BusinessResponse> businesses = businessService.getAllBusinesses();
+        return ResponseEntity.ok(businesses);
+    }
+    @GetMapping("/business-categories")
+    public ResponseEntity<List<BusinessCategoryResponse>> getAllCategories() {
+        List<BusinessCategoryResponse> response = categoryService.getAllCategories();
+        return ResponseEntity.ok(response);
+    }
 
+    @GetMapping("/products")
+    public ResponseEntity<List<ProductResponse>> showAllCourses(){
+        List<ProductResponse> response =productService.showAllProducts();
+        return  ResponseEntity.ok(response);
+    }
+    @GetMapping("/products/{id}")
+    public  ResponseEntity<ProductResponse> showById(@PathVariable("id")Integer id){
+        ProductResponse response =productService.showProductbyId(id);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/coupons")
+    public ResponseEntity<List<CouponResponse>> getAllCoupon() {
+        List<CouponResponse> businesses = couponService.getAllCouponlist();
+        return ResponseEntity.ok(businesses);
+    }
+    @GetMapping("/coupons/view/{id}")
+    public ResponseEntity<Boolean> increaseViewCount(@PathVariable Integer id) {
+        couponService.increaseViewCount(id);
+        return ResponseEntity.ok(true);
+    }
+
+    @GetMapping("/businesses/{id}")
+    public ResponseEntity<BusinessResponse> getBusinessById(@PathVariable Integer id) {
+        BusinessResponse business = businessService.getBusinessById(id);
+        return ResponseEntity.ok(business);
+    }
+
+    @GetMapping("/products/b/{id}")
+    public ResponseEntity<List<ProductResponse>> getByBusiness(@PathVariable("id")Integer id){
+        List<ProductResponse> responses = productService.showByBusinessId(id);
+        if(responses != null){
+            return ResponseEntity.ok(responses);
+        }
+        return ResponseEntity.notFound().build();
+    }
 }

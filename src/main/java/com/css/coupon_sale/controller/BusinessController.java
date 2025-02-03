@@ -2,10 +2,7 @@ package com.css.coupon_sale.controller;
 
 
 import com.css.coupon_sale.config.CustomWebSocketHandler;
-import com.css.coupon_sale.dto.request.BusinessRequest;
-import com.css.coupon_sale.dto.request.PayOwnerRequest;
-import com.css.coupon_sale.dto.request.SignupRequest;
-import com.css.coupon_sale.dto.request.UpdateBusinessRequest;
+import com.css.coupon_sale.dto.request.*;
 import com.css.coupon_sale.dto.response.BusinessResponse;
 import com.css.coupon_sale.dto.response.HttpResponse;
 import com.css.coupon_sale.dto.response.PayOwnerResponse;
@@ -16,6 +13,7 @@ import com.css.coupon_sale.entity.UserEntity;
 import com.css.coupon_sale.repository.BusinessRepository;
 import com.css.coupon_sale.repository.PaidHistoryRepository;
 import com.css.coupon_sale.service.BusinessService;
+import com.css.coupon_sale.service.NotificationService;
 import com.css.coupon_sale.service.PaidHistoryService;
 import jakarta.servlet.http.HttpServletResponse;
 import net.sf.jasperreports.engine.JRException;
@@ -58,6 +56,9 @@ public class BusinessController {
 
     @Autowired
     private CustomWebSocketHandler webSocketHandler;
+
+    @Autowired
+    private NotificationService notificationService;
 
     private static final Logger logger = LoggerFactory.getLogger(BusinessController.class);
 
@@ -128,8 +129,13 @@ public class BusinessController {
 
     @PutMapping("/{id}")
     public ResponseEntity<BusinessResponse> updateBusiness(@PathVariable("id") Integer id, @ModelAttribute UpdateBusinessRequest requestDTO) throws IOException{
-        BusinessResponse updatedBusiness = businessService.updateBusiness(id, requestDTO);
-        return ResponseEntity.ok(updatedBusiness);
+        try{
+            BusinessResponse updatedBusiness = businessService.updateBusiness(id, requestDTO);
+            return ResponseEntity.ok(updatedBusiness);
+        }catch (Exception e){
+            System.out.println("Error"+e.getMessage());
+        }
+        return ResponseEntity.ok().build();
     }
 
     @DeleteMapping("/{id}")
@@ -173,6 +179,17 @@ public class BusinessController {
         try {
             PayOwnerResponse response = paidHistoryService.payOwner(requestDto);
             logger.info("Payment processed successfully: {}", response);
+            BusinessResponse business = businessService.getBusinessById(response.getBusinessId());
+            Long ownerId = business.getUserId();
+
+            webSocketHandler.sendToUser(ownerId,"OWNER_PAID");
+            // Send notification to the user
+            NotificationRequest userNotificationRequest = new NotificationRequest();
+            userNotificationRequest.setReceiverId(ownerId);
+            userNotificationRequest.setMessage("Admin has paid your income amount.");
+            userNotificationRequest.setType("OWNER_PAID");
+            userNotificationRequest.setRoute("/o");
+            notificationService.createNotification(userNotificationRequest);
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             logger.error("Error processing payment: {}", e.getMessage());

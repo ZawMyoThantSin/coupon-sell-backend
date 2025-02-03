@@ -179,5 +179,21 @@ public class SaleCouponImpl implements SaleCouponService {
                 businessId, startOfYear, startOfNextYear);
     }
 
+    @Override
+    public Map<String, Double> getExistingMonthsWithEarnings(int businessId) {
+        List<Object[]> results = saleCouponRepository.findMonthlyEarningsByBusinessId(businessId);
+        Map<String, Double> monthEarningsMap = new LinkedHashMap<>(); // Maintain order
+
+        for (Object[] row : results) {
+            int year = ((Number) row[0]).intValue();
+            int month = ((Number) row[1]).intValue();
+            double earnings = row[2] != null ? ((Number) row[2]).doubleValue() : 0.0;
+
+            String formattedMonth = String.format("%04d-%02d", year, month);
+            monthEarningsMap.put(formattedMonth, earnings);
+        }
+        return monthEarningsMap;
+    }
+
 
 }

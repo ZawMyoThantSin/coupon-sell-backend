@@ -122,4 +122,10 @@ public class UserController {
         response.put("todayUserCount", todayUserCount);
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getBusinessById(@PathVariable Long id) {
+        UserEntity business = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+        return ResponseEntity.ok(business);
+    }
 }

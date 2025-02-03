@@ -6,6 +6,7 @@ import com.css.coupon_sale.entity.OrderEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 @Service
 public interface SaleCouponService {
@@ -23,4 +24,6 @@ public interface SaleCouponService {
     Double getCurrentMonthEarnings(int businessId);
 
     Double getCurrentYearEarnings(int businessId);
+
+    Map<String, Double> getExistingMonthsWithEarnings(int businessId);
 }

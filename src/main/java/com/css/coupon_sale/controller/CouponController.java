@@ -466,4 +466,10 @@ public class CouponController {
                     .body(("Error generating report: " + e.getMessage()).getBytes());
         }
     }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> softDeleteCoupon(@PathVariable Integer id) {
+        couponService.softDeleteCoupon(id);
+        return ResponseEntity.noContent().build();
+    }
 }

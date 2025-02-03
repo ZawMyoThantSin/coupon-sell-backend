@@ -2,6 +2,31 @@
 <!-- Created with Jaspersoft Studio version 6.20.5.final using JasperReports Library version 6.20.5-3efcf2e67f959db3888d79f73dde2dbd7acb4f8e  -->
 <jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="businesses" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="b08965ae-6e0e-4173-b9d1-4d670543865f">
 	<property name="com.jaspersoft.studio.data.defaultdataadapter" value="One Empty Record"/>
+	<style name="tableHeader" forecolor="#000000" backcolor="#E6E6E6">
+		<box>
+			<pen lineColor="#000000"/>
+			<topPen lineWidth="0.5" lineStyle="Solid"/>
+			<leftPen lineWidth="0.5" lineStyle="Solid"/>
+			<bottomPen lineWidth="0.5" lineStyle="Solid"/>
+			<rightPen lineWidth="0.5" lineStyle="Solid"/>
+		</box>
+	</style>
+	<style name="tableCell" forecolor="#000000" backcolor="#FFFFFF">
+		<box>
+			<pen lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineStyle="Solid"/>
+			<bottomPen lineWidth="0.5" lineStyle="Solid"/>
+			<rightPen lineWidth="0.5" lineStyle="Solid"/>
+		</box>
+	</style>
+	<style name="tableFooter" forecolor="#000000" backcolor="#E6E6E6">
+		<box>
+			<pen lineColor="#000000"/>
+			<leftPen lineWidth="0.5" lineStyle="Solid"/>
+			<bottomPen lineWidth="0.5" lineStyle="Solid"/>
+			<rightPen lineWidth="0.5" lineStyle="Solid"/>
+		</box>
+	</style>
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
@@ -10,9 +35,6 @@
 	<field name="email" class="java.lang.String"/>
 	<field name="contactNumber" class="java.lang.String"/>
 	<field name="createdAt" class="java.util.Date"/>
-	<background>
-		<band splitType="Stretch"/>
-	</background>
 	<title>
 		<band height="79" splitType="Stretch">
 			<staticText>
@@ -28,93 +50,74 @@
 			</textField>
 		</band>
 	</title>
-	<pageHeader>
-		<band height="35" splitType="Stretch"/>
-	</pageHeader>
 	<columnHeader>
-		<band height="56" splitType="Stretch">
+		<band height="43" splitType="Stretch">
 			<staticText>
-				<reportElement x="0" y="12" width="113" height="30" uuid="1010efcb-248d-4574-93d1-78de1248046b"/>
-				<textElement>
-					<font size="16"/>
+				<reportElement style="tableHeader" x="0" y="0" width="113" height="43" uuid="1010efcb-248d-4574-93d1-78de1248046b"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="14" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Business Name]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="115" y="13" width="107" height="29" uuid="115cf2bc-6092-46c4-b6dc-45fc18a2c7ba"/>
-				<textElement>
-					<font size="16"/>
+				<reportElement style="tableHeader" x="113" y="0" width="107" height="43" uuid="115cf2bc-6092-46c4-b6dc-45fc18a2c7ba"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="14" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Owner Name]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="228" y="13" width="119" height="29" uuid="835d7382-0e2a-4348-8046-3d70aa873aca"/>
-				<textElement>
-					<font size="16"/>
+				<reportElement style="tableHeader" x="220" y="0" width="119" height="43" uuid="835d7382-0e2a-4348-8046-3d70aa873aca"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="14" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Owner Email]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="351" y="13" width="111" height="29" uuid="ea7aba9a-1c57-4e3a-9702-8f2ab21fd7e3"/>
-				<textElement>
-					<font size="16"/>
+				<reportElement style="tableHeader" x="339" y="0" width="111" height="43" uuid="ea7aba9a-1c57-4e3a-9702-8f2ab21fd7e3"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="14" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Phone Number]]></text>
 			</staticText>
 			<staticText>
-				<reportElement x="469" y="13" width="105" height="29" uuid="6228b179-c4b2-40d6-84d1-92f7a32171fb"/>
-				<textElement>
-					<font size="16"/>
+				<reportElement style="tableHeader" x="450" y="0" width="105" height="43" uuid="6228b179-c4b2-40d6-84d1-92f7a32171fb"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle">
+					<font size="14" isBold="true"/>
 				</textElement>
 				<text><![CDATA[Created Date]]></text>
 			</staticText>
-			<frame>
-				<reportElement x="-20" y="0" width="594" height="56" uuid="3780a775-1eae-420a-9c73-a5eaf8a926e0"/>
-				<box>
-					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-			</frame>
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="47" splitType="Stretch">
+		<band height="40" splitType="Stretch">
 			<textField>
-				<reportElement x="0" y="8" width="100" height="30" uuid="08592da3-82a8-4b00-8c43-01dd5118c65d"/>
+				<reportElement style="tableCell" x="0" y="0" width="113" height="40" uuid="08592da3-82a8-4b00-8c43-01dd5118c65d"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{businessName}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="121" y="9" width="100" height="30" uuid="03e357df-f081-459d-b2fa-154c24233dc7"/>
+				<reportElement style="tableCell" x="113" y="0" width="107" height="40" uuid="03e357df-f081-459d-b2fa-154c24233dc7"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{userName}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="240" y="8" width="90" height="30" uuid="d99665a1-95ac-4076-ab1d-c980317711de"/>
+				<reportElement style="tableCell" x="220" y="0" width="119" height="40" uuid="d99665a1-95ac-4076-ab1d-c980317711de"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{email}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="364" y="10" width="90" height="26" uuid="0226e45f-7fde-4411-99df-d0c78143ceb8"/>
+				<reportElement style="tableCell" x="339" y="0" width="111" height="40" uuid="0226e45f-7fde-4411-99df-d0c78143ceb8"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{contactNumber}]]></textFieldExpression>
 			</textField>
 			<textField pattern="MMMM dd, yyyy">
-				<reportElement x="483" y="10" width="90" height="20" uuid="603c4e1f-adec-4450-be47-e016763d0f23"/>
+				<reportElement style="tableCell" x="450" y="0" width="105" height="40" uuid="603c4e1f-adec-4450-be47-e016763d0f23"/>
+				<textElement textAlignment="Center" verticalAlignment="Middle"/>
 				<textFieldExpression><![CDATA[$F{createdAt}]]></textFieldExpression>
 			</textField>
-			<frame>
-				<reportElement x="-20" y="0" width="594" height="47" uuid="66105370-4777-4334-8b0f-b4851e6cd093"/>
-				<box>
-					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-			</frame>
 		</band>
 	</detail>
-	<columnFooter>
-		<band height="45" splitType="Stretch"/>
-	</columnFooter>
 	<pageFooter>
 		<band height="54" splitType="Stretch">
 			<textField>
@@ -123,7 +126,4 @@
 			</textField>
 		</band>
 	</pageFooter>
-	<summary>
-		<band height="42" splitType="Stretch"/>
-	</summary>
 </jasperReport>

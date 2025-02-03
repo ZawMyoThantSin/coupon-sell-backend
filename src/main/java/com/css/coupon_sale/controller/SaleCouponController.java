@@ -17,6 +17,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/sale-coupon")
@@ -110,5 +111,11 @@ public class SaleCouponController {
     @GetMapping("/business-earnings/yearly/{businessId}")
     public Double getCurrentYearEarnings(@PathVariable int businessId) {
         return saleCouponService.getCurrentYearEarnings(businessId);
+    }
+
+    @GetMapping("/months/{businessId}")
+    public ResponseEntity<Map<String, Double>> getAvailableMonths(@PathVariable int businessId) {
+        Map<String, Double> monthEarnings = saleCouponService.getExistingMonthsWithEarnings(businessId);
+        return ResponseEntity.ok(monthEarnings);
     }
 }

@@ -136,6 +136,13 @@ public class OrderController {
         boolean response = service.updateOrderStatus(id,"ACCEPT");
         if(response){
             webSocketHandler.sendToUser(userId,"ORDER_ACCEPTED");
+            // Send notification to the user
+            NotificationRequest userNotificationRequest = new NotificationRequest();
+            userNotificationRequest.setReceiverId(userId);
+            userNotificationRequest.setMessage("Your order has been accepted.");
+            userNotificationRequest.setType("ORDER_ACCEPTED");
+            userNotificationRequest.setRoute("/homepage/order-history");
+            notificationService.createNotification(userNotificationRequest);
             return ResponseEntity.ok(true);
         }
         return ResponseEntity.notFound().build();

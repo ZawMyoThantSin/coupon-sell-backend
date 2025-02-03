@@ -256,7 +256,7 @@ public class ProductServiceImpl implements ProductService {
                 product.setName(row.getCell(1).getStringCellValue());
                 product.setDescription(row.getCell(2).getStringCellValue());
                 product.setPrice(row.getCell(3).getNumericCellValue());
-                product.setDiscount((float) row.getCell(4).getNumericCellValue());
+                product.setDiscount(0.0f);
                 product.setCreatedAt(LocalDateTime.now());
                 product.setUpdatedAt(LocalDateTime.now());
                 product.setStatus(true);

@@ -41,7 +41,8 @@ public class ProductController {
         }
         return ResponseEntity.badRequest().build();
     }
-    @GetMapping                 //list
+
+    @GetMapping
     public ResponseEntity<List<ProductResponse>> showAllCourses(){
         List<ProductResponse> response =service.showAllProducts();
         return  ResponseEntity.ok(response);

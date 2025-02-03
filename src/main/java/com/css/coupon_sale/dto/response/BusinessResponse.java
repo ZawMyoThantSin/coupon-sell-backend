@@ -2,6 +2,8 @@ package com.css.coupon_sale.dto.response;
 
 import lombok.Data;
 
+import java.time.LocalDateTime;
+
 @Data
 public class BusinessResponse {
     private Long id;
@@ -19,7 +21,16 @@ public class BusinessResponse {
     private double count;
     private String paymentStatus;
     private Double lastPaidAmount;
+    private LocalDateTime createdAt;
 
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
 
     public double getCount() {
         return count;
