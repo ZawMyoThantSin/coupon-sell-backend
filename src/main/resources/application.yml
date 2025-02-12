@@ -33,6 +33,17 @@ spring:
       enabled: true
       max-file-size: 10MB
       max-request-size: 20MB
+    mail:
+    host: smtp.gmail.com
+    port: 587
+    username: yourmail@example.com
+    password: app-password
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
   resources:
     static-locations: classpath:/static/, file:uploads/
 cors:
