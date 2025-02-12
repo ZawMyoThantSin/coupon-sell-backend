@@ -96,7 +96,7 @@ public class EmailServiceImpl implements EmailService {
     public String validateEmail(String email, String ipAddress) {
         String url = String.format(
                 "https://api.zerobounce.net/v2/validate?api_key=%s&email=%s&ip_address=%s",
-                "5d3eb465a3df447993132437409a4726", email, ipAddress);
+                "b83e087b6bfb44a790d045d0cc2eb462", email, ipAddress);
 
         RestTemplate restTemplate = new RestTemplate();
         ResponseEntity<String> response = restTemplate.getForEntity(url, String.class);

@@ -1,10 +1,10 @@
 spring:
   application:
-    name: coupon-sale
+    name: couple-connect
   datasource:
-    url: jdbc:mysql://localhost:3306/coupon_sell_system?createDatabaseIfNotExist=true
-    username: root
-    password: zawmyothantsin
+    url: jdbc:mysql://localhost:3306/couple_connect?createDatabaseIfNotExist=true
+    username: YOUR_DB_USERNAME
+    password: YOUR_DB_PASSWORD
     driver-class-name: com.mysql.cj.jdbc.Driver
   jpa:
     hibernate:
@@ -16,46 +16,23 @@ spring:
       client:
         registration:
           google:
-            client-id: 333270724745-qj2v57nr62ajtooho76e9te3np9d79i9.apps.googleusercontent.com
-            client-secret: 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
+            client-id: YOUR_GOOGLE_CLIENT_ID
+            client-secret: YOUR_GOOGLE_CLIENT_SECRET
             scope:
               - email
               - profile
             redirect-uri: "{baseUrl}/login/oauth2/code/google"
             client-name: Google
-          github:
-            client-id: Iv23liXNVDXQjS3e12lQ
-            client-secret: 4a8a05188fede42e604c3e5f7940ba8ed9a43ae8
-            scope:
-              - read:user
-            redirect-uri: "{baseUrl}/login/oauth2/code/github"
-            client-name: GitHub
         provider:
           google:
             authorization-uri: https://accounts.google.com/o/oauth2/v2/auth
             token-uri: https://oauth2.googleapis.com/token
             user-info-uri: https://www.googleapis.com/oauth2/v3/userinfo
-          github:
-            authorization-uri: https://github.com/login/oauth/authorize
-            token-uri: https://github.com/login/oauth/access_token
-            user-info-uri: https://api.github.com/user
-            user-name-attribute: login
   servlet:
-   multipart:
+    multipart:
       enabled: true
       max-file-size: 10MB
       max-request-size: 20MB
-  mail:
-    host: smtp.gmail.com
-    port: 587
-    username: teamichgo.group1@gmail.com
-    password: leleuibvaueadnib
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enable: true
   resources:
     static-locations: classpath:/static/, file:uploads/
 cors:
@@ -64,7 +41,7 @@ product:
   image:
     upload-dir: uploads/images
 jwt:
-  secret: GDGfx/xcaSqCWZtVqxCzZ5f5j8BPYRnR0lG7vatfAOAt6tgpiGgc7X1Jxw8I96abS8+5ChS4W/hOhtHasM+bHQ==
+  secret: YOUR_JWT_SECRET
 #server:
-#  address: 192.168.1.1
+#  address: YOUR_SERVER_IP
 #  port: 8080

@@ -33,6 +33,3 @@ build/
 ### VS Code ###
 .vscode/
 
-### Ignore Sensitive Files ###
-src/main/resources/application.yml
-
